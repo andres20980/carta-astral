@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carta Astral Gratis — Calcula tu mapa natal con hora exacta</title>
   <meta name="description" content="Genera tu carta astral natal gratis con la hora exacta de tu partida de nacimiento. Cálculo preciso con Swiss Ephemeris: planetas, casas, ascendente y aspectos.">
-  <meta name="keywords" content="carta astral, carta natal, mapa astral, ascendente, horóscopo natal, calcular carta astral gratis, carta astral gratis online">
+  <meta name="keywords" content="carta astral, carta astral gratis, carta natal, carta natal gratis, mapa astral, mapa astral gratis, hacer carta astral, calcular carta astral, carta astral online, ascendente gratis, calcular ascendente, mi carta astral, carta astral por fecha de nacimiento, carta astral hora de nacimiento, casas astrales, carta astral gratis online, carta astral pdf, interpretar carta astral, signo ascendente calcular">
   <link rel="canonical" href="https://carta-astral-gratis.es/">
   <meta property="og:title" content="Carta Astral Gratis — Tu mapa natal con hora exacta">
   <meta property="og:description" content="La única carta astral que extrae automáticamente tu hora de nacimiento de la partida civil. Cálculo astronómico preciso.">
@@ -13,6 +13,8 @@
   <meta property="og:locale" content="es_ES">
   <meta property="og:url" content="https://carta-astral-gratis.es/">
   <meta name="robots" content="index, follow">
+  <link rel="alternate" hreflang="es" href="https://carta-astral-gratis.es/">
+  <link rel="alternate" hreflang="x-default" href="https://carta-astral-gratis.es/">
   <meta name="theme-color" content="#7c3aed">
   <!-- GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DEWMQ73FH5"></script>
@@ -164,6 +166,16 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"Carta Astral Gratis","url":"https://carta-astral-gratis.es/","applicationCategory":"LifestyleApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"description":"Genera tu carta astral natal gratis con cálculo astronómico preciso. Planetas, casas, ascendente y aspectos.","inLanguage":"es"}
   </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"¿Para qué sirve una carta astral?","acceptedAnswer":{"@type":"Answer","text":"La carta astral es un mapa de tu personalidad basado en la posición de los astros cuando naciste. Sirve para entender tus fortalezas, desafíos, compatibilidad en relaciones, vocación profesional y etapas de vida."}},
+    {"@type":"Question","name":"¿Por qué necesito la hora exacta de nacimiento?","acceptedAnswer":{"@type":"Answer","text":"La hora determina tu ascendente, que cambia de signo cada ~2 horas. También define las 12 casas astrológicas. Sin hora exacta, solo puedes saber los planetas en signos, pero no en qué área de tu vida actúan."}},
+    {"@type":"Question","name":"¿Dónde puedo ver mi hora de nacimiento?","acceptedAnswer":{"@type":"Answer","text":"En España puedes descargar tu certificado literal de nacimiento desde sede.mjusticia.gob.es con Cl@ve o certificado digital. Es gratuito. También puedes preguntar a tus padres o revisar el Libro de Familia."}},
+    {"@type":"Question","name":"¿Qué es el ascendente?","acceptedAnswer":{"@type":"Answer","text":"El ascendente es el signo del zodíaco que estaba saliendo por el horizonte este en el momento de tu nacimiento. Representa tu imagen pública y cómo te ven los demás."}},
+    {"@type":"Question","name":"¿Qué diferencia hay entre carta astral y carta natal?","acceptedAnswer":{"@type":"Answer","text":"Ninguna. Carta astral, carta natal y mapa astral son nombres distintos para lo mismo: el gráfico de las posiciones planetarias en el momento de tu nacimiento."}},
+    {"@type":"Question","name":"¿Es fiable esta calculadora de carta astral?","acceptedAnswer":{"@type":"Answer","text":"Sí. Usamos la Swiss Ephemeris (la misma que usa Astro.com y los astrólogos profesionales) y el sistema de casas Placidus, el más utilizado en astrología occidental."}}
+  ]}
+  </script>
 </head>
 <body>
 
@@ -239,7 +251,7 @@
             <div class="opt-card" id="optPdf" onclick="selOpt('pdf')">
               <div class="ic">📄</div>
               <div class="tl">Subir certificado de nacimiento</div>
-              <div class="ds">Extraemos automáticamente tu nombre, fecha y hora exacta del PDF.</div>
+              <div class="ds">Extraemos automáticamente la fecha, hora y lugar de nacimiento del PDF.</div>
               <a href="#" class="hl" onclick="event.stopPropagation();openModal()">¿Cómo descargarlo?</a>
             </div>
             <div class="opt-card" id="optMan" onclick="selOpt('manual')">
@@ -359,7 +371,7 @@
       <div class="panel">
         <h2>¿Qué es una Carta Astral?</h2>
         <p style="line-height:1.7;color:var(--muted);font-size:.9rem">
-          La carta astral — también llamada carta natal o mapa astral — es la representación gráfica
+          La <strong>carta astral</strong> — también llamada <strong>carta natal</strong> o <strong>mapa astral</strong> — es la representación gráfica
           de las posiciones de los planetas, el Sol y la Luna en el momento exacto de tu nacimiento.
           Cada planeta refleja una energía distinta: el Sol es tu identidad, la Luna tus emociones,
           Mercurio tu mente, Venus cómo amas, y Marte cómo actúas.
@@ -367,6 +379,54 @@
           y <strong>lugar de nacimiento</strong>. Nuestra herramienta utiliza la Swiss Ephemeris
           y el sistema de casas Placidus para ofrecerte la máxima precisión astronómica, de forma totalmente gratuita.
         </p>
+      </div>
+
+      <!-- HOW TO -->
+      <div class="panel">
+        <h2>¿Cómo hacer tu carta astral gratis?</h2>
+        <p style="line-height:1.7;color:var(--muted);font-size:.9rem;margin-bottom:.8rem">
+          <strong>Hacer tu carta astral gratis online</strong> es muy sencillo. Solo necesitas tres datos:
+        </p>
+        <ol style="line-height:1.8;color:var(--muted);font-size:.9rem;padding-left:1.2rem">
+          <li><strong>Fecha de nacimiento</strong> — día, mes y año exacto.</li>
+          <li><strong>Hora de nacimiento</strong> — cuanto más exacta, mejor. La hora determina tu ascendente y las casas astrológicas. Puedes obtenerla de tu certificado literal de nacimiento.</li>
+          <li><strong>Lugar de nacimiento</strong> — la ciudad, hospital o pueblo donde naciste. Usamos geocodificación para obtener las coordenadas exactas.</li>
+        </ol>
+        <p style="line-height:1.7;color:var(--muted);font-size:.9rem;margin-top:.8rem">
+          Con estos datos, nuestra calculadora genera al instante la posición de todos los planetas en signos y casas,
+          tu <strong>ascendente</strong>, tu <strong>medio cielo</strong>, y todos los <strong>aspectos natales</strong>
+          (conjunción, oposición, trígono, cuadratura, sextil). El cálculo usa la Swiss Ephemeris,
+          la misma librería astronómica que utilizan los astrólogos profesionales.
+        </p>
+      </div>
+
+      <!-- FAQ -->
+      <div class="panel">
+        <h2>Preguntas frecuentes sobre la Carta Astral</h2>
+        <details style="margin-bottom:.8rem;border-bottom:1px solid var(--border);padding-bottom:.8rem">
+          <summary style="cursor:pointer;font-weight:600;font-size:.9rem;color:var(--text)">¿Para qué sirve una carta astral?</summary>
+          <p style="line-height:1.7;color:var(--muted);font-size:.85rem;margin-top:.5rem">La carta astral es un mapa de tu personalidad basado en la posición de los astros cuando naciste. Sirve para entender tus fortalezas, desafíos, compatibilidad en relaciones, vocación profesional y etapas de vida. No predice el futuro, pero revela las energías con las que naciste.</p>
+        </details>
+        <details style="margin-bottom:.8rem;border-bottom:1px solid var(--border);padding-bottom:.8rem">
+          <summary style="cursor:pointer;font-weight:600;font-size:.9rem;color:var(--text)">¿Por qué necesito la hora exacta de nacimiento?</summary>
+          <p style="line-height:1.7;color:var(--muted);font-size:.85rem;margin-top:.5rem">La hora determina tu <strong>ascendente</strong> (la cúspide de la Casa 1), que cambia de signo cada ~2 horas. También define la posición de las 12 casas astrológicas. Sin hora, solo puedes saber los planetas en signos, pero no en qué área de tu vida actúan. Por eso tu carta astral con hora exacta es mucho más precisa.</p>
+        </details>
+        <details style="margin-bottom:.8rem;border-bottom:1px solid var(--border);padding-bottom:.8rem">
+          <summary style="cursor:pointer;font-weight:600;font-size:.9rem;color:var(--text)">¿Dónde puedo ver mi hora de nacimiento?</summary>
+          <p style="line-height:1.7;color:var(--muted);font-size:.85rem;margin-top:.5rem">En España puedes descargar tu certificado literal de nacimiento desde <a href="https://sede.mjusticia.gob.es/es/tramites/certificado-nacimiento" target="_blank" rel="noopener" style="color:var(--accent)">sede.mjusticia.gob.es</a> con Cl@ve o certificado digital. Es gratuito. También puedes preguntar a tus padres o revisar el Libro de Familia.</p>
+        </details>
+        <details style="margin-bottom:.8rem;border-bottom:1px solid var(--border);padding-bottom:.8rem">
+          <summary style="cursor:pointer;font-weight:600;font-size:.9rem;color:var(--text)">¿Qué es el ascendente?</summary>
+          <p style="line-height:1.7;color:var(--muted);font-size:.85rem;margin-top:.5rem">El <strong>ascendente</strong> es el signo del zodíaco que estaba saliendo por el horizonte este en el momento de tu nacimiento. Representa tu imagen pública, cómo te ven los demás, y tu estilo instintivo de enfrentarte al mundo. Para calcular tu ascendente necesitas fecha, hora y lugar de nacimiento.</p>
+        </details>
+        <details style="margin-bottom:.8rem;border-bottom:1px solid var(--border);padding-bottom:.8rem">
+          <summary style="cursor:pointer;font-weight:600;font-size:.9rem;color:var(--text)">¿Qué diferencia hay entre carta astral y carta natal?</summary>
+          <p style="line-height:1.7;color:var(--muted);font-size:.85rem;margin-top:.5rem">Ninguna. Carta astral, carta natal y mapa astral son nombres distintos para lo mismo: el gráfico de las posiciones planetarias en el momento de tu nacimiento. También se le llama horóscopo natal o tema natal.</p>
+        </details>
+        <details style="margin-bottom:.8rem">
+          <summary style="cursor:pointer;font-weight:600;font-size:.9rem;color:var(--text)">¿Es fiable esta calculadora de carta astral?</summary>
+          <p style="line-height:1.7;color:var(--muted);font-size:.85rem;margin-top:.5rem">Sí. Usamos la <strong>Swiss Ephemeris</strong> (la misma que usa Astro.com y los astrólogos profesionales) y el sistema de casas <strong>Placidus</strong>, el más utilizado en astrología occidental. Las posiciones planetarias tienen precisión de segundos de arco.</p>
+        </details>
       </div>
     </div>
   </div>
