@@ -1,0 +1,129 @@
+name: "\U0001F6E1\uFE0F SEO Tech Smoke"
+
+on:
+  schedule:
+    - cron: '40 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: seo-tech-smoke
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  seo-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "\U0001F50E Comprobar endpoints SEO"
+        id: smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SITE="https://carta-astral-f4ab9.web.app"
+
+          urls=(
+            "$SITE/robots.txt"
+            "$SITE/sitemap.xml"
+            "$SITE/ads.txt"
+            "$SITE/"
+          )
+
+          seo_pages=(
+            "$SITE/"
+          )
+
+          failures=0
+          report=""
+
+          for url in "${urls[@]}"; do
+            code=$(curl -L -s -o /dev/null -w "%{http_code}" --max-time 20 "$url" || echo "000")
+            if [[ "$code" == "200" ]]; then
+              report+="- ✅ ${url} -> ${code}"$'\n'
+            else
+              report+="- ❌ ${url} -> ${code}"$'\n'
+              failures=$((failures + 1))
+            fi
+          done
+
+          # Check robots.txt declares Sitemap
+          robots_content=$(curl -L -s --max-time 20 "$SITE/robots.txt" || true)
+          if echo "$robots_content" | grep -iq 'Sitemap:'; then
+            report+="- ✅ robots.txt declara Sitemap"$'\n'
+          else
+            report+="- ❌ robots.txt no declara Sitemap"$'\n'
+            failures=$((failures + 1))
+          fi
+
+          # Check ads.txt has publisher ID
+          ads_content=$(curl -L -s --max-time 20 "$SITE/ads.txt" || true)
+          if echo "$ads_content" | grep -q 'pub-9368517395014039'; then
+            report+="- ✅ ads.txt contiene publisher ID"$'\n'
+          else
+            report+="- ❌ ads.txt sin publisher ID correcto"$'\n'
+            failures=$((failures + 1))
+          fi
+
+          for page in "${seo_pages[@]}"; do
+            html=$(curl -L -s --max-time 20 "$page" || true)
+
+            if echo "$html" | grep -Eiq 'name=.robots.[^>]*noindex'; then
+              report+="- ❌ ${page} contiene noindex"$'\n'
+              failures=$((failures + 1))
+            else
+              report+="- ✅ ${page} sin noindex"$'\n'
+            fi
+
+            if echo "$html" | grep -iq 'rel="canonical"'; then
+              report+="- ✅ ${page} con canonical"$'\n'
+            else
+              report+="- ❌ ${page} sin canonical"$'\n'
+              failures=$((failures + 1))
+            fi
+
+            if echo "$html" | grep -iq 'application/ld+json'; then
+              report+="- ✅ ${page} con structured data"$'\n'
+            else
+              report+="- ❌ ${page} sin structured data"$'\n'
+              failures=$((failures + 1))
+            fi
+
+            if echo "$html" | grep -iq 'G-DEWMQ73FH5'; then
+              report+="- ✅ ${page} con GA4"$'\n'
+            else
+              report+="- ❌ ${page} sin GA4"$'\n'
+              failures=$((failures + 1))
+            fi
+
+            if echo "$html" | grep -iq 'ca-pub-9368517395014039'; then
+              report+="- ✅ ${page} con AdSense"$'\n'
+            else
+              report+="- ❌ ${page} sin AdSense"$'\n'
+              failures=$((failures + 1))
+            fi
+          done
+
+          echo "failures=$failures" >> "$GITHUB_OUTPUT"
+          echo "$report"
+          echo "report<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$report" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: "\U0001F6A8 Crear issue si hay fallos"
+        if: steps.smoke.outputs.failures != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const failures = '${{ steps.smoke.outputs.failures }}';
+            const report = `${{ steps.smoke.outputs.report }}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🛡️ SEO Smoke: ${failures} fallos detectados`,
+              body: `## SEO Tech Smoke - ${new Date().toISOString().slice(0,10)}\n\n${report}\n\ncc @andres20980`,
+              labels: ['seo', 'automated']
+            });

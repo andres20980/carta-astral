@@ -1,0 +1,50 @@
+name: "\U0001F3D7\uFE0F Deploy + Lighthouse"
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "\u2699\uFE0F Setup Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: "\U0001F525 Deploy to Firebase Hosting"
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: carta-astral-f4ab9
+          channelId: live
+
+      - name: "\U0001F4CA Lighthouse audit"
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://carta-astral-f4ab9.web.app/
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          configJson: |
+            {
+              "ci": {
+                "assert": {
+                  "assertions": {
+                    "categories:performance": ["warn", {"minScore": 0.7}],
+                    "categories:accessibility": ["warn", {"minScore": 0.8}],
+                    "categories:best-practices": ["warn", {"minScore": 0.8}],
+                    "categories:seo": ["error", {"minScore": 0.9}]
+                  }
+                }
+              }
+            }
