@@ -35,6 +35,7 @@ class ChartRequest(BaseModel):
     lng: float
     city: str = ""
     tz: str = "Europe/Madrid"
+    sex: str | None = None
 
 
 @app.post("/api/parse-pdf")
@@ -103,7 +104,7 @@ async def api_interpret_chart(req: ChartRequest):
         raise HTTPException(500, f"Error en el cálculo: {e}")
 
     try:
-        html = await interpret_chart(chart)
+        html = await interpret_chart(chart, sex=req.sex)
     except Exception as e:
         raise HTTPException(502, f"Error al generar interpretación: {e}")
 

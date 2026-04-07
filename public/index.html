@@ -319,6 +319,13 @@
               </select>
             </div>
             <div class="fgroup full"><label for="fname">Nombre <span style="font-weight:300;text-transform:none">(opcional, solo para personalizar)</span></label><input type="text" id="fname" placeholder="Ej: María García López"></div>
+            <div class="fgroup full"><label for="fsex">Sexo</label>
+              <select id="fsex">
+                <option value="">— Selecciona —</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+              </select>
+            </div>
           </div>
           <div class="acts">
             <button class="btn btn-s" onclick="goBack()">← Atrás</button>
@@ -584,6 +591,7 @@ function fillPdf(d){
   if(d.birth_place&&document.getElementById('fplace')){document.getElementById('fplace').value=d.birth_place;ext++}
   if(d.year&&d.month&&d.day){document.getElementById('fdate').value=`${d.year}-${String(d.month).padStart(2,'0')}-${String(d.day).padStart(2,'0')}`;ext++}
   if(d.hour!==null&&d.minute!==null){document.getElementById('ftime').value=`${String(d.hour).padStart(2,'0')}:${String(d.minute).padStart(2,'0')}`;ext++}
+  if(d.sex){document.getElementById('fsex').value=d.sex;ext++}
   valStep();return ext;
 }
 
@@ -620,7 +628,7 @@ async function calcChart(){
   ld.classList.remove('hidden');rs.classList.add('hidden');
   const[y,mo,d]=document.getElementById('fdate').value.split('-').map(Number);
   const[h,mi]=document.getElementById('ftime').value.split(':').map(Number);
-  const body={name:document.getElementById('fname').value.trim()||'Carta Astral',year:y,month:mo,day:d,hour:h,minute:mi,lat:bLat,lng:bLng,city:document.getElementById('fcity').value.trim()||document.getElementById('fplace')?.value.trim()||'',tz:document.getElementById('ftz').value};
+  const body={name:document.getElementById('fname').value.trim()||'Carta Astral',year:y,month:mo,day:d,hour:h,minute:mi,lat:bLat,lng:bLng,city:document.getElementById('fcity').value.trim()||document.getElementById('fplace')?.value.trim()||'',tz:document.getElementById('ftz').value,sex:document.getElementById('fsex').value||null};
   try{
     const r=await fetch('/api/calculate-chart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     if(!r.ok)throw new Error((await r.json()).detail||'Error');
@@ -704,7 +712,8 @@ async function requestInterpretation(){
     year:chartData.birth.year,month:chartData.birth.month,day:chartData.birth.day,
     hour:chartData.birth.hour,minute:chartData.birth.minute,
     lat:chartData.birth.lat,lng:chartData.birth.lng,
-    city:chartData.birth.city||'',tz:document.getElementById('ftz').value
+    city:chartData.birth.city||'',tz:document.getElementById('ftz').value,
+    sex:document.getElementById('fsex').value||null
   };
   try{
     const r=await fetch('/api/interpret-chart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});

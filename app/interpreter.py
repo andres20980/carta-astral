@@ -29,6 +29,7 @@ Estructura tu respuesta con estas secciones en HTML (usa <h3>, <p>, <ul>, <li>):
 
 Sé específico con los grados y las casas. Explica qué significa cada posición en la vida cotidiana.
 No repitas la posición sin explicarla. Cada párrafo debe aportar insight práctico.
+Si se indica el sexo de la persona, adapta el lenguaje (masculino/femenino) y las referencias astrológicas a su género.
 Extensión: 800-1200 palabras. Solo devuelve el HTML, sin markdown ni bloques de código.\
 """
 
@@ -41,6 +42,11 @@ def _build_chart_summary(chart: dict) -> str:
                  f"a las {b.get('hour')}:{b.get('minute'):02d}, "
                  f"{b.get('city', 'ubicación desconocida')} "
                  f"({b.get('lat')}, {b.get('lng')})")
+
+    sex = chart.get("sex")
+    if sex:
+        label = "Masculino" if sex == "M" else "Femenino"
+        lines.append(f"Sexo: {label}")
 
     asc = chart.get("ascendant", {})
     lines.append(f"Ascendente: {asc.get('sign')} {asc.get('degree_dms', '')}")
@@ -73,8 +79,10 @@ def _build_chart_summary(chart: dict) -> str:
     return "\n".join(lines)
 
 
-async def interpret_chart(chart: dict) -> str:
+async def interpret_chart(chart: dict, sex: str | None = None) -> str:
     """Envía la carta a Gemini y devuelve HTML con la interpretación."""
+    if sex:
+        chart["sex"] = sex
     if not GEMINI_KEY:
         raise RuntimeError("GEMINI_API_KEY no configurada")
 
