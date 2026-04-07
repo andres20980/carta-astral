@@ -1,0 +1,135 @@
+name: "📊 Weekly Google Report"
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'   # Lunes 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "🔑 Auth Google"
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+
+      - name: "📊 Generate report"
+        env:
+          GA4_PROPERTY: "properties/531527723"
+          ADSENSE_ACCOUNT: "accounts/pub-9368517395014039"
+        run: |
+          TOKEN=$(gcloud auth print-access-token)
+
+          echo "## 📊 Weekly Report — $(date +%Y-%m-%d)" > /tmp/report.md
+          echo "" >> /tmp/report.md
+
+          # GA4 traffic
+          echo "### 🔍 GA4 Traffic (last 7 days)" >> /tmp/report.md
+          TRAFFIC=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "dateRanges": [{"startDate": "7daysAgo", "endDate": "today"}],
+              "metrics": [
+                {"name": "sessions"},
+                {"name": "totalUsers"},
+                {"name": "screenPageViews"},
+                {"name": "averageSessionDuration"},
+                {"name": "bounceRate"}
+              ]
+            }' \
+            "https://analyticsdata.googleapis.com/v1beta/$GA4_PROPERTY:runReport")
+
+          SESSIONS=$(echo "$TRAFFIC" | python3 -c "import sys,json;r=json.load(sys.stdin);print(r.get('rows',[{}])[0].get('metricValues',[{}])[0].get('value','N/A'))" 2>/dev/null || echo "N/A")
+          USERS=$(echo "$TRAFFIC" | python3 -c "import sys,json;r=json.load(sys.stdin);print(r.get('rows',[{}])[0].get('metricValues',[{}])[1].get('value','N/A'))" 2>/dev/null || echo "N/A")
+          VIEWS=$(echo "$TRAFFIC" | python3 -c "import sys,json;r=json.load(sys.stdin);print(r.get('rows',[{}])[0].get('metricValues',[{}])[2].get('value','N/A'))" 2>/dev/null || echo "N/A")
+          DURATION=$(echo "$TRAFFIC" | python3 -c "import sys,json;r=json.load(sys.stdin);v=r.get('rows',[{}])[0].get('metricValues',[{}])[3].get('value','0');print(f'{float(v):.1f}s')" 2>/dev/null || echo "N/A")
+          BOUNCE=$(echo "$TRAFFIC" | python3 -c "import sys,json;r=json.load(sys.stdin);v=r.get('rows',[{}])[0].get('metricValues',[{}])[4].get('value','0');print(f'{float(v)*100:.1f}%')" 2>/dev/null || echo "N/A")
+
+          echo "| Metric | Value |" >> /tmp/report.md
+          echo "|--------|-------|" >> /tmp/report.md
+          echo "| Sessions | $SESSIONS |" >> /tmp/report.md
+          echo "| Users | $USERS |" >> /tmp/report.md
+          echo "| Page Views | $VIEWS |" >> /tmp/report.md
+          echo "| Avg Duration | $DURATION |" >> /tmp/report.md
+          echo "| Bounce Rate | $BOUNCE |" >> /tmp/report.md
+          echo "" >> /tmp/report.md
+
+          # GA4 key events
+          echo "### 🎯 Conversions (last 7 days)" >> /tmp/report.md
+          EVENTS=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "dateRanges": [{"startDate": "7daysAgo", "endDate": "today"}],
+              "dimensions": [{"name": "eventName"}],
+              "metrics": [{"name": "eventCount"}],
+              "dimensionFilter": {
+                "orGroup": {
+                  "expressions": [
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "chart_calculated"}}},
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "interpretation_generated"}}},
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "upload_certificate"}}}
+                  ]
+                }
+              }
+            }' \
+            "https://analyticsdata.googleapis.com/v1beta/$GA4_PROPERTY:runReport")
+
+          echo "| Event | Count |" >> /tmp/report.md
+          echo "|-------|-------|" >> /tmp/report.md
+          echo "$EVENTS" | python3 -c "
+          import sys,json
+          r=json.load(sys.stdin)
+          for row in r.get('rows',[]):
+            name=row['dimensionValues'][0]['value']
+            count=row['metricValues'][0]['value']
+            print(f'| {name} | {count} |')
+          " >> /tmp/report.md 2>/dev/null || echo "| No data yet | — |" >> /tmp/report.md
+          echo "" >> /tmp/report.md
+
+          # GA4 traffic sources
+          echo "### 📈 Traffic Sources" >> /tmp/report.md
+          SOURCES=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "dateRanges": [{"startDate": "7daysAgo", "endDate": "today"}],
+              "dimensions": [{"name": "sessionDefaultChannelGroup"}],
+              "metrics": [{"name": "sessions"}, {"name": "totalUsers"}],
+              "orderBys": [{"metric": {"metricName": "sessions"}, "desc": true}],
+              "limit": 10
+            }' \
+            "https://analyticsdata.googleapis.com/v1beta/$GA4_PROPERTY:runReport")
+
+          echo "| Channel | Sessions | Users |" >> /tmp/report.md
+          echo "|---------|----------|-------|" >> /tmp/report.md
+          echo "$SOURCES" | python3 -c "
+          import sys,json
+          r=json.load(sys.stdin)
+          for row in r.get('rows',[]):
+            ch=row['dimensionValues'][0]['value']
+            s=row['metricValues'][0]['value']
+            u=row['metricValues'][1]['value']
+            print(f'| {ch} | {s} | {u} |')
+          " >> /tmp/report.md 2>/dev/null || echo "| No data yet | — | — |" >> /tmp/report.md
+          echo "" >> /tmp/report.md
+
+          cat /tmp/report.md
+
+      - name: "📝 Create issue"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "📊 Weekly Report — $(date +%Y-%m-%d)" \
+            --body-file /tmp/report.md \
+            --label "report"
