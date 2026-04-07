@@ -107,67 +107,62 @@ def _ocr_pdf(pdf_path: str | Path) -> str:
 
 
 def _gemini_vision_ocr(pdf_path: str | Path) -> str:
-    """Extrae datos de nacimiento de un PDF escaneado usando Gemini Vision."""
+    """Extrae datos de nacimiento de un PDF escaneado usando Gemini Vision.
+
+    Envía el PDF nativo directamente a Gemini (mejor calidad que imágenes).
+    """
     if not GEMINI_KEY:
         log.warning("GEMINI_API_KEY not set, skipping Gemini Vision OCR")
         return ""
-    if not HAS_OCR:
-        return ""
 
-    images = convert_from_path(str(pdf_path), dpi=200)
-    if not images:
-        return ""
+    pdf_bytes = Path(pdf_path).read_bytes()
+    pdf_b64 = base64.b64encode(pdf_bytes).decode()
 
-    # Convert all pages (up to 3) to base64 JPEG
-    parts = []
-    parts.append({
-        "text": (
-            "Este es un certificado de nacimiento español escaneado del Registro Civil. "
-            "El documento es un acta de nacimiento manuscrita/mecanografiada que ha sido escaneada. "
-            "Los campos pueden estar escritos a mano, ser difíciles de leer, o estar parcialmente ocultos.\n\n"
-            "Examina TODAS las páginas cuidadosamente e identifica:\n"
-            "- El nombre del inscrito (la persona cuyo nacimiento se registra)\n"
-            "- Sus apellidos\n"
-            "- La FECHA de nacimiento (día, mes, año) - suele aparecer en el texto del acta\n"
-            "- La HORA de nacimiento - suele aparecer como 'a las X horas' o similar\n"
-            "- El LUGAR de nacimiento\n"
-            "- El sexo (varón/hembra)\n\n"
-            "IMPORTANTE: La fecha y hora suelen estar escritas en texto, por ejemplo "
-            "'a las seis cuarenta horas del día veintiuno de agosto de mil novecientos ochenta'\n\n"
-            "Responde EXACTAMENTE en este formato:\n"
-            "Nombre: [nombre]\n"
-            "Primer apellido: [apellido1]\n"
-            "Segundo apellido: [apellido2]\n"
-            "Día: [número]\n"
-            "Mes: [nombre del mes en español]\n"
-            "Año: [número de 4 cifras]\n"
-            "Hora de nacimiento: [HH:MM]\n"
-            "Lugar: [ciudad/pueblo]\n"
-            "Sexo: [varón o hembra]\n\n"
-            "Si un campo no es legible, escribe: NO LEGIBLE"
-        )
-    })
+    prompt = (
+        "Este es un certificado de nacimiento español escaneado del Registro Civil.\n\n"
+        "INSTRUCCIONES CLAVE:\n"
+        "1. Examina TODAS las páginas y TODAS las zonas: texto central, MÁRGENES IZQUIERDO Y DERECHO, "
+        "anotaciones laterales, sellos, notas a mano, encabezados y pies de página.\n"
+        "2. En las actas antiguas hay MÚLTIPLES fuentes de información para la misma persona:\n"
+        "   - El MARGEN IZQUIERDO suele tener un resumen con nombre, apellidos y fecha en formato numérico "
+        "(ej: 'nació el 26-6-1953'). Esta es la fuente MÁS FIABLE para la fecha.\n"
+        "   - El CUERPO CENTRAL tiene el texto en prosa con la fecha escrita en palabras "
+        "(ej: 'día veintiséis de junio'). La caligrafía puede inducir a error.\n"
+        "   - Puede haber anotaciones, sellos o notas marginales adicionales.\n"
+        "3. En actas MODERNAS (formato impreso con campos como 'Día de nacimiento', 'Mes', 'Año'), "
+        "los valores están escritos en los campos. Lee con CUIDADO cada carácter.\n"
+        "4. Si hay DISCREPANCIA entre fuentes numéricas (margen, campos) y texto en prosa, "
+        "DA PRIORIDAD a los datos numéricos.\n"
+        "5. La HORA de nacimiento aparece como 'Hora de nacimiento: X Y' (horas y minutos en texto) "
+        "o 'a las X horas' en actas antiguas.\n"
+        "6. El LUGAR de nacimiento suele ser el municipio del Registro Civil o el indicado en el campo.\n"
+        "7. El SEXO aparece como 'Sexo ... varón/hembra' o 'nacimiento de una hembra/varón'.\n\n"
+        "Responde EXACTAMENTE en este formato (un campo por línea):\n"
+        "Nombre: [nombre de pila]\n"
+        "Primer apellido: [primer apellido]\n"
+        "Segundo apellido: [segundo apellido]\n"
+        "Día: [número]\n"
+        "Mes: [nombre del mes en español]\n"
+        "Año: [número de 4 cifras]\n"
+        "Hora de nacimiento: [HH:MM en formato 24h]\n"
+        "Lugar: [municipio o ciudad]\n"
+        "Sexo: [varón o hembra]\n\n"
+        "Si un campo no es legible, escribe: NO LEGIBLE"
+    )
 
-    import io
-    for img in images[:3]:
-        buf = io.BytesIO()
-        img.save(buf, format="JPEG", quality=85)
-        b64 = base64.b64encode(buf.getvalue()).decode()
-        parts.append({
-            "inlineData": {
-                "mimeType": "image/jpeg",
-                "data": b64
-            }
-        })
+    parts = [
+        {"text": prompt},
+        {"inlineData": {"mimeType": "application/pdf", "data": pdf_b64}},
+    ]
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={GEMINI_KEY}"
     payload = {
         "contents": [{"parts": parts}],
-        "generationConfig": {"temperature": 0.1, "maxOutputTokens": 500}
+        "generationConfig": {"temperature": 0.1, "maxOutputTokens": 2048},
     }
 
     try:
-        resp = httpx.post(url, json=payload, timeout=30.0)
+        resp = httpx.post(url, json=payload, timeout=60.0)
         resp.raise_for_status()
         data = resp.json()
         text = data["candidates"][0]["content"]["parts"][0]["text"]
