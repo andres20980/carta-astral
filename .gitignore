@@ -6,3 +6,4 @@ __pycache__/
 .firebase/
 .tmp/
 docs/SEO_AGENT_STATE.json
+certificado*
