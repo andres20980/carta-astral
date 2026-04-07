@@ -26,7 +26,7 @@ jobs:
           GA4_PROPERTY: "properties/531527723"
           ADSENSE_ACCOUNT: "accounts/pub-9368517395014039"
         run: |
-          TOKEN=$(gcloud auth print-access-token)
+          TOKEN=$(gcloud auth print-access-token --scopes=https://www.googleapis.com/auth/cloud-platform)
 
           echo "## 📊 Weekly Report — $(date +%Y-%m-%d)" > /tmp/report.md
           echo "" >> /tmp/report.md
@@ -47,6 +47,12 @@ jobs:
               ]
             }' \
             "https://analyticsdata.googleapis.com/v1beta/$GA4_PROPERTY:runReport")
+
+          # Debug: log error if API failed
+          if echo "$TRAFFIC" | python3 -c "import sys,json;d=json.load(sys.stdin);e=d.get('error');sys.exit(0 if e else 1)" 2>/dev/null; then
+            echo "⚠️ GA4 API error:" >&2
+            echo "$TRAFFIC" | python3 -c "import sys,json;print(json.load(sys.stdin).get('error',{}).get('message','unknown'))" >&2
+          fi
 
           SESSIONS=$(echo "$TRAFFIC" | python3 -c "import sys,json;r=json.load(sys.stdin);print(r.get('rows',[{}])[0].get('metricValues',[{}])[0].get('value','N/A'))" 2>/dev/null || echo "N/A")
           USERS=$(echo "$TRAFFIC" | python3 -c "import sys,json;r=json.load(sys.stdin);print(r.get('rows',[{}])[0].get('metricValues',[{}])[1].get('value','N/A'))" 2>/dev/null || echo "N/A")
