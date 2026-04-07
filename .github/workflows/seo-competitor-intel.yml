@@ -1,0 +1,36 @@
+name: "🕵️ Competitor Intel"
+
+on:
+  schedule:
+    - cron: '30 8 * * 1'   # Lunes 8:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  intel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "⚙️ Setup Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: "🕵️ Crawl competitors"
+        run: node .github/scripts/seo-competitor-intel.js
+
+      - name: "📤 Commit results"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/SEO_COMPETITOR_INTEL.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios"
+          else
+            git commit -m "chore: update competitor intel $(date -u +%F)"
+            git push
+          fi
