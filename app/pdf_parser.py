@@ -118,37 +118,38 @@ def _gemini_vision_ocr(pdf_path: str | Path) -> str:
     if not images:
         return ""
 
-    # Convert first 2 pages to base64 JPEG
+    # Convert all pages (up to 3) to base64 JPEG
     parts = []
     parts.append({
         "text": (
-            "Este es un certificado de nacimiento español escaneado. "
-            "Extrae EXACTAMENTE estos campos del documento:\n"
-            "- Nombre completo del inscrito\n"
-            "- Primer apellido\n"
-            "- Segundo apellido\n"
-            "- Día de nacimiento (número)\n"
-            "- Mes de nacimiento (nombre en español)\n"
-            "- Año de nacimiento (número)\n"
-            "- Hora de nacimiento (HH:MM)\n"
-            "- Lugar de nacimiento\n"
-            "- Sexo\n\n"
-            "Responde SOLO en este formato exacto, una línea por campo:\n"
-            "Nombre: ...\n"
-            "Primer apellido: ...\n"
-            "Segundo apellido: ...\n"
-            "Día: ...\n"
-            "Mes: ...\n"
-            "Año: ...\n"
-            "Hora de nacimiento: HH:MM\n"
-            "Lugar: ...\n"
-            "Sexo: varón/hembra\n"
-            "Si no puedes leer un campo, escribe: NO LEGIBLE"
+            "Este es un certificado de nacimiento español escaneado del Registro Civil. "
+            "El documento es un acta de nacimiento manuscrita/mecanografiada que ha sido escaneada. "
+            "Los campos pueden estar escritos a mano, ser difíciles de leer, o estar parcialmente ocultos.\n\n"
+            "Examina TODAS las páginas cuidadosamente e identifica:\n"
+            "- El nombre del inscrito (la persona cuyo nacimiento se registra)\n"
+            "- Sus apellidos\n"
+            "- La FECHA de nacimiento (día, mes, año) - suele aparecer en el texto del acta\n"
+            "- La HORA de nacimiento - suele aparecer como 'a las X horas' o similar\n"
+            "- El LUGAR de nacimiento\n"
+            "- El sexo (varón/hembra)\n\n"
+            "IMPORTANTE: La fecha y hora suelen estar escritas en texto, por ejemplo "
+            "'a las seis cuarenta horas del día veintiuno de agosto de mil novecientos ochenta'\n\n"
+            "Responde EXACTAMENTE en este formato:\n"
+            "Nombre: [nombre]\n"
+            "Primer apellido: [apellido1]\n"
+            "Segundo apellido: [apellido2]\n"
+            "Día: [número]\n"
+            "Mes: [nombre del mes en español]\n"
+            "Año: [número de 4 cifras]\n"
+            "Hora de nacimiento: [HH:MM]\n"
+            "Lugar: [ciudad/pueblo]\n"
+            "Sexo: [varón o hembra]\n\n"
+            "Si un campo no es legible, escribe: NO LEGIBLE"
         )
     })
 
     import io
-    for img in images[:2]:
+    for img in images[:3]:
         buf = io.BytesIO()
         img.save(buf, format="JPEG", quality=85)
         b64 = base64.b64encode(buf.getvalue()).decode()
@@ -552,11 +553,10 @@ def parse_birth_certificate(pdf_path: str | Path) -> dict:
             gemini_fields = _parse_gemini_response(gemini_text)
             log.info("Gemini extracted: %s", {k: v for k, v in gemini_fields.items() if v is not None})
             result["gemini_used"] = True
-            # Fill in only missing fields
+            # Gemini Vision results take priority (regex on garbled OCR is unreliable)
             for key in ("name", "first_surname", "second_surname", "day", "month", "year", "hour", "minute", "birthplace", "sex"):
-                if not result.get(key) and gemini_fields.get(key) is not None:
+                if gemini_fields.get(key) is not None:
                     result[key] = gemini_fields[key]
-                    log.info("Gemini filled field %s = %s", key, gemini_fields[key])
     else:
         result["gemini_used"] = False
 
