@@ -360,9 +360,20 @@
         throw new Error(err.detail || 'Error al procesar');
       }
       const data = await res.json();
-      fillFormFromPdf(data);
-      okEl.classList.remove('hidden');
-      dropzone.innerHTML = `<div class="icon">✅</div><p><strong>${file.name}</strong></p><p style="font-size:0.8rem;color:var(--muted);">Datos extraídos — verifica abajo</p>`;
+      const extracted = fillFormFromPdf(data);
+
+      if (extracted === 0) {
+        // No se extrajo nada útil
+        errEl.textContent = 'No se pudieron extraer datos del PDF. Puede ser un documento escaneado sin texto legible. Rellena los campos manualmente.';
+        errEl.classList.remove('hidden');
+        dropzone.innerHTML = `<div class="icon">⚠️</div><p><strong>${file.name}</strong></p><p style="font-size:0.8rem;color:var(--muted);">Sin datos extraíbles — rellena manualmente</p>`;
+      } else {
+        const ocrNote = data.ocr_used ? ' (OCR usado — revisa con atención)' : '';
+        const partialNote = extracted < 3 ? ' ⚠️ Extracción parcial — completa los campos vacíos.' : '';
+        okEl.textContent = '✓ Datos extraídos' + ocrNote + partialNote;
+        okEl.classList.remove('hidden');
+        dropzone.innerHTML = `<div class="icon">✅</div><p><strong>${file.name}</strong></p><p style="font-size:0.8rem;color:var(--muted);">Datos extraídos — verifica abajo${ocrNote}</p>`;
+      }
     } catch (e) {
       errEl.textContent = 'Error: ' + e.message;
       errEl.classList.remove('hidden');
@@ -375,28 +386,35 @@
   }
 
   function fillFormFromPdf(data) {
+    let extracted = 0;
     let name = '';
     if (data.name) name = data.name;
     if (data.first_surname) name += ' ' + data.first_surname;
     if (data.second_surname) name += ' ' + data.second_surname;
-    document.getElementById('fname').value = name.trim();
+    if (name.trim()) {
+      document.getElementById('fname').value = name.trim();
+      extracted++;
+    }
 
     if (data.year && data.month && data.day) {
       const y = data.year;
       const m = String(data.month).padStart(2, '0');
       const d = String(data.day).padStart(2, '0');
       document.getElementById('fdate').value = `${y}-${m}-${d}`;
+      extracted++;
     }
 
     if (data.hour !== null && data.minute !== null) {
       const h = String(data.hour).padStart(2, '0');
       const min = String(data.minute).padStart(2, '0');
       document.getElementById('ftime').value = `${h}:${min}`;
+      extracted++;
     }
 
     // birthplace del PDF se ignora — se usa el mapa para geolocalizacion
 
     validateStep();
+    return extracted;
   }
 
   // --- Map ---
