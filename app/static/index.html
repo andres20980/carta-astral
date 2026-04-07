@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carta Astral</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161b22; --border: #30363d;
+      --text: #e6edf3; --muted: #8b949e; --accent: #c9a227;
+      --accent2: #7c3aed; --success: #3fb950; --danger: #f85149;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      text-align: center; padding: 2rem 1rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 { font-size: 2rem; color: var(--accent); letter-spacing: 0.05em; }
+    header p { color: var(--muted); margin-top: 0.3rem; }
+    .container { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
+
+    /* Steps */
+    .steps { display: flex; gap: 0.5rem; margin-bottom: 2rem; justify-content: center; }
+    .step-indicator {
+      width: 2.2rem; height: 2.2rem; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9rem;
+      background: var(--surface); border: 2px solid var(--border); color: var(--muted);
+      transition: all 0.3s;
+    }
+    .step-indicator.active { border-color: var(--accent); color: var(--accent); }
+    .step-indicator.done { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+    .step-line { width: 3rem; height: 2px; background: var(--border); align-self: center; }
+
+    .panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .panel h2 { color: var(--accent); font-size: 1.15rem; margin-bottom: 1rem; }
+    .panel h3 { color: var(--text); font-size: 1rem; margin: 1rem 0 0.5rem; }
+
+    /* Upload area */
+    .upload-area {
+      border: 2px dashed var(--border); border-radius: 8px;
+      padding: 2rem; text-align: center; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .upload-area:hover, .upload-area.dragover { border-color: var(--accent); }
+    .upload-area .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .upload-area p { color: var(--muted); }
+    .upload-area input { display: none; }
+
+    /* Extracted data */
+    .data-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.75rem; margin-top: 1rem;
+    }
+    .data-field label {
+      display: block; font-size: 0.75rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;
+    }
+    .data-field input, .data-field select {
+      width: 100%; padding: 0.5rem 0.75rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); font-size: 0.95rem;
+    }
+    .data-field input:focus, .data-field select:focus {
+      outline: none; border-color: var(--accent);
+    }
+    .data-field.full { grid-column: 1 / -1; }
+
+    /* Map */
+    #map { height: 350px; border-radius: 8px; margin-top: 0.5rem; }
+    .coords-display {
+      display: flex; gap: 1rem; margin-top: 0.75rem;
+      font-family: monospace; color: var(--muted); font-size: 0.85rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.5rem; border-radius: 8px;
+      font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { filter: brightness(1.15); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-secondary:hover { background: var(--muted); }
+    .actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem; }
+
+    /* Loading */
+    .spinner {
+      display: inline-block; width: 1.2rem; height: 1.2rem;
+      border: 2px solid var(--bg); border-top-color: transparent;
+      border-radius: 50%; animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Results */
+    .result-section { margin-top: 1rem; }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    th, td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .glyph { font-size: 1.1rem; }
+
+    /* Element bars */
+    .elem-bar-container { margin-top: 0.5rem; }
+    .elem-bar {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.4rem; font-size: 0.85rem;
+    }
+    .elem-bar .label { width: 5rem; color: var(--muted); }
+    .elem-bar .bar {
+      height: 1.2rem; border-radius: 4px; transition: width 0.5s;
+      min-width: 2px;
+    }
+    .elem-bar .count { color: var(--text); font-weight: 600; }
+    .fire { background: #e25822; } .earth { background: #6b8e23; }
+    .air { background: #4a90d9; } .water { background: #2e8b8b; }
+
+    .hidden { display: none; }
+    .error { color: var(--danger); font-size: 0.85rem; margin-top: 0.5rem; }
+    .success-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      color: var(--success); font-size: 0.85rem;
+    }
+
+    /* Aspect type pills */
+    .asp-conj { color: #c9a227; } .asp-opos { color: #f85149; }
+    .asp-trig { color: #3fb950; } .asp-cuad { color: #f0883e; }
+    .asp-sext { color: #4a90d9; } .asp-quin { color: #8b949e; }
+
+    @media (max-width: 600px) {
+      .data-grid { grid-template-columns: 1fr; }
+      #map { height: 250px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>☽ Carta Astral ☉</h1>
+  <p>Generador de carta natal — Swiss Ephemeris</p>
+</header>
+
+<div class="container">
+
+  <!-- Step indicators -->
+  <div class="steps">
+    <div class="step-indicator active" id="si-1">1</div>
+    <div class="step-line"></div>
+    <div class="step-indicator" id="si-2">2</div>
+    <div class="step-line"></div>
+    <div class="step-indicator" id="si-3">3</div>
+  </div>
+
+  <!-- STEP 1: Upload PDF -->
+  <div id="step1">
+    <div class="panel">
+      <h2>① Certificado de Nacimiento</h2>
+      <p style="color:var(--muted); margin-bottom:1rem;">
+        Sube el PDF del certificado de nacimiento del Registro Civil español.
+        Los datos se extraerán automáticamente.
+      </p>
+      <div class="upload-area" id="dropzone">
+        <div class="icon">📄</div>
+        <p><strong>Arrastra el PDF aquí</strong> o haz clic para seleccionar</p>
+        <p style="font-size:0.8rem; margin-top:0.5rem;">Máx. 10 MB · Solo PDF</p>
+        <input type="file" id="pdfInput" accept=".pdf" />
+      </div>
+      <div id="uploadError" class="error hidden"></div>
+      <div id="uploadSuccess" class="success-badge hidden">✓ Datos extraídos correctamente</div>
+    </div>
+
+    <!-- Extracted / Manual data -->
+    <div class="panel" id="dataPanel">
+      <h2>② Datos de Nacimiento</h2>
+      <p style="color:var(--muted); margin-bottom:1rem;">
+        Verifica los datos extraídos o introdúcelos manualmente.
+      </p>
+      <div class="data-grid">
+        <div class="data-field full">
+          <label>Nombre completo</label>
+          <input type="text" id="fname" placeholder="Ej: Andrés Sánchez Martín" />
+        </div>
+        <div class="data-field">
+          <label>Fecha de nacimiento</label>
+          <input type="date" id="fdate" />
+        </div>
+        <div class="data-field">
+          <label>Hora de nacimiento</label>
+          <input type="time" id="ftime" />
+        </div>
+        <div class="data-field">
+          <label>Zona horaria</label>
+          <select id="ftz">
+            <option value="Europe/Madrid" selected>Europa/Madrid (CET/CEST)</option>
+            <option value="Atlantic/Canary">Atlántico/Canarias</option>
+            <option value="Europe/London">Europa/Londres</option>
+            <option value="Europe/Paris">Europa/París</option>
+            <option value="America/Mexico_City">América/Ciudad de México</option>
+            <option value="America/Argentina/Buenos_Aires">América/Buenos Aires</option>
+            <option value="America/Bogota">América/Bogotá</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Map -->
+  <div id="step2" class="hidden">
+    <div class="panel">
+      <h2>② Lugar exacto de nacimiento</h2>
+      <p style="color:var(--muted); margin-bottom:0.75rem;">
+        Busca el lugar o haz clic en el mapa para marcar el punto exacto de nacimiento.
+      </p>
+      <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+        <input type="text" id="mapSearch" placeholder="Buscar lugar (ej: Hospital Dexeus Barcelona)"
+          style="flex:1; padding:0.5rem 0.75rem; background:var(--bg); border:1px solid var(--border);
+          border-radius:6px; color:var(--text); font-size:0.9rem;" />
+        <button class="btn btn-secondary" onclick="searchPlace()" style="padding:0.5rem 1rem;">🔍</button>
+      </div>
+      <div id="map"></div>
+      <div class="coords-display">
+        <span>Lat: <strong id="dispLat">—</strong></span>
+        <span>Lng: <strong id="dispLng">—</strong></span>
+        <span>📍 <strong id="dispCity">—</strong></span>
+      </div>
+      <input type="hidden" id="fcity" value="" />
+    </div>
+  </div>
+
+  <!-- STEP 3: Results -->
+  <div id="step3" class="hidden">
+    <div class="panel" id="resultPanel">
+      <h2>③ Carta Astral Natal</h2>
+      <div id="chartLoading" class="hidden" style="text-align:center; padding:2rem;">
+        <div class="spinner"></div>
+        <p style="color:var(--muted); margin-top:0.5rem;">Calculando posiciones planetarias…</p>
+      </div>
+      <div id="chartResult" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="actions">
+    <button class="btn btn-secondary hidden" id="btnBack" onclick="goBack()">← Atrás</button>
+    <button class="btn btn-primary" id="btnNext" onclick="goNext()" disabled>Continuar →</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  let currentStep = 1;
+  let birthLat = null, birthLng = null;
+  let birthCity = '';
+  let map = null, marker = null;
+  let chartData = null;
+  let geocodeTimer = null;
+
+  // --- Step navigation ---
+  function updateSteps() {
+    for (let i = 1; i <= 3; i++) {
+      const el = document.getElementById('si-' + i);
+      el.classList.remove('active', 'done');
+      if (i < currentStep) el.classList.add('done');
+      else if (i === currentStep) el.classList.add('active');
+    }
+    document.getElementById('step1').classList.toggle('hidden', currentStep !== 1);
+    document.getElementById('step2').classList.toggle('hidden', currentStep !== 2);
+    document.getElementById('step3').classList.toggle('hidden', currentStep !== 3);
+    document.getElementById('btnBack').classList.toggle('hidden', currentStep === 1);
+
+    if (currentStep === 3) {
+      document.getElementById('btnNext').classList.add('hidden');
+    } else {
+      document.getElementById('btnNext').classList.remove('hidden');
+      document.getElementById('btnNext').textContent = currentStep === 2 ? 'Generar Carta Astral ✦' : 'Continuar →';
+    }
+    validateStep();
+  }
+
+  function validateStep() {
+    const btn = document.getElementById('btnNext');
+    if (currentStep === 1) {
+      const name = document.getElementById('fname').value.trim();
+      const date = document.getElementById('fdate').value;
+      const time = document.getElementById('ftime').value;
+      btn.disabled = !(name && date && time);
+    } else if (currentStep === 2) {
+      btn.disabled = !(birthLat !== null && birthLng !== null);
+    }
+  }
+
+  function goNext() {
+    if (currentStep === 1) {
+      currentStep = 2;
+      updateSteps();
+      setTimeout(initMap, 100);
+    } else if (currentStep === 2) {
+      currentStep = 3;
+      updateSteps();
+      calculateChart();
+    }
+  }
+
+  function goBack() {
+    if (currentStep > 1) { currentStep--; updateSteps(); }
+  }
+
+  // --- Validation on input ---
+  document.addEventListener('input', validateStep);
+
+  // --- PDF Upload ---
+  const dropzone = document.getElementById('dropzone');
+  const pdfInput = document.getElementById('pdfInput');
+
+  dropzone.addEventListener('click', () => pdfInput.click());
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  pdfInput.addEventListener('change', () => { if (pdfInput.files.length) handleFile(pdfInput.files[0]); });
+
+  async function handleFile(file) {
+    const errEl = document.getElementById('uploadError');
+    const okEl = document.getElementById('uploadSuccess');
+    errEl.classList.add('hidden');
+    okEl.classList.add('hidden');
+
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      errEl.textContent = 'Solo se aceptan archivos PDF.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    dropzone.innerHTML = '<div class="spinner"></div><p style="color:var(--muted);margin-top:0.5rem;">Procesando PDF…</p>';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/parse-pdf', { method: 'POST', body: formData });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Error al procesar');
+      }
+      const data = await res.json();
+      fillFormFromPdf(data);
+      okEl.classList.remove('hidden');
+      dropzone.innerHTML = `<div class="icon">✅</div><p><strong>${file.name}</strong></p><p style="font-size:0.8rem;color:var(--muted);">Datos extraídos — verifica abajo</p>`;
+    } catch (e) {
+      errEl.textContent = 'Error: ' + e.message;
+      errEl.classList.remove('hidden');
+      dropzone.innerHTML = '<div class="icon">📄</div><p><strong>Arrastra el PDF aquí</strong> o haz clic para seleccionar</p><p style="font-size:0.8rem;margin-top:0.5rem;">Máx. 10 MB · Solo PDF</p><input type="file" id="pdfInput" accept=".pdf" />';
+      document.getElementById('pdfInput').addEventListener('change', () => {
+        if (document.getElementById('pdfInput').files.length)
+          handleFile(document.getElementById('pdfInput').files[0]);
+      });
+    }
+  }
+
+  function fillFormFromPdf(data) {
+    let name = '';
+    if (data.name) name = data.name;
+    if (data.first_surname) name += ' ' + data.first_surname;
+    if (data.second_surname) name += ' ' + data.second_surname;
+    document.getElementById('fname').value = name.trim();
+
+    if (data.year && data.month && data.day) {
+      const y = data.year;
+      const m = String(data.month).padStart(2, '0');
+      const d = String(data.day).padStart(2, '0');
+      document.getElementById('fdate').value = `${y}-${m}-${d}`;
+    }
+
+    if (data.hour !== null && data.minute !== null) {
+      const h = String(data.hour).padStart(2, '0');
+      const min = String(data.minute).padStart(2, '0');
+      document.getElementById('ftime').value = `${h}:${min}`;
+    }
+
+    // birthplace del PDF se ignora — se usa el mapa para geolocalizacion
+
+    validateStep();
+  }
+
+  // --- Map ---
+  function initMap() {
+    if (map) return;
+    map = L.map('map').setView([40.0, -3.7], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    map.on('click', e => {
+      updateMapPoint(e.latlng);
+    });
+    setTimeout(() => map.invalidateSize(), 200);
+  }
+
+  function updateMapPoint(latlng) {
+    birthLat = Math.round(latlng.lat * 1e6) / 1e6;
+    birthLng = Math.round(latlng.lng * 1e6) / 1e6;
+    if (marker) marker.setLatLng(latlng);
+    else {
+      marker = L.marker(latlng, { draggable: true }).addTo(map);
+      marker.on('dragend', () => updateMapPoint(marker.getLatLng()));
+    }
+    document.getElementById('dispLat').textContent = birthLat;
+    document.getElementById('dispLng').textContent = birthLng;
+    document.getElementById('dispCity').textContent = 'buscando…';
+    validateStep();
+    reverseGeocode(birthLat, birthLng);
+  }
+
+  function reverseGeocode(lat, lng) {
+    clearTimeout(geocodeTimer);
+    geocodeTimer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=es`,
+          { headers: { 'User-Agent': 'CartaAstralApp/1.0' } }
+        );
+        const data = await res.json();
+        const addr = data.address || {};
+        birthCity = addr.city || addr.town || addr.village || addr.municipality || addr.county || '';
+        const country = addr.country || '';
+        const display = birthCity + (country ? ', ' + country : '');
+        document.getElementById('dispCity').textContent = display || 'Ubicación desconocida';
+        document.getElementById('fcity').value = birthCity;
+      } catch {
+        document.getElementById('dispCity').textContent = '—';
+        birthCity = '';
+      }
+    }, 400);
+  }
+
+  async function searchPlace() {
+    const query = document.getElementById('mapSearch').value.trim();
+    if (!query) return;
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&accept-language=es`,
+        { headers: { 'User-Agent': 'CartaAstralApp/1.0' } }
+      );
+      const results = await res.json();
+      if (results.length > 0) {
+        const r = results[0];
+        const latlng = L.latLng(parseFloat(r.lat), parseFloat(r.lon));
+        map.setView(latlng, 16);
+        updateMapPoint(latlng);
+      }
+    } catch { /* silently fail */ }
+  }
+
+  document.getElementById('mapSearch').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); searchPlace(); }
+  });
+
+  // --- Calculate Chart ---
+  async function calculateChart() {
+    const loading = document.getElementById('chartLoading');
+    const result = document.getElementById('chartResult');
+    loading.classList.remove('hidden');
+    result.classList.add('hidden');
+
+    const [year, month, day] = document.getElementById('fdate').value.split('-').map(Number);
+    const [hour, minute] = document.getElementById('ftime').value.split(':').map(Number);
+
+    const body = {
+      name: document.getElementById('fname').value.trim(),
+      year, month, day, hour, minute,
+      lat: birthLat, lng: birthLng,
+      city: document.getElementById('fcity').value.trim(),
+      tz: document.getElementById('ftz').value,
+    };
+
+    try {
+      const res = await fetch('/api/calculate-chart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error((await res.json()).detail || 'Error en el cálculo');
+      chartData = await res.json();
+      renderChart(chartData);
+    } catch (e) {
+      result.innerHTML = `<p class="error">Error: ${e.message}</p>`;
+      result.classList.remove('hidden');
+    }
+    loading.classList.add('hidden');
+  }
+
+  // --- Render Chart ---
+  function renderChart(c) {
+    const el = document.getElementById('chartResult');
+    const b = c.birth;
+
+    let html = `
+      <h3 style="text-align:center; font-size:1.3rem; color:var(--accent); margin-bottom:0.5rem;">
+        ${c.name}
+      </h3>
+      <p style="text-align:center; color:var(--muted); font-size:0.85rem; margin-bottom:1.5rem;">
+        ${b.day}/${b.month}/${b.year} · ${String(b.hour).padStart(2,'0')}:${String(b.minute).padStart(2,'0')}h
+        · ${b.city} (${b.lat}, ${b.lng})
+      </p>
+
+      <div style="display:flex; justify-content:center; gap:2rem; margin-bottom:1.5rem;">
+        <div style="text-align:center;">
+          <div style="font-size:0.7rem; color:var(--muted); text-transform:uppercase;">Ascendente</div>
+          <div style="font-size:1.1rem; font-weight:700;">${c.ascendant.sign} ${c.ascendant.degree_dms}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:0.7rem; color:var(--muted); text-transform:uppercase;">Medio Cielo</div>
+          <div style="font-size:1.1rem; font-weight:700;">${c.midheaven.sign} ${c.midheaven.degree_dms}</div>
+        </div>
+      </div>
+    `;
+
+    // Planets table
+    html += `<h3>Posiciones Planetarias</h3><table><thead><tr>
+      <th></th><th>Planeta</th><th>Signo</th><th>Grado</th><th>Casa</th><th>Elemento</th><th>Modal.</th>
+    </tr></thead><tbody>`;
+    for (const p of c.planets) {
+      html += `<tr>
+        <td class="glyph">${p.glyph}</td><td>${p.name}</td><td>${p.sign}</td>
+        <td>${p.degree_dms}</td><td>${p.house}</td><td>${p.element}</td><td>${p.modality}</td>
+      </tr>`;
+    }
+    if (c.north_node) {
+      html += `<tr><td class="glyph">☊</td><td>Nodo Norte</td><td>${c.north_node.sign}</td>
+        <td>${c.north_node.degree_dms}</td><td>—</td><td>—</td><td>—</td></tr>`;
+    }
+    if (c.chiron) {
+      html += `<tr><td class="glyph">⚷</td><td>Quirón</td><td>${c.chiron.sign}</td>
+        <td>${c.chiron.degree_dms}</td><td>${c.chiron.house}</td><td>—</td><td>—</td></tr>`;
+    }
+    html += '</tbody></table>';
+
+    // Houses table
+    html += `<h3>Cúspides de las Casas</h3><table><thead><tr>
+      <th>Casa</th><th>Signo</th><th>Grado</th>
+    </tr></thead><tbody>`;
+    for (const h of c.houses) {
+      html += `<tr><td>${h.number}</td><td>${h.sign}</td><td>${h.degree_dms}</td></tr>`;
+    }
+    html += '</tbody></table>';
+
+    // Aspects
+    html += `<h3>Aspectos Natales</h3><table><thead><tr>
+      <th>Planeta</th><th></th><th>Aspecto</th><th>Planeta</th><th>Orbe</th>
+    </tr></thead><tbody>`;
+    const aspClass = { 'Conjunción':'asp-conj','Oposición':'asp-opos','Trígono':'asp-trig',
+      'Cuadratura':'asp-cuad','Sextil':'asp-sext','Quincuncio':'asp-quin' };
+    for (const a of c.aspects) {
+      html += `<tr>
+        <td>${a.p1}</td><td class="glyph ${aspClass[a.aspect]||''}">${a.glyph}</td>
+        <td class="${aspClass[a.aspect]||''}">${a.aspect}</td>
+        <td>${a.p2}</td><td>${a.orb}°</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+
+    // Elements
+    const elemColors = { 'Fuego':'fire', 'Tierra':'earth', 'Aire':'air', 'Agua':'water' };
+    html += `<h3>Distribución Elemental</h3><div class="elem-bar-container">`;
+    for (const [elem, count] of Object.entries(c.elements)) {
+      const pct = (count / 10) * 100;
+      html += `<div class="elem-bar">
+        <span class="label">${elem}</span>
+        <div class="bar ${elemColors[elem]}" style="width:${Math.max(pct, 2)}%;"></div>
+        <span class="count">${count}</span>
+      </div>`;
+    }
+    html += '</div>';
+
+    // Modalities
+    html += `<h3>Modalidades</h3><div class="elem-bar-container">`;
+    const modColors = { 'Cardinal':'fire', 'Fija':'water', 'Mutable':'air' };
+    for (const [mod, count] of Object.entries(c.modalities)) {
+      const pct = (count / 10) * 100;
+      html += `<div class="elem-bar">
+        <span class="label">${mod}</span>
+        <div class="bar ${modColors[mod]||'air'}" style="width:${Math.max(pct, 2)}%;"></div>
+        <span class="count">${count}</span>
+      </div>`;
+    }
+    html += '</div>';
+
+    // Download button
+    html += `<div class="actions" style="margin-top:1.5rem;">
+      <button class="btn btn-secondary" onclick="downloadJSON()">⬇ Descargar JSON</button>
+      <button class="btn btn-secondary" onclick="goBack()">← Nueva carta</button>
+    </div>`;
+
+    el.innerHTML = html;
+    el.classList.remove('hidden');
+  }
+
+  function downloadJSON() {
+    if (!chartData) return;
+    const blob = new Blob([JSON.stringify(chartData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `carta_astral_${chartData.name.replace(/\s+/g, '_').toLowerCase()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  updateSteps();
+</script>
+</body>
+</html>

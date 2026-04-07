@@ -1,1 +1,5 @@
 kerykeion>=4.0
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pdfplumber>=0.11
+python-multipart>=0.0.9
