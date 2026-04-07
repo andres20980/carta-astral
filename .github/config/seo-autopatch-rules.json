@@ -1,0 +1,34 @@
+{
+  "rulesByQuery": {
+    "carta astral gratis": {
+      "file": "public/index.html",
+      "title": "Carta Astral Gratis — Calcula tu mapa natal con hora exacta",
+      "description": "Genera tu carta astral natal gratis con la hora exacta de tu partida de nacimiento. Cálculo preciso con Swiss Ephemeris: planetas, casas, ascendente y aspectos.",
+      "h1": "Descubre tu Carta Astral"
+    },
+    "carta natal gratis": {
+      "file": "public/index.html",
+      "title": "Carta Natal Gratis — Tu mapa astral con cálculo astronómico preciso",
+      "description": "Calcula tu carta natal gratis con hora exacta. Extrae los datos de tu certificado de nacimiento o introdúcelos manualmente. Planetas, casas y ascendente.",
+      "h1": "Descubre tu Carta Astral"
+    },
+    "mapa astral gratis": {
+      "file": "public/index.html",
+      "title": "Mapa Astral Gratis Online — Calcula tu carta natal con hora exacta",
+      "description": "Genera tu mapa astral gratis online con la hora exacta de nacimiento. Cálculo con Swiss Ephemeris: planetas, casas, ascendente, medio cielo y aspectos natales.",
+      "h1": "Descubre tu Carta Astral"
+    },
+    "calcular carta astral": {
+      "file": "public/index.html",
+      "title": "Calcular Carta Astral Gratis — Hora exacta y lugar de nacimiento",
+      "description": "Calcula tu carta astral gratis con fecha, hora y lugar exacto de nacimiento. Sube tu certificado o introduce los datos manualmente. Cálculo astronómico preciso.",
+      "h1": "Descubre tu Carta Astral"
+    },
+    "ascendente gratis": {
+      "file": "public/index.html",
+      "title": "Calcula tu Ascendente Gratis — Carta Astral con hora exacta",
+      "description": "Descubre tu ascendente gratis con la hora exacta de nacimiento. Cálculo astronómico preciso con Swiss Ephemeris y sistema de casas Placidus.",
+      "h1": "Descubre tu Carta Astral"
+    }
+  }
+}
