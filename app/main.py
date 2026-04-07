@@ -17,6 +17,7 @@ from pydantic import BaseModel
 
 from app.pdf_parser import parse_birth_certificate
 from app.chart_engine import calculate_chart
+from app.interpreter import interpret_chart
 
 app = FastAPI(title="Carta Astral", version="1.0.0")
 
@@ -54,9 +55,20 @@ async def parse_pdf(file: UploadFile = File(...)):
         except Exception as e:
             raise HTTPException(422, f"Error al procesar el PDF: {e}")
 
-    # No devolver raw_text al cliente
-    result.pop("raw_text", None)
+    # No devolver raw_text al cliente (salvo debug)
+    raw = result.pop("raw_text", None)
     return result
+
+
+@app.post("/api/parse-pdf-debug")
+async def parse_pdf_debug(file: UploadFile = File(...)):
+    """Debug: devuelve el raw_text extraído del PDF."""
+    content = await file.read()
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=True) as tmp:
+        tmp.write(content)
+        tmp.flush()
+        result = parse_birth_certificate(tmp.name)
+    return {"raw_text": result.get("raw_text", ""), "ocr_used": result.get("ocr_used", False)}
 
 
 @app.post("/api/calculate-chart")
@@ -74,6 +86,28 @@ async def api_calculate_chart(req: ChartRequest):
         raise HTTPException(500, f"Error en el cálculo: {e}")
 
     return chart
+
+
+@app.post("/api/interpret-chart")
+async def api_interpret_chart(req: ChartRequest):
+    """Calcula la carta y devuelve una interpretación con IA."""
+    try:
+        chart = calculate_chart(
+            name=req.name,
+            year=req.year, month=req.month, day=req.day,
+            hour=req.hour, minute=req.minute,
+            lat=req.lat, lng=req.lng,
+            city=req.city, tz=req.tz,
+        )
+    except Exception as e:
+        raise HTTPException(500, f"Error en el cálculo: {e}")
+
+    try:
+        html = await interpret_chart(chart)
+    except Exception as e:
+        raise HTTPException(502, f"Error al generar interpretación: {e}")
+
+    return {"interpretation": html}
 
 
 @app.get("/")

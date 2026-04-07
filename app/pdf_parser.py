@@ -11,10 +11,13 @@ Soporta:
   - Formato antiguo en prosa ("se procede a inscribir el nacimiento...")
 """
 
+import logging
 import re
 from pathlib import Path
 
 import pdfplumber
+
+log = logging.getLogger(__name__)
 
 try:
     import pytesseract
@@ -76,8 +79,10 @@ ANNO_TEXTO = {
 
 
 def _normalize(text: str) -> str:
-    """Normaliza texto: minúsculas, espacios simples."""
+    """Normaliza texto: minúsculas, espacios simples, elimina relleno de puntos."""
     text = text.lower().strip()
+    # Eliminar líneas de puntos usadas como relleno en formularios
+    text = re.sub(r"[.·]{2,}", " ", text)
     text = re.sub(r"\s+", " ", text)
     return text
 
@@ -114,13 +119,13 @@ def _parse_hora(text: str) -> tuple[int, int] | None:
     text_norm = _normalize(text)
 
     # Formato numérico: HH:MM o HH.MM
-    m = re.search(r"hora de nacimiento[^\d]*(\d{1,2})[:\.](\d{2})", text_norm)
+    m = re.search(r"hora de nacimiento[\s.\xb7:_-]*(\d{1,2})[:\.](\d{2})", text_norm)
     if m:
         return int(m.group(1)), int(m.group(2))
 
     # Formato texto moderno: "seis cuarenta", "nueve - treinta"
     m = re.search(
-        r"hora de nacimiento\s+[^\w]*\s*(\w+)\s*[-–—]?\s*(\w+)",
+        r"hora de nacimiento[\s.\xb7:_-]*(\w+)\s*[-–—]?\s*(\w+)",
         text_norm,
     )
     if m:
@@ -165,10 +170,13 @@ def _parse_hora(text: str) -> tuple[int, int] | None:
 
 def _parse_nombre(text: str) -> str | None:
     """Extrae el nombre del inscrito (formato moderno o antiguo)."""
-    # Formato moderno: "Nombre  JUAN ANTONIO"
-    m = re.search(r"Nombre\s+([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s\-]+)", text)
+    # Formato moderno: "Nombre  JUAN ANTONIO" (con posibles puntos de relleno)
+    m = re.search(r"Nombre[\s.\xb7:_-]+([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s\-]+)", text)
     if m:
-        return m.group(1).strip().title()
+        name = m.group(1).strip()
+        # Limpiar trailing separators
+        name = re.sub(r"[\s.\xb7:_-]+$", "", name)
+        return name.title() if name else None
 
     # Formato antiguo: "los nombres de (6) María Jesús"
     m = re.search(r"(?:los\s+)?nombres?\s+de\s*\(\d\)\s*([^\n]+)", text, re.IGNORECASE)
@@ -190,10 +198,12 @@ def _parse_nombre(text: str) -> str | None:
 
 def _parse_apellidos(text: str) -> tuple[str, str] | None:
     """Extrae primer y segundo apellido."""
-    m1 = re.search(r"Primer apellido\s*([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s]+)", text)
-    m2 = re.search(r"Segundo apellido\s*([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s]+)", text)
+    m1 = re.search(r"Primer apellido[\s.\xb7:_-]*([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s]+)", text)
+    m2 = re.search(r"Segundo apellido[\s.\xb7:_-]*([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s]+)", text)
     if m1 and m2:
-        return m1.group(1).strip().title(), m2.group(1).strip().title()
+        ap1 = re.sub(r"[\s.\xb7:_-]+$", "", m1.group(1).strip())
+        ap2 = re.sub(r"[\s.\xb7:_-]+$", "", m2.group(1).strip())
+        return ap1.title(), ap2.title()
     return None
 
 
@@ -201,15 +211,18 @@ def _parse_dia(text: str) -> int | None:
     """Extrae el día de nacimiento."""
     text_norm = _normalize(text)
 
-    # Formato moderno: "Día dos" o "Día 2" o "Día doce"
-    m = re.search(r"d[ií]a\s+(\w+)", text_norm)
+    # Formato moderno: "Día dos" o "Día 2" o "Día ..dos.. mes"
+    m = re.search(r"d[ií]a[\s.·:_-]+(\w+)", text_norm)
     if m:
         val = m.group(1)
-        if val.isdigit():
+        if val == "mes":
+            pass  # Skip — matched the label, not the value
+        elif val.isdigit():
             return int(val)
-        v = NUMEROS_TEXTO.get(val)
-        if v:
-            return v
+        else:
+            v = NUMEROS_TEXTO.get(val)
+            if v:
+                return v
 
     # Formato antiguo: "del día veinticinco de junio"
     m = re.search(r"del\s+d[ií]a\s+(\w+)\s+de\s+\w+", text_norm)
@@ -226,12 +239,15 @@ def _parse_mes(text: str) -> int | None:
     """Extrae el mes de nacimiento."""
     text_norm = _normalize(text)
 
-    # Formato moderno: "Mes junio"
-    m = re.search(r"mes\s+(\w+)", text_norm)
+    # Formato moderno: "mes junio" o "mes .....junio" o "mes Septiembre"
+    m = re.search(r"mes[\s.·:_-]+(\w+)", text_norm)
     if m:
-        v = MESES.get(m.group(1))
-        if v:
-            return v
+        val = m.group(1).lower()
+        # Saltar si matcheó label como "mes de" sin valor
+        if val != "de":
+            v = MESES.get(val)
+            if v:
+                return v
 
     # Formato antiguo: "del día veinticinco de junio de mil..."
     m = re.search(r"del\s+d[ií]a\s+\w+\s+de\s+(\w+)\s+de\s+", text_norm)
@@ -284,10 +300,12 @@ def _parse_sexo(text: str) -> str | None:
 
 def _parse_lugar(text: str) -> str | None:
     """Extrae el lugar de nacimiento."""
-    # Formato moderno
-    m = re.search(r"Lugar\s+([^\n]+)", text)
+    # Formato moderno (con posibles puntos de relleno)
+    m = re.search(r"Lugar[\s.\xb7:_-]+([A-ZÁÉÍÓÚÑa-záéíóúñ][^\n]+)", text)
     if m:
-        return m.group(1).strip()
+        lugar = m.group(1).strip()
+        lugar = re.sub(r"[\s.\xb7:_-]+$", "", lugar)
+        return lugar if lugar else None
 
     # Formato antiguo: "Registro Civil de Palomero"
     m = re.search(r"Registro\s+Civil\s+de\s+([A-ZÁÉÍÓÚÑa-záéíóúñ\s]+)", text)
@@ -329,6 +347,9 @@ def parse_birth_certificate(pdf_path: str | Path) -> dict:
             text = page.extract_text() or ""
             full_text += text + "\n"
 
+    log.info("pdfplumber text length: %d chars, useful: %s", len(full_text), _is_text_useful(full_text))
+    log.info("pdfplumber first 500 chars: %s", repr(full_text[:500]))
+
     ocr_used = False
 
     # Paso 2: si el texto no tiene datos útiles, intentar OCR
@@ -338,6 +359,7 @@ def parse_birth_certificate(pdf_path: str | Path) -> dict:
             if _is_text_useful(ocr_text):
                 full_text = ocr_text
                 ocr_used = True
+                log.info("Using OCR text, length: %d", len(ocr_text))
         # Si ni pdfplumber ni OCR dieron resultado útil, seguimos con lo que hay
 
     result = {
@@ -379,5 +401,10 @@ def parse_birth_certificate(pdf_path: str | Path) -> dict:
     else:
         result["hour"] = None
         result["minute"] = None
+
+    log.info("Parsed fields: name=%s day=%s month=%s year=%s hour=%s min=%s place=%s ocr=%s",
+             result.get("name"), result.get("day"), result.get("month"),
+             result.get("year"), result.get("hour"), result.get("minute"),
+             result.get("birthplace"), ocr_used)
 
     return result
