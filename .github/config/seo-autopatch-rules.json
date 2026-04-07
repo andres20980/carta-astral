@@ -1,33 +1,98 @@
 {
+  "targetKeywords": [
+    {"query": "carta astral gratis", "vol": "high", "priority": 1},
+    {"query": "carta astral", "vol": "high", "priority": 1},
+    {"query": "carta natal gratis", "vol": "high", "priority": 1},
+    {"query": "mapa astral gratis", "vol": "medium", "priority": 2},
+    {"query": "hacer carta astral gratis", "vol": "medium", "priority": 2},
+    {"query": "hacer carta astral", "vol": "medium", "priority": 2},
+    {"query": "carta astral online", "vol": "medium", "priority": 2},
+    {"query": "carta astral calcular", "vol": "medium", "priority": 2},
+    {"query": "calcular carta astral gratis", "vol": "medium", "priority": 2},
+    {"query": "mi carta astral gratis", "vol": "medium", "priority": 2},
+    {"query": "carta natal online gratis", "vol": "medium", "priority": 2},
+    {"query": "ascendente gratis", "vol": "medium", "priority": 3},
+    {"query": "calcular ascendente", "vol": "medium", "priority": 3},
+    {"query": "calcular ascendente y luna", "vol": "medium", "priority": 3},
+    {"query": "signo ascendente calcular", "vol": "medium", "priority": 3},
+    {"query": "carta astral por fecha de nacimiento", "vol": "medium", "priority": 3},
+    {"query": "carta astral con hora de nacimiento gratis", "vol": "low", "priority": 3},
+    {"query": "carta astral hora de nacimiento", "vol": "low", "priority": 3},
+    {"query": "carta astral significado de las casas", "vol": "low", "priority": 4},
+    {"query": "casas astrales significado", "vol": "low", "priority": 4},
+    {"query": "casas astrales calcular", "vol": "low", "priority": 4},
+    {"query": "carta astral pdf", "vol": "low", "priority": 4},
+    {"query": "interpretar carta astral gratis", "vol": "low", "priority": 5},
+    {"query": "carta astral gratis explicada", "vol": "low", "priority": 5},
+    {"query": "que es una carta astral", "vol": "low", "priority": 5}
+  ],
+  "competitors": [
+    "https://www.losarcanos.com/carta-astral.php",
+    "https://carta-natal.es/carta.php",
+    "https://astro.cafeastrology.com/natal.php",
+    "https://www.astro.com/cgi/ade.cgi?lang=s",
+    "https://www.horoscopo.com/carta-astral-gratis",
+    "https://www.elhoroscopodeldia.com/carta-astral/"
+  ],
   "rulesByQuery": {
     "carta astral gratis": {
       "file": "public/index.html",
       "title": "Carta Astral Gratis — Calcula tu mapa natal con hora exacta",
-      "description": "Genera tu carta astral natal gratis con la hora exacta de tu partida de nacimiento. Cálculo preciso con Swiss Ephemeris: planetas, casas, ascendente y aspectos.",
+      "description": "Genera tu carta astral gratis con la hora exacta de nacimiento. Cálculo preciso con Swiss Ephemeris: planetas, casas, ascendente y aspectos. Online sin registro.",
+      "h1": "Descubre tu Carta Astral"
+    },
+    "carta astral": {
+      "file": "public/index.html",
+      "title": "Carta Astral Gratis Online — Calcular con hora y lugar exacto de nacimiento",
+      "description": "Carta astral gratis online con cálculo astronómico preciso. Introduce tu fecha, hora y lugar de nacimiento. Planetas en signos y casas, ascendente y aspectos natales.",
       "h1": "Descubre tu Carta Astral"
     },
     "carta natal gratis": {
       "file": "public/index.html",
       "title": "Carta Natal Gratis — Tu mapa astral con cálculo astronómico preciso",
-      "description": "Calcula tu carta natal gratis con hora exacta. Extrae los datos de tu certificado de nacimiento o introdúcelos manualmente. Planetas, casas y ascendente.",
+      "description": "Calcula tu carta natal gratis con hora exacta. Sube tu certificado de nacimiento o introduce los datos manualmente. Planetas, casas, ascendente y medio cielo.",
       "h1": "Descubre tu Carta Astral"
     },
     "mapa astral gratis": {
       "file": "public/index.html",
       "title": "Mapa Astral Gratis Online — Calcula tu carta natal con hora exacta",
-      "description": "Genera tu mapa astral gratis online con la hora exacta de nacimiento. Cálculo con Swiss Ephemeris: planetas, casas, ascendente, medio cielo y aspectos natales.",
+      "description": "Genera tu mapa astral gratis online. Cálculo con Swiss Ephemeris: posición de planetas en signos y casas, ascendente, medio cielo y aspectos natales.",
+      "h1": "Descubre tu Carta Astral"
+    },
+    "hacer carta astral": {
+      "file": "public/index.html",
+      "title": "Hacer Carta Astral Gratis — Calcula tu mapa natal online",
+      "description": "Hacer tu carta astral gratis es fácil: introduce fecha, hora y lugar de nacimiento. Obtendrás planetas, casas, ascendente y aspectos al instante. Sin registro.",
       "h1": "Descubre tu Carta Astral"
     },
     "calcular carta astral": {
       "file": "public/index.html",
       "title": "Calcular Carta Astral Gratis — Hora exacta y lugar de nacimiento",
-      "description": "Calcula tu carta astral gratis con fecha, hora y lugar exacto de nacimiento. Sube tu certificado o introduce los datos manualmente. Cálculo astronómico preciso.",
+      "description": "Calcula tu carta astral gratis con fecha, hora y lugar exacto de nacimiento. Sube tu certificado o introduce los datos. Cálculo astronómico Swiss Ephemeris.",
       "h1": "Descubre tu Carta Astral"
     },
     "ascendente gratis": {
       "file": "public/index.html",
       "title": "Calcula tu Ascendente Gratis — Carta Astral con hora exacta",
       "description": "Descubre tu ascendente gratis con la hora exacta de nacimiento. Cálculo astronómico preciso con Swiss Ephemeris y sistema de casas Placidus.",
+      "h1": "Descubre tu Carta Astral"
+    },
+    "calcular ascendente": {
+      "file": "public/index.html",
+      "title": "Calcular Ascendente Gratis — Hora de nacimiento y carta natal",
+      "description": "Calcula tu ascendente astrológico gratis con la hora exacta de nacimiento. También obtendrás tu carta natal completa: planetas, casas y aspectos.",
+      "h1": "Descubre tu Carta Astral"
+    },
+    "carta astral por fecha de nacimiento": {
+      "file": "public/index.html",
+      "title": "Carta Astral por Fecha de Nacimiento — Gratis y con hora exacta",
+      "description": "Obtén tu carta astral gratis por fecha de nacimiento. Necesitas fecha, hora y lugar exacto. Sube tu certificado de nacimiento o introdúcelos manualmente.",
+      "h1": "Descubre tu Carta Astral"
+    },
+    "casas astrales significado": {
+      "file": "public/index.html",
+      "title": "Las 12 Casas Astrales y su Significado — Carta Astral Gratis",
+      "description": "Descubre el significado de las 12 casas astrológicas: identidad, dinero, comunicación, hogar, amor, trabajo, pareja, transformación, viajes, éxito, amigos e inconsciente.",
       "h1": "Descubre tu Carta Astral"
     }
   }
