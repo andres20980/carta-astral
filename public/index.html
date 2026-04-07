@@ -704,7 +704,7 @@ async function requestInterpretation(){
   const btn=document.getElementById('btnInterpret');
   btn.disabled=true;btn.textContent='🔮 Leyendo las estrellas...';
   const ic=document.getElementById('interpContent'),ia=document.getElementById('interpActions');
-  ic.innerHTML='<div class="interp-loading"><div class="spinner"></div><p style="color:var(--muted)">Leyendo las estrellas para ti...</p><p style="color:var(--muted);font-size:.8rem">Esto puede tardar unos segundos</p></div>';
+  ic.innerHTML='<div class="interp-loading"><div class="spinner"></div><p style="color:var(--muted)">Preparando tu interpretación exhaustiva...</p><p style="color:var(--muted);font-size:.8rem">Estamos analizando cada planeta, casa y aspecto en profundidad. Puede tardar 30-60 segundos.</p></div>';
   ia.style.display='none';
   openInterp();
   const body={
