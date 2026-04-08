@@ -140,6 +140,87 @@ jobs:
           " >> /tmp/report.md 2>/dev/null || echo "| No data yet | — | — |" >> /tmp/report.md
           echo "" >> /tmp/report.md
 
+          # Extract organic sessions for milestone check
+          ORGANIC_SESSIONS=$(echo "$SOURCES" | python3 -c "
+          import sys,json
+          r=json.load(sys.stdin)
+          for row in r.get('rows',[]):
+            if 'organic' in row['dimensionValues'][0]['value'].lower():
+              print(row['metricValues'][0]['value']); break
+          else: print('0')
+          " 2>/dev/null || echo "0")
+
+          # Extract event counts for milestone check
+          CHART_CALC=$(echo "$EVENTS" | python3 -c "
+          import sys,json
+          r=json.load(sys.stdin)
+          for row in r.get('rows',[]):
+            if row['dimensionValues'][0]['value']=='chart_calculated':
+              print(row['metricValues'][0]['value']); break
+          else: print('0')
+          " 2>/dev/null || echo "0")
+
+          INTERP_GEN=$(echo "$EVENTS" | python3 -c "
+          import sys,json
+          r=json.load(sys.stdin)
+          for row in r.get('rows',[]):
+            if row['dimensionValues'][0]['value']=='interpretation_generated':
+              print(row['metricValues'][0]['value']); break
+          else: print('0')
+          " 2>/dev/null || echo "0")
+
+          # AdSense earnings (best-effort, may fail if not yet approved)
+          echo "### 💰 AdSense Revenue (last 7 days)" >> /tmp/report.md
+          ADSENSE_TOKEN=$(python3 -c "
+          import google.auth
+          import google.auth.transport.requests
+          creds, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/adsense.readonly'])
+          creds.refresh(google.auth.transport.requests.Request())
+          print(creds.token)
+          " 2>/dev/null || echo "")
+
+          if [ -n "$ADSENSE_TOKEN" ]; then
+            START_DATE=$(date -d '7 days ago' +%Y-%m-%d)
+            END_DATE=$(date +%Y-%m-%d)
+            ADSENSE=$(curl -s -H "Authorization: Bearer $ADSENSE_TOKEN" \
+              "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/reports:generate?dateRange=LAST_7_DAYS&metrics=ESTIMATED_EARNINGS&metrics=PAGE_VIEWS&metrics=IMPRESSIONS&metrics=CLICKS" 2>/dev/null || echo "{}")
+
+            AD_EARNINGS=$(echo "$ADSENSE" | python3 -c "
+            import sys,json
+            r=json.load(sys.stdin)
+            rows=r.get('rows',[])
+            if rows:
+              cells=rows[0].get('cells',[])
+              earn=cells[0].get('value','0') if len(cells)>0 else '0'
+              views=cells[1].get('value','0') if len(cells)>1 else '0'
+              impr=cells[2].get('value','0') if len(cells)>2 else '0'
+              clicks=cells[3].get('value','0') if len(cells)>3 else '0'
+              print(f'| Earnings | €{float(earn)/1000000:.2f} |')
+              print(f'| Page Views | {views} |')
+              print(f'| Impressions | {impr} |')
+              print(f'| Clicks | {clicks} |')
+            else:
+              print('| Status | No earnings data yet |')
+            " 2>/dev/null || echo "| Status | API not available |")
+            echo "| Metric | Value |" >> /tmp/report.md
+            echo "|--------|-------|" >> /tmp/report.md
+            echo "$AD_EARNINGS" >> /tmp/report.md
+          else
+            echo "> AdSense API not accessible (pending approval or missing scope)" >> /tmp/report.md
+          fi
+          echo "" >> /tmp/report.md
+
+          # Growth milestone check
+          BOUNCE_RAW=$(echo "$TRAFFIC" | python3 -c "import sys,json;r=json.load(sys.stdin);print(r.get('rows',[{}])[0].get('metricValues',[{}])[4].get('value','0'))" 2>/dev/null || echo "0")
+          DURATION_RAW=$(echo "$TRAFFIC" | python3 -c "import sys,json;r=json.load(sys.stdin);print(r.get('rows',[{}])[0].get('metricValues',[{}])[3].get('value','0'))" 2>/dev/null || echo "0")
+
+          SESSIONS=$SESSIONS USERS=$USERS VIEWS=$VIEWS \
+          DURATION=$DURATION_RAW BOUNCE=$BOUNCE_RAW \
+          ORGANIC_SESSIONS=$ORGANIC_SESSIONS \
+          CHART_CALCULATED=$CHART_CALC \
+          INTERPRETATION_GENERATED=$INTERP_GEN \
+          node .github/scripts/growth-milestone-check.js >> /tmp/report.md
+
           cat /tmp/report.md
 
       - name: "📝 Create issue"
@@ -150,3 +231,10 @@ jobs:
             --title "📊 Weekly Report — $(date +%Y-%m-%d)" \
             --body-file /tmp/report.md \
             --label "report"
+
+      - name: "💾 Commit milestone updates"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/GROWTH_MILESTONES.json
+          git diff --cached --quiet || git commit -m "chore: update growth milestone status [skip ci]" && git push || true

@@ -172,6 +172,15 @@
     .ad-ph-v{width:160px;min-height:600px}
     .ad-ph-h{width:100%;height:90px}
     .ad-ph-h.tall{height:250px}
+
+    /* AFFILIATE RECOMMENDATION BOXES (hidden until M3 milestone) */
+    .reco-box{display:none;background:linear-gradient(135deg,#fef9ee 0%,#f9f5ff 100%);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.5rem;margin:1.2rem 0}
+    .reco-box.active{display:block}
+    .reco-box .reco-badge{display:inline-block;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);background:#fef9ee;border:1px solid var(--gold);border-radius:20px;padding:2px 10px;margin-bottom:.6rem}
+    .reco-box .reco-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--text);margin-bottom:.4rem}
+    .reco-box .reco-desc{font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:.8rem}
+    .reco-box .reco-cta{display:inline-block;padding:.5rem 1.2rem;background:var(--gradient);color:#fff;font-weight:600;font-size:.85rem;border-radius:8px;text-decoration:none;transition:transform .2s,box-shadow .2s}
+    .reco-box .reco-cta:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(124,58,237,.3)}
   </style>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"Carta Astral Gratis","url":"https://carta-astral-gratis.es/","applicationCategory":"LifestyleApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"description":"Genera tu carta astral natal gratis con cálculo astronómico preciso. Planetas, casas, ascendente y aspectos.","inLanguage":"es"}
@@ -184,6 +193,13 @@
     {"@type":"Question","name":"¿Qué es el ascendente?","acceptedAnswer":{"@type":"Answer","text":"El ascendente es el signo del zodíaco que estaba saliendo por el horizonte este en el momento de tu nacimiento. Representa tu imagen pública y cómo te ven los demás."}},
     {"@type":"Question","name":"¿Qué diferencia hay entre carta astral y carta natal?","acceptedAnswer":{"@type":"Answer","text":"Ninguna. Carta astral, carta natal y mapa astral son nombres distintos para lo mismo: el gráfico de las posiciones planetarias en el momento de tu nacimiento."}},
     {"@type":"Question","name":"¿Es fiable esta calculadora de carta astral?","acceptedAnswer":{"@type":"Answer","text":"Sí. Usamos la Swiss Ephemeris (la misma que usa Astro.com y los astrólogos profesionales) y el sistema de casas Placidus, el más utilizado en astrología occidental."}}
+  ]}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"HowTo","name":"Cómo hacer tu carta astral gratis online","description":"Calcula tu carta astral natal gratis en 3 pasos con hora exacta de nacimiento.","totalTime":"PT2M","step":[
+    {"@type":"HowToStep","name":"Introduce tus datos de nacimiento","text":"Sube tu certificado de nacimiento en PDF o introduce manualmente tu fecha, hora y lugar de nacimiento.","position":1},
+    {"@type":"HowToStep","name":"Confirma tu lugar de nacimiento en el mapa","text":"Busca tu ciudad en el mapa interactivo o haz clic para marcar el lugar exacto. Las coordenadas se calculan automáticamente.","position":2},
+    {"@type":"HowToStep","name":"Obtén tu carta astral completa","text":"Recibe al instante tu carta astral con planetas en signos y casas, ascendente, medio cielo, aspectos natales y distribución elemental.","position":3}
   ]}
   </script>
 </head>
@@ -490,12 +506,29 @@
   </div></div>
 </div>
 
+<!-- Affiliate recommendation boxes (hidden until M3 milestone - activate with .active class) -->
+<div id="reco-section" style="max-width:780px;margin:0 auto;padding:0 1.5rem">
+  <div class="reco-box" id="reco-tarot">
+    <span class="reco-badge">☆ Recomendado</span>
+    <div class="reco-title">¿Quieres profundizar en tu carta astral?</div>
+    <div class="reco-desc">Habla con una astróloga profesional que interprete tu carta natal en detalle. Sesiones personalizadas de 30 minutos.</div>
+    <a class="reco-cta" href="#" rel="nofollow sponsored">Reservar consulta →</a>
+  </div>
+  <div class="reco-box" id="reco-tools">
+    <span class="reco-badge">✦ Herramientas</span>
+    <div class="reco-title">Herramientas Astrológicas Recomendadas</div>
+    <div class="reco-desc">Mazos de tarot, piedras energéticas y velas ritualizadas seleccionadas por nuestro equipo.</div>
+    <a class="reco-cta" href="#" rel="nofollow sponsored">Ver selección →</a>
+  </div>
+</div>
+
 <!-- Ad before footer (Auto Ads fills this area) -->
 <div class="ad-h" style="max-width:780px;margin:1rem auto"></div>
 
 <footer>
   <p>© 2026 Carta Astral Gratis · Cálculo con Swiss Ephemeris · Sistema Placidus</p>
-  <p style="margin-top:.3rem"><a href="#">Política de privacidad</a> · <a href="#">Términos de uso</a></p>
+  <p style="margin-top:.3rem"><a href="#">Política de privacidad</a> · <a href="#">Términos de uso</a> · <a href="#">Sobre nosotros</a></p>
+  <p style="margin-top:.3rem;font-size:.7rem;color:var(--muted)">Desarrollado por especialistas en astronomía computacional. Los cálculos utilizan la Swiss Ephemeris con precisión de segundos de arco.</p>
   <p style="margin-top:.5rem;font-style:italic">"Las estrellas no obligan, inclinan."</p>
 </footer>
 
