@@ -11,17 +11,14 @@ concurrency:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
-  create-seo-pr:
+  auto-seo:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: "\U0001F4E5 Checkout"
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: "\u2699\uFE0F Setup Node"
         uses: actions/setup-node@v4
@@ -39,24 +36,12 @@ jobs:
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
           cat /tmp/seo-result.json
 
-      - name: "\U0001F4DD Create PR"
+      - name: "\U0001F4E4 Push to master"
         if: steps.autopatch.outputs.changed != '0'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const branch = `seo/auto-${new Date().toISOString().slice(0,10)}`;
-            const { execSync } = require('child_process');
-            execSync('git config user.name "SEO Bot"');
-            execSync('git config user.email "seo-bot@carta-astral-gratis.es"');
-            execSync(`git checkout -b ${branch}`);
-            execSync('git add -A');
-            execSync(`git commit -m "feat(seo): auto-optimización ${new Date().toISOString().slice(0,10)}"`);
-            execSync(`git push origin ${branch}`);
-            await github.rest.pulls.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `🧠 SEO Auto-PR ${new Date().toISOString().slice(0,10)}`,
-              head: branch,
-              base: 'master',
-              body: '## SEO Auto-optimization\n\nCambios aplicados automáticamente por el agente SEO.\n\ncc @andres20980'
-            });
+        run: |
+          set -euo pipefail
+          git config user.name "SEO Bot"
+          git config user.email "seo-bot@carta-astral-gratis.es"
+          git add -A
+          git commit -m "feat(seo): auto-optimización $(date +%Y-%m-%d)"
+          git push origin master
