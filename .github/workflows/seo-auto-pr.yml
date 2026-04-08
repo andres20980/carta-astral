@@ -46,6 +46,8 @@ jobs:
           script: |
             const branch = `seo/auto-${new Date().toISOString().slice(0,10)}`;
             const { execSync } = require('child_process');
+            execSync('git config user.name "SEO Bot"');
+            execSync('git config user.email "seo-bot@carta-astral-gratis.es"');
             execSync(`git checkout -b ${branch}`);
             execSync('git add -A');
             execSync(`git commit -m "feat(seo): auto-optimización ${new Date().toISOString().slice(0,10)}"`);
