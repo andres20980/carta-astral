@@ -68,6 +68,25 @@ jobs:
             failures=$((failures + 1))
           fi
 
+          # Check legal pages exist (AdSense requirement)
+          for legal_page in "/privacy" "/terms"; do
+            legal_code=$(curl -L -s -o /dev/null -w "%{http_code}" --max-time 20 "$SITE$legal_page" || echo "000")
+            if [[ "$legal_code" == "200" ]]; then
+              report+="- ✅ ${legal_page} exists (HTTP ${legal_code})"$'\n'
+            else
+              report+="- ❌ ${legal_page} MISSING (HTTP ${legal_code}) — AdSense requirement!"$'\n'
+              failures=$((failures + 1))
+            fi
+          done
+
+          # Check manifest.json exists (PWA)
+          manifest_code=$(curl -L -s -o /dev/null -w "%{http_code}" --max-time 20 "$SITE/manifest.json" || echo "000")
+          if [[ "$manifest_code" == "200" ]]; then
+            report+="- ✅ manifest.json exists"$'\n'
+          else
+            report+="- ⚠️ manifest.json missing (PWA disabled)"$'\n'
+          fi
+
           for page in "${seo_pages[@]}"; do
             html=$(curl -L -s --max-time 20 "$page" || true)
 

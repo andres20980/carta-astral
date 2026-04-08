@@ -3,21 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Página no encontrada — Carta Astral</title>
+  <title>Página no encontrada — Carta Astral Gratis</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#7c3aed">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    body { background: #0d1117; color: #e6edf3; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-    .box { text-align: center; }
-    h1 { color: #c9a227; font-size: 3rem; }
-    p { color: #8b949e; margin: 1rem 0; }
-    a { color: #c9a227; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    :root{--bg:#faf8f5;--surface:#fff;--border:#e8e0d8;--text:#2d2a26;--muted:#7a7268;--accent:#7c3aed;--gradient:linear-gradient(135deg,#7c3aed 0%,#c084fc 50%,#d4a017 100%)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+    .box{text-align:center;max-width:500px}
+    .code{font-family:'Playfair Display',Georgia,serif;font-size:5rem;font-weight:700;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+    .msg{font-size:1.1rem;color:var(--muted);margin:1rem 0 1.5rem;line-height:1.6}
+    .sparkle{display:inline-block;animation:twinkle 2s ease-in-out infinite}
+    @keyframes twinkle{0%,100%{opacity:1}50%{opacity:.3}}
+    .btn{display:inline-block;padding:.7rem 1.5rem;background:var(--accent);color:#fff;font-family:inherit;font-size:.9rem;font-weight:600;border-radius:10px;text-decoration:none;box-shadow:0 4px 14px rgba(124,58,237,.3);transition:all .2s}
+    .btn:hover{background:#6d28d9;transform:translateY(-1px)}
+    .links{margin-top:1.5rem;font-size:.85rem;color:var(--muted)}
+    .links a{color:var(--accent);text-decoration:none;margin:0 .5rem}
+    .links a:hover{text-decoration:underline}
+    footer{position:fixed;bottom:0;width:100%;text-align:center;padding:1rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--bg)}
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>404</h1>
-    <p>Las estrellas no encuentran esta página.</p>
-    <a href="/">← Volver a calcular tu carta astral</a>
+    <div class="code">404</div>
+    <p class="msg"><span class="sparkle">✦</span> Las estrellas no encuentran esta página. <span class="sparkle">✦</span><br>Pero tu carta astral sigue esperándote.</p>
+    <a href="/" class="btn">Calcular mi carta astral →</a>
+    <div class="links">
+      <a href="/">Inicio</a> ·
+      <a href="/privacy">Privacidad</a> ·
+      <a href="/terms">Términos</a>
+    </div>
   </div>
+  <footer>© 2026 Carta Astral Gratis · Cálculo con Swiss Ephemeris · Sistema Placidus</footer>
 </body>
 </html>
