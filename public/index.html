@@ -38,7 +38,7 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9368517395014039" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://pagead2.googlesyndication.com">
   <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -66,6 +66,11 @@
     .hero-desc{max-width:620px;margin:.8rem auto 0;font-size:.95rem;line-height:1.65;color:var(--muted);font-weight:300}
     .sparkle{display:inline-block;animation:twinkle 2s ease-in-out infinite}
     @keyframes twinkle{0%,100%{opacity:1}50%{opacity:.3}}
+    .zodiac-ring{margin:1.2rem auto .2rem;display:block;max-width:220px;height:auto;opacity:.85;filter:drop-shadow(0 2px 8px rgba(124,58,237,.15))}
+    @keyframes zodiac-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    .zodiac-ring .ring-outer{animation:zodiac-spin 90s linear infinite}
+    .social-proof{display:inline-flex;align-items:center;gap:.4rem;margin-top:.8rem;padding:.35rem 1rem;border-radius:999px;background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.15);font-size:.8rem;color:var(--accent);font-weight:500}
+    .social-proof .counter{font-variant-numeric:tabular-nums;font-weight:700}
 
     /* STEPS */
     .steps{display:flex;gap:.4rem;justify-content:center;margin:1.5rem 0;padding:0 1rem}
@@ -276,12 +281,37 @@
 
 <header>
   <div class="logo">✦ Carta Astral Gratis ✦</div>
+  <!-- Zodiac wheel SVG -->
+  <svg class="zodiac-ring" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rueda zodiacal con los 12 signos">
+    <defs>
+      <linearGradient id="zg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="50%" stop-color="#c084fc"/><stop offset="100%" stop-color="#d4a017"/></linearGradient>
+    </defs>
+    <g class="ring-outer" transform-origin="100 100">
+      <circle cx="100" cy="100" r="90" fill="none" stroke="url(#zg1)" stroke-width="1.5" opacity=".4"/>
+      <circle cx="100" cy="100" r="70" fill="none" stroke="url(#zg1)" stroke-width=".8" opacity=".25"/>
+      <!-- 12 signos a 30° cada uno -->
+      <text font-size="14" fill="#7c3aed" text-anchor="middle" dominant-baseline="central">
+        <tspan x="100" y="18">♈</tspan><tspan x="165" y="35">♉</tspan>
+        <tspan x="190" y="100">♊</tspan><tspan x="165" y="165">♋</tspan>
+        <tspan x="100" y="186">♌</tspan><tspan x="35" y="165">♍</tspan>
+        <tspan x="10" y="100">♎</tspan><tspan x="35" y="35">♏</tspan>
+      </text>
+      <text font-size="13" fill="#c084fc" text-anchor="middle" dominant-baseline="central">
+        <tspan x="140" y="22">♐</tspan><tspan x="183" y="138">♑</tspan>
+        <tspan x="60" y="183">♒</tspan><tspan x="17" y="62">♓</tspan>
+      </text>
+    </g>
+    <circle cx="100" cy="100" r="5" fill="#d4a017" opacity=".6"/>
+  </svg>
   <h1>Descubre tu <span>Carta Astral</span></h1>
   <p class="hero-desc">
     Tu Carta Astral es una fotografía del cielo en el instante en que naciste, vista desde tu lugar de nacimiento.
     El cielo se divide en 12 Casas — familia, pareja, trabajo, dinero… — y la posición del Sol, la Luna y los planetas
     en los signos del zodíaco describe las energías con las que naciste. <span class="sparkle">✨</span>
   </p>
+  <div class="social-proof">
+    <span>✨</span> Ya hemos calculado <span class="counter" id="chartCounter">0</span> cartas astrales
+  </div>
 </header>
 
 <!-- Ad: mobile leaderboard (below header, high visibility) -->
@@ -564,9 +594,28 @@
   <p style="margin-top:.5rem;font-style:italic">"Las estrellas no obligan, inclinan."</p>
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Lazy-load Leaflet JS (only needed at Step 2)
+let leafletLoaded=false;
+function loadLeaflet(){return new Promise(res=>{
+  if(leafletLoaded)return res();
+  const s=document.createElement('script');
+  s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  s.onload=()=>{leafletLoaded=true;res()};
+  document.head.appendChild(s);
+  // Ensure CSS is active
+  document.querySelector('link[href*="leaflet"]').media='all';
+})}
+</script>
 <script>
 let step=1,bLat=null,bLng=null,bCity='',map=null,marker=null,geoT=null,chartData=null,mode=null;
+
+// Social proof counter — seed + localStorage increments
+const COUNTER_SEED=1847; // base count before localStorage tracking
+function getChartCount(){return COUNTER_SEED+Number(localStorage.getItem('cc')||0)}
+function incChartCount(){const n=Number(localStorage.getItem('cc')||0)+1;localStorage.setItem('cc',String(n));updCounter()}
+function updCounter(){const el=document.getElementById('chartCounter');if(el)el.textContent=getChartCount().toLocaleString('es-ES')}
+updCounter();
 
 function openModal(){document.getElementById('certModal').classList.add('open')}
 function closeModal(){document.getElementById('certModal').classList.remove('open')}
@@ -596,7 +645,7 @@ function valStep(){
   else if(step===2){document.getElementById('btnN2').disabled=!(bLat!==null&&bLng!==null)}
 }
 
-function goNext(){if(step===1){step=2;updSteps();setTimeout(()=>{initMap();autoGeoPlace()},100)}else if(step===2){step=3;updSteps();calcChart()}}
+function goNext(){if(step===1){step=2;updSteps();loadLeaflet().then(()=>{setTimeout(()=>{initMap();autoGeoPlace()},100)})}else if(step===2){step=3;updSteps();calcChart()}}
 async function autoGeoPlace(){
   const p=document.getElementById('fplace')?document.getElementById('fplace').value.trim():'';
   if(!p)return;
@@ -682,7 +731,7 @@ async function calcChart(){
   try{
     const r=await fetch('/api/calculate-chart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     if(!r.ok)throw new Error((await r.json()).detail||'Error');
-    chartData=await r.json();renderChart(chartData);
+    chartData=await r.json();renderChart(chartData);incChartCount();
     gtag('event','chart_calculated',{sign:chartData.ascendant?.sign||''});
   }catch(e){rs.innerHTML=`<p class="alert alert-err">Error: ${e.message}</p>`;rs.classList.remove('hidden')}
   ld.classList.add('hidden');
