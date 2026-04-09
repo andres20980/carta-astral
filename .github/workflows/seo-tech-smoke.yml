@@ -88,7 +88,20 @@ jobs:
           fi
 
           for page in "${seo_pages[@]}"; do
-            html=$(curl -L -s --max-time 20 "$page" || true)
+            # Retry up to 3 times with 5s delay to avoid CDN transient failures
+            html=""
+            for attempt in 1 2 3; do
+              html=$(curl -L -s --max-time 20 "$page" || true)
+              if [[ ${#html} -gt 500 ]]; then break; fi
+              echo "⚠️ Attempt $attempt: empty/short response from $page (${#html} bytes), retrying..."
+              sleep 5
+            done
+
+            if [[ ${#html} -lt 500 ]]; then
+              report+="- ⚠️ ${page} no se pudo obtener HTML tras 3 intentos (${#html} bytes)"$'\n'
+              failures=$((failures + 1))
+              continue
+            fi
 
             if echo "$html" | grep -Eiq 'name=.robots.[^>]*noindex'; then
               report+="- ❌ ${page} contiene noindex"$'\n'
