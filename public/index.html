@@ -178,7 +178,22 @@
     .ad-h{width:100%;max-width:728px;margin:1rem auto;min-height:90px;text-align:center}
     @media(min-width:1100px){.ad-h.mob{display:none}}
 
-
+    /* AD PLACEHOLDERS — esoteric themed */
+    .ad-ph{position:relative;overflow:hidden;border-radius:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;text-decoration:none;color:#e8dff0;transition:transform .2s,box-shadow .2s}
+    .ad-ph:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,.25)}
+    .ad-ph::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#1a0a2e 0%,#2d1b4e 35%,#1a0a2e 60%,#0d0517 100%);z-index:0}
+    .ad-ph::after{content:'☽ ♈ ✦ ♉ ☿ ♊ ♀ ♋ ☉ ♌ ⚶ ♍ ♎ ♂ ♏ ♃ ♐ ♄ ♑ ♒ ♆ ♓';position:absolute;inset:0;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:.6rem;font-size:1.1rem;opacity:.12;z-index:1;pointer-events:none;color:#c084fc;letter-spacing:.3rem;line-height:2;padding:.8rem}
+    .ad-ph>*{position:relative;z-index:2}
+    .ad-ph .ad-icon{font-size:1.8rem;filter:drop-shadow(0 0 8px rgba(212,160,23,.5))}
+    .ad-ph .ad-label{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:600;color:#e8dff0;text-align:center;line-height:1.4;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+    .ad-ph .ad-cta{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.35rem 1rem;border:1px solid rgba(212,160,23,.5);border-radius:20px;color:var(--gold);background:rgba(212,160,23,.08);transition:all .2s}
+    .ad-ph:hover .ad-cta{background:rgba(212,160,23,.2);border-color:var(--gold)}
+    /* Horizontal placeholder */
+    .ad-ph-h{min-height:100px;padding:1.2rem}
+    /* Vertical placeholder (sidebars) */
+    .ad-ph-v{min-height:600px;width:160px;padding:1.5rem .8rem}
+    .ad-ph-v .ad-label{font-size:.8rem;writing-mode:horizontal-tb}
+    .ad-ph-v::after{font-size:.9rem;writing-mode:vertical-lr;letter-spacing:.5rem}
 
     /* AFFILIATE RECOMMENDATION BOXES (hidden until M3 milestone) */
     .reco-box{display:none;background:linear-gradient(135deg,#fef9ee 0%,#f9f5ff 100%);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.5rem;margin:1.2rem 0}
@@ -271,13 +286,22 @@
 
 <!-- Ad: mobile leaderboard (below header, high visibility) -->
 <div class="ad-h mob" id="ad-top" style="min-height:100px">
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9368517395014039" data-ad-slot="TODO_SLOT_MOBILE_TOP" data-ad-format="auto" data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+  <a class="ad-ph ad-ph-h" href="mailto:publicidad@carta-astral-gratis.es?subject=Publicidad%20en%20Carta%20Astral%20Gratis%20—%20Banner%20Superior" title="Anúnciate aquí">
+    <span class="ad-icon">🌙</span>
+    <span class="ad-label">¿Quieres tu publicidad aquí?</span>
+    <span class="ad-cta">Contáctanos →</span>
+  </a>
 </div>
 
 <div class="page-wrap">
   <!-- AD LEFT -->
-  <div class="ad-col"><div class="ad-slot" id="ad-left"></div></div>
+  <div class="ad-col"><div class="ad-slot" id="ad-left">
+    <a class="ad-ph ad-ph-v" href="mailto:publicidad@carta-astral-gratis.es?subject=Publicidad%20en%20Carta%20Astral%20Gratis%20—%20Lateral%20Izquierdo" title="Anúnciate aquí">
+      <span class="ad-icon">✦</span>
+      <span class="ad-label">¿Vendes cristales, tarot o incienso?</span>
+      <span class="ad-cta">Anúnciate aquí</span>
+    </a>
+  </div></div>
 
   <!-- MAIN -->
   <div class="main-col">
@@ -383,8 +407,11 @@
 
       <!-- Ad: in-article after results (highest engagement point) -->
       <div class="ad-h" id="ad-mid" style="min-height:250px">
-        <ins class="adsbygoogle" style="display:block;text-align:center" data-ad-client="ca-pub-9368517395014039" data-ad-slot="TODO_SLOT_MID_CONTENT" data-ad-layout="in-article" data-ad-format="fluid"></ins>
-        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+        <a class="ad-ph ad-ph-h" href="mailto:publicidad@carta-astral-gratis.es?subject=Publicidad%20en%20Carta%20Astral%20Gratis%20—%20Banner%20Central" title="Anúnciate aquí" style="min-height:250px">
+          <span class="ad-icon">☉</span>
+          <span class="ad-label">¿Ofreces consultas astrológicas o lecturas de tarot?</span>
+          <span class="ad-cta">Pon tu anuncio aquí →</span>
+        </a>
       </div>
 
       <!-- MAPA DE TU VIDA -->
@@ -417,8 +444,11 @@
 
       <!-- Ad: between casas and SEO (content break, good viewability) -->
       <div class="ad-h" id="ad-casas" style="min-height:100px">
-        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9368517395014039" data-ad-slot="TODO_SLOT_BETWEEN_SECTIONS" data-ad-format="auto" data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+        <a class="ad-ph ad-ph-h" href="mailto:publicidad@carta-astral-gratis.es?subject=Publicidad%20en%20Carta%20Astral%20Gratis%20—%20Banner%20entre%20secciones" title="Anúnciate aquí">
+          <span class="ad-icon">🔮</span>
+          <span class="ad-label">Espacio para tu marca — Llega a miles de amantes de la astrología</span>
+          <span class="ad-cta">Informarte →</span>
+        </a>
       </div>
 
       <!-- SEO Block -->
@@ -489,7 +519,13 @@
   </div>
 
   <!-- AD RIGHT -->
-  <div class="ad-col"><div class="ad-slot" id="ad-right"></div></div>
+  <div class="ad-col"><div class="ad-slot" id="ad-right">
+    <a class="ad-ph ad-ph-v" href="mailto:publicidad@carta-astral-gratis.es?subject=Publicidad%20en%20Carta%20Astral%20Gratis%20—%20Lateral%20Derecho" title="Anúnciate aquí">
+      <span class="ad-icon">☽</span>
+      <span class="ad-label">¿Ofreces sesiones de coaching o terapia holística?</span>
+      <span class="ad-cta">Tu anuncio aquí</span>
+    </a>
+  </div></div>
 </div>
 
 <!-- Affiliate recommendation boxes (hidden until M3 milestone - activate with .active class) -->
@@ -509,7 +545,13 @@
 </div>
 
 <!-- Ad before footer (Auto Ads fills this area) -->
-<div class="ad-h" style="max-width:780px;margin:1rem auto"></div>
+<div class="ad-h" style="max-width:780px;margin:1rem auto">
+  <a class="ad-ph ad-ph-h" href="mailto:publicidad@carta-astral-gratis.es?subject=Publicidad%20en%20Carta%20Astral%20Gratis%20—%20Banner%20Pre-Footer" title="Anúnciate aquí">
+    <span class="ad-icon">⚶</span>
+    <span class="ad-label">¿Quieres tu publicidad aquí?</span>
+    <span class="ad-cta">Escríbenos →</span>
+  </a>
+</div>
 
 <footer>
   <p>© 2026 Carta Astral Gratis · Cálculo con Swiss Ephemeris · Sistema Placidus</p>
