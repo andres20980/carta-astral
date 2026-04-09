@@ -372,4 +372,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/GROWTH_MILESTONES.json public/stats.json
-          git diff --cached --quiet || git commit -m "chore: update growth milestone + public stats [skip ci]" && git push || true
+          git diff --cached --quiet || git commit -m "chore: update growth milestone + public stats" && git push || true
