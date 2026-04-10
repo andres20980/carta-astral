@@ -90,19 +90,19 @@ jobs:
           case "${{ matrix.site }}" in
             carta-astral)
               project_id="carta-astral-f4ab9"
-              service_account="$FIREBASE_SA_CARTA_ASTRAL"
+              service_account="${FIREBASE_SA_CARTA_ASTRAL:-$FIREBASE_SERVICE_ACCOUNT}"
               ;;
             compatibilidad-signos)
               project_id="compat-signos-es"
-              service_account="$FIREBASE_SA_COMPATIBILIDAD_SIGNOS"
+              service_account="${FIREBASE_SA_COMPATIBILIDAD_SIGNOS:-$FIREBASE_SERVICE_ACCOUNT}"
               ;;
             tarot-del-dia)
               project_id="tarot-del-dia-es"
-              service_account="$FIREBASE_SA_TAROT_DEL_DIA"
+              service_account="${FIREBASE_SA_TAROT_DEL_DIA:-$FIREBASE_SERVICE_ACCOUNT}"
               ;;
             calcular-numerologia)
               project_id="calc-numerologia-es"
-              service_account="$FIREBASE_SA_CALCULAR_NUMEROLOGIA"
+              service_account="${FIREBASE_SA_CALCULAR_NUMEROLOGIA:-$FIREBASE_SERVICE_ACCOUNT}"
               ;;
             horoscopo-de-hoy)
               project_id="horoscopo-hoy-es"
