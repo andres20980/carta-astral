@@ -56,6 +56,22 @@
     .network a{color:var(--accent);text-decoration:none}
     footer{text-align:center;padding:2rem 1rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
     footer a{color:var(--accent);text-decoration:none}
+    .ad-h{margin:1.25rem 0}
+    .ad-ph{display:flex;align-items:center;justify-content:center;text-decoration:none;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,#f9f5ff 0%,#fef9ee 100%);box-shadow:var(--shadow);padding:1rem;transition:transform .2s,box-shadow .2s,border-color .2s;text-align:center;color:var(--text)}
+    .ad-ph:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(124,58,237,.14);border-color:rgba(124,58,237,.28)}
+    .ad-ph-h{min-height:122px;flex-direction:column;gap:.32rem}
+    .ad-kicker{font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+    .ad-icon{font-size:1.5rem;line-height:1}
+    .ad-label{font-family:'Playfair Display',serif;font-size:1.08rem;font-weight:700;line-height:1.25}
+    .ad-copy{font-size:.82rem;line-height:1.6;color:var(--muted);max-width:560px}
+    .ad-cta{display:inline-flex;align-items:center;justify-content:center;margin-top:.2rem;padding:.45rem .95rem;border-radius:999px;background:var(--accent);color:#fff;font-size:.76rem;font-weight:700}
+    .ad-link{color:var(--accent);text-decoration:none;font-weight:600}
+    .ad-link:hover{text-decoration:underline}
+    @media(max-width:600px){
+      .ad-ph-h{min-height:110px;padding:.9rem}
+      .ad-label{font-size:.98rem}
+      .ad-copy{font-size:.78rem}
+    }
 
     .intro{text-align:center;color:var(--muted);font-size:.92rem;line-height:1.6;max-width:600px;margin:0 auto 1rem}
     .signs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin:1.5rem 0}
@@ -83,6 +99,16 @@
 <a class="sign-card" href="/aries"><span class="sc-glyph">♈</span><span class="sc-name">Aries</span><span class="sc-dates">21 mar – 19 abr</span><span class="sc-stars">★★★☆☆</span></a><a class="sign-card" href="/tauro"><span class="sc-glyph">♉</span><span class="sc-name">Tauro</span><span class="sc-dates">20 abr – 20 may</span><span class="sc-stars">★★★☆☆</span></a><a class="sign-card" href="/geminis"><span class="sc-glyph">♊</span><span class="sc-name">Géminis</span><span class="sc-dates">21 may – 20 jun</span><span class="sc-stars">★★★★☆</span></a><a class="sign-card" href="/cancer"><span class="sc-glyph">♋</span><span class="sc-name">Cáncer</span><span class="sc-dates">21 jun – 22 jul</span><span class="sc-stars">★★☆☆☆</span></a><a class="sign-card" href="/leo"><span class="sc-glyph">♌</span><span class="sc-name">Leo</span><span class="sc-dates">23 jul – 22 ago</span><span class="sc-stars">★★★☆☆</span></a><a class="sign-card" href="/virgo"><span class="sc-glyph">♍</span><span class="sc-name">Virgo</span><span class="sc-dates">23 ago – 22 sep</span><span class="sc-stars">★★★☆☆</span></a><a class="sign-card" href="/libra"><span class="sc-glyph">♎</span><span class="sc-name">Libra</span><span class="sc-dates">23 sep – 22 oct</span><span class="sc-stars">★★★★☆</span></a><a class="sign-card" href="/escorpio"><span class="sc-glyph">♏</span><span class="sc-name">Escorpio</span><span class="sc-dates">23 oct – 21 nov</span><span class="sc-stars">★★★☆☆</span></a><a class="sign-card" href="/sagitario"><span class="sc-glyph">♐</span><span class="sc-name">Sagitario</span><span class="sc-dates">22 nov – 21 dic</span><span class="sc-stars">★★★☆☆</span></a><a class="sign-card" href="/capricornio"><span class="sc-glyph">♑</span><span class="sc-name">Capricornio</span><span class="sc-dates">22 dic – 19 ene</span><span class="sc-stars">★★★☆☆</span></a><a class="sign-card" href="/acuario"><span class="sc-glyph">♒</span><span class="sc-name">Acuario</span><span class="sc-dates">20 ene – 18 feb</span><span class="sc-stars">★★★☆☆</span></a><a class="sign-card" href="/piscis"><span class="sc-glyph">♓</span><span class="sc-name">Piscis</span><span class="sc-dates">19 feb – 20 mar</span><span class="sc-stars">★★★☆☆</span></a>
   </div>
 
+<div class="ad-h">
+  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui">
+    <span class="ad-kicker">Espacio publicitario premium</span>
+    <span class="ad-icon">⭐</span>
+    <span class="ad-label">Publicidad premium en una audiencia que vuelve cada dia</span>
+    <span class="ad-copy">Tu marca puede mantenerse visible en un producto de consumo recurrente y muy contextual.</span>
+    <span class="ad-cta">Informarme -></span>
+  </a>
+</div>
+
   <div class="cta-box">
     <h3>🔮 ¿Quieres un análisis más profundo?</h3>
     <p>El horóscopo diario se basa en tu signo solar. Tu carta astral completa revela la influencia de todos los planetas.</p>
@@ -100,9 +126,20 @@
     <p>Las predicciones diarias de amor pueden complementarse con un análisis de <a href="https://compatibilidad-signos.es/">compatibilidad entre signos</a> para entender mejor la dinámica de tus relaciones. También puedes explorar el <a href="https://tarot-del-dia.es/">tarot del día</a> o tu <a href="https://calcular-numerologia.es/">número de vida</a> para una visión más completa.</p>
   </div>
 
+<div class="ad-h">
+  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui">
+    <span class="ad-kicker">Espacio publicitario premium</span>
+    <span class="ad-icon">✨</span>
+    <span class="ad-label">Patrocina una ubicacion de alto recuerdo</span>
+    <span class="ad-copy">El patrocinio directo gana valor frente a AdSense cuando el mensaje y el contexto estan alineados.</span>
+    <span class="ad-cta">Ver media kit -></span>
+  </a>
+</div>
+
 <footer>
   <p>© 2026 Horóscopo de Hoy — Actualizado diariamente</p>
   <p><a href="/privacy">Privacidad</a> · <a href="/terms">Términos</a></p>
+  <p style="margin-top:.6rem"><a href="/publicidad" class="ad-link">✦ Quiero anunciarme en Horóscopo de Hoy: ver espacios y tarifas</a></p>
   <div class="network">Nuestras herramientas: <a href="https://carta-astral-gratis.es/" rel="noopener">Carta Astral Gratis</a> · <a href="https://compatibilidad-signos.es/" rel="noopener">Compatibilidad de Signos</a> · <a href="https://tarot-del-dia.es/" rel="noopener">Tarot del Día</a> · <a href="https://calcular-numerologia.es/" rel="noopener">Calcular Numerología</a></div>
 </footer>
 </div>

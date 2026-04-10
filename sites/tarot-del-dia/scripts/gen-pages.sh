@@ -13,6 +13,7 @@ SITE_KEY="tarot-del-dia"
 DOMAIN="${DOMAINS[$SITE_KEY]}"
 GA4="${GA4_IDS[$SITE_KEY]}"
 TODAY=$(date +%Y-%m-%d)
+AD_CSS="$(ad_css)"
 
 mkdir -p "$PUBLIC/arcanos-mayores" "$PUBLIC/arcanos-menores"
 
@@ -67,6 +68,7 @@ COMMON_CSS="
     .network a{color:var(--accent);text-decoration:none}
     footer{text-align:center;padding:2rem 1rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
     footer a{color:var(--accent);text-decoration:none}
+${AD_CSS}
 "
 
 gen_footer() {
@@ -74,6 +76,7 @@ gen_footer() {
 <footer>
   <p>© $(date +%Y) Tarot del Día — Herramienta gratuita de tarot</p>
   <p><a href="/privacy">Privacidad</a> · <a href="/terms">Términos</a></p>
+  $(footer_publicidad_line "$SITE_KEY")
   ${CROSSLINKS_HTML}
 </footer>
 ENDFOOTER
@@ -166,6 +169,8 @@ ${COMMON_CSS}
 
   <div class="keywords">$(IFS=','; for kw in ${keys}; do echo "<span class=\"kw\">${kw## }</span>"; done)</div>
 
+$(ad_block "🔮" "¿Ofreces consultas, cursos o productos esotericos?" "Tu marca puede aparecer junto a lectores que ya estan inmersos en una interpretacion de tarot." "Ver espacios y tarifas ->")
+
   <div class="panel">
     <h2>🔮 Descripción de ${name}</h2>
     <p>${desc}</p>
@@ -191,6 +196,8 @@ ${COMMON_CSS}
     <h2>💼 ${name} en el Trabajo</h2>
     <p>En el ámbito laboral, ${name} al derecho señala ${upright}. Es un momento para aplicar estas energías en tu carrera. Invertida puede indicar ${reversed}, invitándote a reflexionar sobre tu dirección profesional.</p>
   </div>
+
+$(ad_block "🃏" "Patrocina una lectura de alta atencion" "Ubicacion premium entre la interpretacion y la llamada a la accion del usuario." "Reservar un banner premium ->")
 
   <div class="nav-cards">
     <a href="/arcanos-mayores/${MAJOR_SLUGS[$prev_idx]}">← ${MAJOR_NAMES[$prev_idx]}</a>
@@ -246,6 +253,9 @@ ${COMMON_CSS}
   <nav class="breadcrumb"><a href="/">Tarot del Día</a> › Arcanos Mayores</nav>
   <h1>Los 22 <span>Arcanos Mayores</span></h1>
   <p class="intro">Los Arcanos Mayores representan los grandes arquetipos y lecciones de vida. Cada carta contiene un mensaje profundo sobre tu camino. Pulsa en cualquiera para leer su significado completo.</p>
+
+$(ad_block "🃏" "Publicidad premium para un publico espiritual" "Ideal para marcas de tarot, rituales, formacion y productos con afinidad esoterica." "Informarme ->")
+
   <div class="tarot-grid">${CARDS_GRID}</div>
 
   <div class="cta-box">
@@ -337,6 +347,8 @@ ${COMMON_CSS}
     <div class="deck" id="deck"></div>
   </div>
 
+$(ad_block "🔮" "¿Quieres llegar a usuarios que consultan tarot hoy?" "Espacio visible entre la tirada interactiva y la lectura, con contexto perfecto para conversion." "Ver espacios y tarifas ->")
+
   <div class="result" id="result"></div>
 
   <div class="cta-box">
@@ -363,6 +375,8 @@ ${COMMON_CSS}
     <h2>Tarot y astrología</h2>
     <p>Cada Arcano Mayor está conectado con un signo zodiacal o planeta. Por eso, combinar tu <a href="https://carta-astral-gratis.es/">carta astral</a> con el tarot te da una perspectiva mucho más rica. La <a href="https://compatibilidad-signos.es/">compatibilidad de signos</a> también puede enriquecer las lecturas sobre relaciones.</p>
   </div>
+
+$(ad_block "✨" "Patrocina un inventario de alta afinidad" "Directo mejor que remanente: mas control, mas recuerdo de marca y mayor contexto editorial." "Ver media kit ->")
 
 $(gen_footer)
 </div>
@@ -420,12 +434,15 @@ SITEMAP_URLS="  <url><loc>https://${DOMAIN}/</loc><lastmod>${TODAY}</lastmod><ch
 # STATIC FILES
 # ══════════════════════════════════════════════════════════════
 echo "google.com, ${ADSENSE_PUB#ca-}, DIRECT, f08c47fec0942fa0" > "$PUBLIC/ads.txt"
+gen_publicidad_page "$SITE_KEY" "$PUBLIC"
 
 cat > "$PUBLIC/robots.txt" <<ENDROBOTS
 User-agent: *
 Allow: /
 Sitemap: https://${DOMAIN}/sitemap.xml
 ENDROBOTS
+
+SITEMAP_URLS+="  <url><loc>https://${DOMAIN}/publicidad</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n"
 
 cat > "$PUBLIC/sitemap.xml" <<ENDSITEMAP
 <?xml version="1.0" encoding="UTF-8"?>

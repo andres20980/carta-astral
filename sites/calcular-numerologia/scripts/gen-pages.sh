@@ -13,6 +13,7 @@ SITE_KEY="calcular-numerologia"
 DOMAIN="${DOMAINS[$SITE_KEY]}"
 GA4="${GA4_IDS[$SITE_KEY]}"
 TODAY=$(date +%Y-%m-%d)
+AD_CSS="$(ad_css)"
 
 mkdir -p "$PUBLIC/numero-de-vida"
 
@@ -67,6 +68,7 @@ COMMON_CSS="
     .network a{color:var(--accent);text-decoration:none}
     footer{text-align:center;padding:2rem 1rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
     footer a{color:var(--accent);text-decoration:none}
+${AD_CSS}
 "
 
 gen_footer() {
@@ -74,6 +76,7 @@ gen_footer() {
 <footer>
   <p>© $(date +%Y) Calcular Numerología — Herramienta gratuita</p>
   <p><a href="/privacy">Privacidad</a> · <a href="/terms">Términos</a></p>
+  $(footer_publicidad_line "$SITE_KEY")
   ${CROSSLINKS_HTML}
 </footer>
 ENDFOOTER
@@ -173,6 +176,8 @@ ${COMMON_CSS}
 
   <div class="keywords">$(IFS=','; for kw in ${NUM_KEYS[$n]}; do echo "<span class=\"kw\">${kw## }</span>"; done)</div>
 
+$(ad_block "🔢" "¿Vendes cursos, libros o sesiones de numerologia?" "Llega a usuarios que ya buscan respuestas personales y estan listos para profundizar." "Ver espacios y tarifas ->")
+
   <div class="panel">
     <h2>🔢 Significado del Número ${n}</h2>
     <p>${NUM_DESC[$n]}</p>
@@ -194,6 +199,8 @@ ${COMMON_CSS}
     <div class="compat-nums">$(IFS=','; for cn in ${NUM_COMPAT[$n]}; do echo "<a href=\"/numero-de-vida/${cn## }\">${cn## }</a>"; done)</div>
     <p style="margin-top:.6rem">Consulta la <a href="https://compatibilidad-signos.es/">compatibilidad de signos</a> para añadir la dimensión astrológica.</p>
   </div>
+
+$(ad_block "✨" "Patrocina un calculo con alta intencion educativa" "Inventario ideal para escuelas holisticas, membresias premium y herramientas de autoconocimiento." "Reservar un banner premium ->")
 
   <div class="nav-nums">
     <a href="/numero-de-vida/${prev}">← Número ${prev}: ${NUM_TITLES[$prev]}</a>
@@ -250,6 +257,8 @@ ${COMMON_CSS}
   <h1>Los 9 <span>Números de Vida</span></h1>
   <p class="intro">Cada número del 1 al 9 tiene una vibración única que define tu personalidad, talentos y misión de vida.</p>
   <div class="num-grid">${NUM_GRID}</div>
+
+$(ad_block "🔢" "Publicidad premium para un publico de autoconocimiento" "Reserva una ubicacion contextual entre las fichas de numeros mas consultadas." "Informarme ->")
 
   <div class="cta-box">
     <h3>🔢 Calcula tu número de vida</h3>
@@ -324,12 +333,16 @@ ${COMMON_CSS}
     <button class="btn" onclick="calculate()">Calcular mi número de vida →</button>
   </div>
 
+$(ad_block "🔢" "Patrocina el momento de mayor atencion del usuario" "Tu mensaje aparece justo despues de la accion principal del calculo numerologico." "Ver espacios y tarifas ->")
+
   <div class="result-box" id="result"></div>
 
   <h2 style="text-align:center;margin-top:2rem">Los 9 Números de Vida</h2>
   <div class="nums-preview">
 $(for n in $(seq 1 9); do echo "    <a href=\"/numero-de-vida/${n}\"><span class=\"n\">${n}</span><span class=\"t\">${NUM_TITLES[$n]}</span></a>"; done)
   </div>
+
+$(ad_block "✨" "Publicidad directa mejor que remanente" "Mas control, mejor contexto y mas valor comercial para marcas de formacion y bienestar." "Ver media kit ->")
 
   <div class="cta-box">
     <h3>🌟 Complementa con tu carta astral</h3>
@@ -386,12 +399,15 @@ SITEMAP_URLS="  <url><loc>https://${DOMAIN}/</loc><lastmod>${TODAY}</lastmod><ch
 # STATIC FILES
 # ══════════════════════════════════════════════════════════════
 echo "google.com, ${ADSENSE_PUB#ca-}, DIRECT, f08c47fec0942fa0" > "$PUBLIC/ads.txt"
+gen_publicidad_page "$SITE_KEY" "$PUBLIC"
 
 cat > "$PUBLIC/robots.txt" <<ENDROBOTS
 User-agent: *
 Allow: /
 Sitemap: https://${DOMAIN}/sitemap.xml
 ENDROBOTS
+
+SITEMAP_URLS+="  <url><loc>https://${DOMAIN}/publicidad</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n"
 
 cat > "$PUBLIC/sitemap.xml" <<ENDSITEMAP
 <?xml version="1.0" encoding="UTF-8"?>

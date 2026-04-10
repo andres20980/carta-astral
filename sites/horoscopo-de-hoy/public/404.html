@@ -33,6 +33,22 @@
     .network a{color:var(--accent);text-decoration:none}
     footer{text-align:center;padding:2rem 1rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
     footer a{color:var(--accent);text-decoration:none}
+    .ad-h{margin:1.25rem 0}
+    .ad-ph{display:flex;align-items:center;justify-content:center;text-decoration:none;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,#f9f5ff 0%,#fef9ee 100%);box-shadow:var(--shadow);padding:1rem;transition:transform .2s,box-shadow .2s,border-color .2s;text-align:center;color:var(--text)}
+    .ad-ph:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(124,58,237,.14);border-color:rgba(124,58,237,.28)}
+    .ad-ph-h{min-height:122px;flex-direction:column;gap:.32rem}
+    .ad-kicker{font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+    .ad-icon{font-size:1.5rem;line-height:1}
+    .ad-label{font-family:'Playfair Display',serif;font-size:1.08rem;font-weight:700;line-height:1.25}
+    .ad-copy{font-size:.82rem;line-height:1.6;color:var(--muted);max-width:560px}
+    .ad-cta{display:inline-flex;align-items:center;justify-content:center;margin-top:.2rem;padding:.45rem .95rem;border-radius:999px;background:var(--accent);color:#fff;font-size:.76rem;font-weight:700}
+    .ad-link{color:var(--accent);text-decoration:none;font-weight:600}
+    .ad-link:hover{text-decoration:underline}
+    @media(max-width:600px){
+      .ad-ph-h{min-height:110px;padding:.9rem}
+      .ad-label{font-size:.98rem}
+      .ad-copy{font-size:.78rem}
+    }
 </style>
 </head>
 <body>

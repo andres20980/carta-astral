@@ -13,6 +13,7 @@ SITE_KEY="compatibilidad-signos"
 DOMAIN="${DOMAINS[$SITE_KEY]}"
 GA4="${GA4_IDS[$SITE_KEY]}"
 TODAY=$(date +%Y-%m-%d)
+AD_CSS="$(ad_css)"
 
 mkdir -p "$PUBLIC"
 
@@ -162,6 +163,7 @@ COMMON_CSS="
     .network a{color:var(--accent);text-decoration:none}
     footer{text-align:center;padding:2rem 1rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
     footer a{color:var(--accent);text-decoration:none}
+${AD_CSS}
 "
 
 # ── Cross-links ──────────────────────────────────────────────
@@ -173,6 +175,7 @@ gen_footer() {
 <footer>
   <p>© $(date +%Y) Compatibilidad Signos — Herramienta gratuita de astrología</p>
   <p><a href="/privacy">Privacidad</a> · <a href="/terms">Términos</a></p>
+  $(footer_publicidad_line "$SITE_KEY")
   ${CROSSLINKS_HTML}
 </footer>
 ENDFOOTER
@@ -239,6 +242,8 @@ $(gen_head "$title" "$desc" "$url_path")
     <span class="tag">${g2} ${n2} · ${e2} · ${r2}</span>
   </div>
 
+$(ad_block "❤" "¿Tienes una app de citas, consulta o regalo romantico?" "Aparece ante usuarios que ya estan leyendo una combinacion concreta y tienen intencion alta de relacion." "Ver espacios y tarifas ->")
+
   <div class="panel">
     <h2>${g1}${g2} Análisis de Compatibilidad</h2>
     <p>${elem_text}</p>
@@ -267,6 +272,8 @@ $(gen_head "$title" "$desc" "$url_path")
     <h2>🌙 En la Carta Natal</h2>
     <p>La compatibilidad real va más allá del signo solar. Si tienes Luna, Venus o Marte en ${n2}, tu conexión con personas ${n2} será más intensa. Calcula tu carta astral completa para descubrir todas tus compatibilidades planetarias.</p>
   </div>
+
+$(ad_block "✦" "Patrocina una de las combinaciones mas buscadas" "Ideal para marcas de pareja, coaching, joyeria y bienestar emocional con mensaje contextual." "Reservar un banner premium ->")
 
   <div class="cta-box">
     <h3>🔮 Descubre tu carta astral completa</h3>
@@ -369,6 +376,8 @@ ${COMMON_CSS}
     <button class="btn" onclick="location.href='/'+document.getElementById('s1').value+'-'+document.getElementById('s2').value">Ver compatibilidad →</button>
   </div>
 
+$(ad_block "❤" "Publicidad premium en un nicho de amor y afinidad" "La ubicacion mas visible para captar usuarios antes de que profundicen en la tabla completa." "Informarme ->")
+
   <h2 style="text-align:center">Tabla de Compatibilidad Completa</h2>
   <div class="grid-wrap">
   <table>
@@ -378,6 +387,8 @@ ${GRID_ROWS}
     </tbody>
   </table>
   </div>
+
+$(ad_block "🔮" "Patrocina trafico SEO de alta intencion" "Tu marca puede aparecer entre la herramienta de calculo y las 144 combinaciones de signos." "Ver media kit ->")
 
   <div class="cta-box">
     <h3>🔮 ¿Quieres ir más allá del signo solar?</h3>
@@ -422,6 +433,9 @@ echo "  ✓ index.html"
 # ads.txt
 echo "google.com, ${ADSENSE_PUB#ca-}, DIRECT, f08c47fec0942fa0" > "$PUBLIC/ads.txt"
 
+# publicidad
+gen_publicidad_page "$SITE_KEY" "$PUBLIC"
+
 # robots.txt
 cat > "$PUBLIC/robots.txt" <<ENDROBOTS
 User-agent: *
@@ -430,6 +444,7 @@ Sitemap: https://${DOMAIN}/sitemap.xml
 ENDROBOTS
 
 # sitemap.xml
+SITEMAP_URLS+="  <url><loc>https://${DOMAIN}/publicidad</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n"
 cat > "$PUBLIC/sitemap.xml" <<ENDSITEMAP
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

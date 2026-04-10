@@ -15,6 +15,7 @@ SITE_KEY="horoscopo-de-hoy"
 DOMAIN="${DOMAINS[$SITE_KEY]}"
 GA4="${GA4_IDS[$SITE_KEY]}"
 TODAY=$(date +%Y-%m-%d)
+AD_CSS="$(ad_css)"
 TODAY_DISPLAY=$(date +"%d de %B de %Y" | sed 's/January/enero/;s/February/febrero/;s/March/marzo/;s/April/abril/;s/May/mayo/;s/June/junio/;s/July/julio/;s/August/agosto/;s/September/septiembre/;s/October/octubre/;s/November/noviembre/;s/December/diciembre/')
 DOW=$(date +%u)  # 1=Mon..7=Sun
 
@@ -147,6 +148,7 @@ COMMON_CSS="
     .network a{color:var(--accent);text-decoration:none}
     footer{text-align:center;padding:2rem 1rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
     footer a{color:var(--accent);text-decoration:none}
+${AD_CSS}
 "
 
 gen_footer() {
@@ -154,6 +156,7 @@ gen_footer() {
 <footer>
   <p>© $(date +%Y) Horóscopo de Hoy — Actualizado diariamente</p>
   <p><a href="/privacy">Privacidad</a> · <a href="/terms">Términos</a></p>
+  $(footer_publicidad_line "$SITE_KEY")
   ${CROSSLINKS_HTML}
 </footer>
 ENDFOOTER
@@ -244,6 +247,8 @@ ${COMMON_CSS}
     <span class="tag">🎨 ${lucky_c}</span>
   </div>
 
+$(ad_block "⭐" "¿Quieres visibilidad diaria en una audiencia recurrente?" "Aparece junto al horoscopo de amor, trabajo y salud de cada signo." "Ver espacios y tarifas ->")
+
   <div class="panel">
     <h2>💕 Amor</h2>
     <p>${love}</p>
@@ -263,6 +268,8 @@ ${COMMON_CSS}
     <h2>🌟 Consejo del día para ${n}</h2>
     <p>Hoy tu elemento ${e} $([ "$e" = "Fuego" ] && echo "te pide acción: no postergues lo importante. La energía está de tu lado, úsala con intención." || [ "$e" = "Tierra" ] && echo "te invita a confiar en el proceso. Los resultados llegan con paciencia y constancia. Mantén los pies en la tierra." || [ "$e" = "Aire" ] && echo "activa tu mente: nuevas ideas y conexiones pueden marcar la diferencia hoy. Comunica lo que sientes." || echo "amplifica tu intuición: escucha a tu cuerpo y a tus emociones. Hoy las respuestas están dentro de ti.")</p>
   </div>
+
+$(ad_block "🌙" "Patrocina un signo o el trafico diario del sitio" "Ideal para tarot, astrologia, bienestar y ecommerce espiritual con repeticion de impacto." "Reservar un banner premium ->")
 
   <div class="nav-signs">
     <a href="/${prev_s}">${GLYPH[$prev_s]} ${NAME[$prev_s]}</a>
@@ -341,6 +348,8 @@ ${COMMON_CSS}
 ${INDEX_CARDS}
   </div>
 
+$(ad_block "⭐" "Publicidad premium en una audiencia que vuelve cada dia" "Tu marca puede mantenerse visible en un producto de consumo recurrente y muy contextual." "Informarme ->")
+
   <div class="cta-box">
     <h3>🔮 ¿Quieres un análisis más profundo?</h3>
     <p>El horóscopo diario se basa en tu signo solar. Tu carta astral completa revela la influencia de todos los planetas.</p>
@@ -358,6 +367,8 @@ ${INDEX_CARDS}
     <p>Las predicciones diarias de amor pueden complementarse con un análisis de <a href="https://compatibilidad-signos.es/">compatibilidad entre signos</a> para entender mejor la dinámica de tus relaciones. También puedes explorar el <a href="https://tarot-del-dia.es/">tarot del día</a> o tu <a href="https://calcular-numerologia.es/">número de vida</a> para una visión más completa.</p>
   </div>
 
+$(ad_block "✨" "Patrocina una ubicacion de alto recuerdo" "El patrocinio directo gana valor frente a AdSense cuando el mensaje y el contexto estan alineados." "Ver media kit ->")
+
 $(gen_footer)
 </div>
 </body>
@@ -370,12 +381,15 @@ SITEMAP_URLS="  <url><loc>https://${DOMAIN}/</loc><lastmod>${TODAY}</lastmod><ch
 # STATIC FILES
 # ══════════════════════════════════════════════════════════════
 echo "google.com, ${ADSENSE_PUB#ca-}, DIRECT, f08c47fec0942fa0" > "$PUBLIC/ads.txt"
+gen_publicidad_page "$SITE_KEY" "$PUBLIC"
 
 cat > "$PUBLIC/robots.txt" <<ENDROBOTS
 User-agent: *
 Allow: /
 Sitemap: https://${DOMAIN}/sitemap.xml
 ENDROBOTS
+
+SITEMAP_URLS+="  <url><loc>https://${DOMAIN}/publicidad</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n"
 
 cat > "$PUBLIC/sitemap.xml" <<ENDSITEMAP
 <?xml version="1.0" encoding="UTF-8"?>

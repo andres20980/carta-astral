@@ -56,6 +56,22 @@
     .network a{color:var(--accent);text-decoration:none}
     footer{text-align:center;padding:2rem 1rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
     footer a{color:var(--accent);text-decoration:none}
+    .ad-h{margin:1.25rem 0}
+    .ad-ph{display:flex;align-items:center;justify-content:center;text-decoration:none;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,#f9f5ff 0%,#fef9ee 100%);box-shadow:var(--shadow);padding:1rem;transition:transform .2s,box-shadow .2s,border-color .2s;text-align:center;color:var(--text)}
+    .ad-ph:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(124,58,237,.14);border-color:rgba(124,58,237,.28)}
+    .ad-ph-h{min-height:122px;flex-direction:column;gap:.32rem}
+    .ad-kicker{font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+    .ad-icon{font-size:1.5rem;line-height:1}
+    .ad-label{font-family:'Playfair Display',serif;font-size:1.08rem;font-weight:700;line-height:1.25}
+    .ad-copy{font-size:.82rem;line-height:1.6;color:var(--muted);max-width:560px}
+    .ad-cta{display:inline-flex;align-items:center;justify-content:center;margin-top:.2rem;padding:.45rem .95rem;border-radius:999px;background:var(--accent);color:#fff;font-size:.76rem;font-weight:700}
+    .ad-link{color:var(--accent);text-decoration:none;font-weight:600}
+    .ad-link:hover{text-decoration:underline}
+    @media(max-width:600px){
+      .ad-ph-h{min-height:110px;padding:.9rem}
+      .ad-label{font-size:.98rem}
+      .ad-copy{font-size:.78rem}
+    }
 
     .sign-hero{text-align:center;padding:1.5rem 0}
     .sign-hero .glyph{font-size:3.5rem;display:block;margin-bottom:.3rem}
@@ -87,6 +103,16 @@
     <span class="tag">🎨 Rojo</span>
   </div>
 
+<div class="ad-h">
+  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui">
+    <span class="ad-kicker">Espacio publicitario premium</span>
+    <span class="ad-icon">⭐</span>
+    <span class="ad-label">¿Quieres visibilidad diaria en una audiencia recurrente?</span>
+    <span class="ad-copy">Aparece junto al horoscopo de amor, trabajo y salud de cada signo.</span>
+    <span class="ad-cta">Ver espacios y tarifas -></span>
+  </a>
+</div>
+
   <div class="panel">
     <h2>💕 Amor</h2>
     <p>Hoy las energías invitan a la reflexión en pareja. No es momento de grandes decisiones amorosas sino de escuchar y comprender. La paciencia será tu mejor aliada.</p>
@@ -106,6 +132,16 @@
     <h2>🌟 Consejo del día para Escorpio</h2>
     <p>Hoy tu elemento Agua amplifica tu intuición: escucha a tu cuerpo y a tus emociones. Hoy las respuestas están dentro de ti.</p>
   </div>
+
+<div class="ad-h">
+  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui">
+    <span class="ad-kicker">Espacio publicitario premium</span>
+    <span class="ad-icon">🌙</span>
+    <span class="ad-label">Patrocina un signo o el trafico diario del sitio</span>
+    <span class="ad-copy">Ideal para tarot, astrologia, bienestar y ecommerce espiritual con repeticion de impacto.</span>
+    <span class="ad-cta">Reservar un banner premium -></span>
+  </a>
+</div>
 
   <div class="nav-signs">
     <a href="/libra">♎ Libra</a>
@@ -128,6 +164,7 @@
 <footer>
   <p>© 2026 Horóscopo de Hoy — Actualizado diariamente</p>
   <p><a href="/privacy">Privacidad</a> · <a href="/terms">Términos</a></p>
+  <p style="margin-top:.6rem"><a href="/publicidad" class="ad-link">✦ Quiero anunciarme en Horóscopo de Hoy: ver espacios y tarifas</a></p>
   <div class="network">Nuestras herramientas: <a href="https://carta-astral-gratis.es/" rel="noopener">Carta Astral Gratis</a> · <a href="https://compatibilidad-signos.es/" rel="noopener">Compatibilidad de Signos</a> · <a href="https://tarot-del-dia.es/" rel="noopener">Tarot del Día</a> · <a href="https://calcular-numerologia.es/" rel="noopener">Calcular Numerología</a></div>
 </footer>
 </div>
