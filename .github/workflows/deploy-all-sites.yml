@@ -34,6 +34,7 @@ jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
+      has_sites: ${{ steps.set-matrix.outputs.has_sites }}
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v6
@@ -42,26 +43,34 @@ jobs:
 
       - id: set-matrix
         run: |
-          if [ "${{ inputs.site }}" = "all" ] || [ -z "${{ inputs.site }}" ]; then
-            # Detect which sites changed
-            CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "sites/")
+          ALL_SITES=(carta-astral compatibilidad-signos tarot-del-dia calcular-numerologia horoscopo-de-hoy)
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ inputs.site }}" = "all" ] || [ -z "${{ inputs.site }}" ]; then
+              SITES=("${ALL_SITES[@]}")
+            else
+              SITES=("${{ inputs.site }}")
+            fi
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || true)
             SITES=()
-            for site in carta-astral compatibilidad-signos tarot-del-dia calcular-numerologia horoscopo-de-hoy; do
+            for site in "${ALL_SITES[@]}"; do
               if echo "$CHANGED" | grep -q "sites/${site}/" || echo "$CHANGED" | grep -q "shared/"; then
                 SITES+=("$site")
               fi
             done
-            # If nothing detected (first push, etc.), deploy all
-            if [ ${#SITES[@]} -eq 0 ]; then
-              SITES=(carta-astral compatibilidad-signos tarot-del-dia calcular-numerologia horoscopo-de-hoy)
-            fi
+          fi
+
+          if [ ${#SITES[@]} -eq 0 ]; then
+            echo "has_sites=false" >> "$GITHUB_OUTPUT"
           else
-            SITES=("${{ inputs.site }}")
+            echo "has_sites=true" >> "$GITHUB_OUTPUT"
           fi
           echo "matrix=$(printf '%s\n' "${SITES[@]}" | jq -R . | jq -sc .)" >> "$GITHUB_OUTPUT"
 
   deploy:
     needs: detect-changes
+    if: needs.detect-changes.outputs.has_sites == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -173,6 +182,7 @@ jobs:
     needs:
       - detect-changes
       - deploy
+    if: needs.detect-changes.outputs.has_sites == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
