@@ -18,10 +18,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: "\U0001F4E5 Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "\u2699\uFE0F Setup Node"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 

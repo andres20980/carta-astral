@@ -36,7 +36,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 2
 
@@ -69,10 +69,10 @@ jobs:
         site: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: "⚙️ Setup Node"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
@@ -142,13 +142,20 @@ jobs:
           fi
 
       - name: "🔥 Deploy ${{ matrix.site }}"
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ steps.config.outputs.firebaseServiceAccount }}
-          projectId: ${{ steps.config.outputs.projectId }}
-          channelId: live
-          entryPoint: sites/${{ matrix.site }}
+        shell: bash
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ steps.config.outputs.firebaseServiceAccount }}
+          FIREBASE_PROJECT_ID: ${{ steps.config.outputs.projectId }}
+        run: |
+          set -euo pipefail
+
+          creds_file="$RUNNER_TEMP/firebase-${{ matrix.site }}.json"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$creds_file"
+          chmod 600 "$creds_file"
+
+          export GOOGLE_APPLICATION_CREDENTIALS="$creds_file"
+          cd "sites/${{ matrix.site }}"
+          npx firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT_ID" --non-interactive
 
       - name: "🔔 Ping Sitemap"
         run: |
@@ -167,7 +174,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: "📊 Lighthouse (all sites)"
         uses: treosh/lighthouse-ci-action@v12
