@@ -41,8 +41,30 @@ jobs:
           failures=0
           report=""
 
+          fetch() {
+            curl -L -sS \
+              --retry 3 \
+              --retry-delay 2 \
+              --retry-all-errors \
+              --connect-timeout 10 \
+              --max-time 30 \
+              --user-agent "astro-cluster-seo-smoke/1.0" \
+              "$1"
+          }
+
+          http_code() {
+            curl -L -sS -o /dev/null -w "%{http_code}" \
+              --retry 3 \
+              --retry-delay 2 \
+              --retry-all-errors \
+              --connect-timeout 10 \
+              --max-time 30 \
+              --user-agent "astro-cluster-seo-smoke/1.0" \
+              "$1" || echo "000"
+          }
+
           for url in "$SITE/robots.txt" "$SITE/sitemap.xml" "$SITE/ads.txt" "$SITE/"; do
-            code=$(curl -L -s -o /dev/null -w "%{http_code}" --max-time 20 "$url" || echo "000")
+            code=$(http_code "$url")
             if [[ "$code" == "200" ]]; then
               report+="- ✅ ${url} -> ${code}"$'\n'
             else
@@ -52,7 +74,7 @@ jobs:
           done
 
           # Check robots.txt declares Sitemap
-          robots_content=$(curl -L -s --max-time 20 "$SITE/robots.txt" || true)
+          robots_content=$(fetch "$SITE/robots.txt" || true)
           if echo "$robots_content" | grep -iq 'Sitemap:'; then
             report+="- ✅ robots.txt declares Sitemap"$'\n'
           else
@@ -61,7 +83,7 @@ jobs:
           fi
 
           # Check ads.txt
-          ads_content=$(curl -L -s --max-time 20 "$SITE/ads.txt" || true)
+          ads_content=$(fetch "$SITE/ads.txt" || true)
           if echo "$ads_content" | grep -q 'pub-9368517395014039'; then
             report+="- ✅ ads.txt OK"$'\n'
           else
@@ -71,7 +93,7 @@ jobs:
 
           # Legal pages (AdSense requirement)
           for page in "/privacy" "/terms"; do
-            code=$(curl -L -s -o /dev/null -w "%{http_code}" --max-time 20 "$SITE$page" || echo "000")
+            code=$(http_code "$SITE$page")
             if [[ "$code" == "200" ]]; then
               report+="- ✅ ${page} OK"$'\n'
             else
@@ -81,29 +103,38 @@ jobs:
           done
 
           # SEO meta checks on index
-          html=$(curl -L -s --max-time 20 "$SITE/" || true)
-          if echo "$html" | grep -q '<title>'; then
-            report+="- ✅ <title> present"$'\n'
+          home_code=$(http_code "$SITE/")
+          if [[ "$home_code" == "200" ]]; then
+            html=$(fetch "$SITE/" || true)
+
+            if echo "$html" | grep -Eiq '<title[^>]*>[^<]'; then
+              report+="- ✅ <title> present"$'\n'
+            else
+              report+="- ❌ <title> missing"$'\n'
+              failures=$((failures + 1))
+            fi
+
+            if echo "$html" | grep -Eiq "<meta[^>]+name=['\"]description['\"][^>]*content=['\"][^'\"]+['\"]|<meta[^>]+content=['\"][^'\"]+['\"][^>]*name=['\"]description['\"]"; then
+              report+="- ✅ meta description present"$'\n'
+            else
+              report+="- ❌ meta description missing"$'\n'
+              failures=$((failures + 1))
+            fi
+
+            if echo "$html" | grep -Eiq "<link[^>]+rel=['\"]canonical['\"][^>]*href=['\"]https?://|<link[^>]+href=['\"]https?://[^'\"]+['\"][^>]*rel=['\"]canonical['\"]"; then
+              report+="- ✅ canonical present"$'\n'
+            else
+              report+="- ❌ canonical missing"$'\n'
+              failures=$((failures + 1))
+            fi
+
+            if echo "$html" | grep -Eiq "type=['\"]application/ld\\+json['\"]"; then
+              report+="- ✅ structured data present"$'\n'
+            else
+              report+="- ⚠️ no structured data"$'\n'
+            fi
           else
-            report+="- ❌ <title> missing"$'\n'
-            failures=$((failures + 1))
-          fi
-          if echo "$html" | grep -q 'meta name="description"'; then
-            report+="- ✅ meta description present"$'\n'
-          else
-            report+="- ❌ meta description missing"$'\n'
-            failures=$((failures + 1))
-          fi
-          if echo "$html" | grep -q 'rel="canonical"'; then
-            report+="- ✅ canonical present"$'\n'
-          else
-            report+="- ❌ canonical missing"$'\n'
-            failures=$((failures + 1))
-          fi
-          if echo "$html" | grep -q 'application/ld+json'; then
-            report+="- ✅ structured data present"$'\n'
-          else
-            report+="- ⚠️ no structured data"$'\n'
+            report+="- ⚠️ skipped SEO meta checks because homepage returned ${home_code}"$'\n'
           fi
 
           echo "failures=$failures" >> "$GITHUB_OUTPUT"
@@ -111,15 +142,72 @@ jobs:
           echo "$report" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
-      - name: "📋 Create issue if failures"
-        if: steps.smoke.outputs.failures != '0'
+      - name: "📋 Sync issue state"
         uses: actions/github-script@v7
         with:
           script: |
-            await github.rest.issues.create({
+            const domain = '${{ matrix.domain }}';
+            const titlePrefix = `🚨 SEO Smoke fail: ${domain}`;
+            const title = titlePrefix;
+            const body = `## SEO Tech Smoke — ${domain}\n\n${{ steps.smoke.outputs.report }}\n\n**Failures**: ${{ steps.smoke.outputs.failures }}`;
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `🚨 SEO Smoke fail: ${{ matrix.domain }} (${new Date().toISOString().slice(0,10)})`,
-              body: `## SEO Tech Smoke — ${{ matrix.domain }}\n\n${{ steps.smoke.outputs.report }}\n\n**Failures**: ${{ steps.smoke.outputs.failures }}`,
-              labels: ['seo', 'automated']
+              state: 'open',
+              labels: 'seo,automated',
+              per_page: 100
             });
+
+            const matching = issues.filter(issue => issue.title.startsWith(titlePrefix));
+            const primary = matching[0];
+
+            if ('${{ steps.smoke.outputs.failures }}' !== '0') {
+              if (primary) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: primary.number,
+                  title,
+                  body
+                });
+              } else {
+                const created = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                  labels: ['seo', 'automated']
+                });
+                matching.unshift(created.data);
+              }
+
+              for (const duplicate of matching.slice(1)) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  body: `Superseded by #${matching[0].number}. Keeping one canonical SEO smoke issue per domain.`
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  state: 'closed'
+                });
+              }
+            } else {
+              for (const issue of matching) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: `SEO smoke passed on ${new Date().toISOString().slice(0, 10)}. Closing this automated report.`
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  state: 'closed'
+                });
+              }
+            }

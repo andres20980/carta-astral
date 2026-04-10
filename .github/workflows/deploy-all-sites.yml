@@ -5,8 +5,10 @@ on:
     branches: [master]
     paths:
       - 'sites/*/public/**'
+      - 'sites/*/scripts/**'
       - 'sites/*/firebase.json'
       - 'shared/**'
+      - '.github/workflows/deploy-all-sites.yml'
   workflow_dispatch:
     inputs:
       site:
@@ -74,26 +76,77 @@ jobs:
         with:
           node-version: '22'
 
+      - name: "🧭 Resolve project and credentials"
+        id: config
+        shell: bash
+        env:
+          FIREBASE_SA_CARTA_ASTRAL: ${{ secrets.FIREBASE_SA_CARTA_ASTRAL }}
+          FIREBASE_SA_COMPATIBILIDAD_SIGNOS: ${{ secrets.FIREBASE_SA_COMPATIBILIDAD_SIGNOS }}
+          FIREBASE_SA_TAROT_DEL_DIA: ${{ secrets.FIREBASE_SA_TAROT_DEL_DIA }}
+          FIREBASE_SA_CALCULAR_NUMEROLOGIA: ${{ secrets.FIREBASE_SA_CALCULAR_NUMEROLOGIA }}
+          FIREBASE_SA_HOROSCOPO_DE_HOY: ${{ secrets.FIREBASE_SA_HOROSCOPO_DE_HOY }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          case "${{ matrix.site }}" in
+            carta-astral)
+              project_id="carta-astral-f4ab9"
+              service_account="$FIREBASE_SA_CARTA_ASTRAL"
+              ;;
+            compatibilidad-signos)
+              project_id="compat-signos-es"
+              service_account="$FIREBASE_SA_COMPATIBILIDAD_SIGNOS"
+              ;;
+            tarot-del-dia)
+              project_id="tarot-del-dia-es"
+              service_account="$FIREBASE_SA_TAROT_DEL_DIA"
+              ;;
+            calcular-numerologia)
+              project_id="calc-numerologia-es"
+              service_account="$FIREBASE_SA_CALCULAR_NUMEROLOGIA"
+              ;;
+            horoscopo-de-hoy)
+              project_id="horoscopo-hoy-es"
+              service_account="${FIREBASE_SA_HOROSCOPO_DE_HOY:-$FIREBASE_SERVICE_ACCOUNT}"
+              ;;
+            *)
+              echo "Unknown site: ${{ matrix.site }}" >&2
+              exit 1
+              ;;
+          esac
+
+          if [ -z "$service_account" ]; then
+            echo "Missing Firebase service account secret for ${{ matrix.site }}" >&2
+            exit 1
+          fi
+
+          echo "projectId=$project_id" >> "$GITHUB_OUTPUT"
+          {
+            echo "firebaseServiceAccount<<EOF"
+            echo "$service_account"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: "🏗️ Generate static site if needed"
+        shell: bash
+        run: |
+          site_dir="sites/${{ matrix.site }}"
+          script_path="$site_dir/scripts/gen-pages.sh"
+
+          if [ -f "$script_path" ]; then
+            bash "$script_path"
+          fi
+
+          if [ ! -d "$site_dir/public" ]; then
+            echo "Expected $site_dir/public to exist before deploy" >&2
+            exit 1
+          fi
+
       - name: "🔥 Deploy ${{ matrix.site }}"
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: >-
-            ${{
-              matrix.site == 'carta-astral'             && secrets.FIREBASE_SA_CARTA_ASTRAL ||
-              matrix.site == 'compatibilidad-signos'     && secrets.FIREBASE_SA_COMPATIBILIDAD_SIGNOS ||
-              matrix.site == 'tarot-del-dia'             && secrets.FIREBASE_SA_TAROT_DEL_DIA ||
-              matrix.site == 'calcular-numerologia'      && secrets.FIREBASE_SA_CALCULAR_NUMEROLOGIA ||
-              secrets.FIREBASE_SA_HOROSCOPO_DE_HOY
-            }}
-          projectId: >-
-            ${{
-              matrix.site == 'carta-astral'             && 'carta-astral-f4ab9' ||
-              matrix.site == 'compatibilidad-signos'     && 'compat-signos-es' ||
-              matrix.site == 'tarot-del-dia'             && 'tarot-del-dia-es' ||
-              matrix.site == 'calcular-numerologia'      && 'calc-numerologia-es' ||
-              'horoscopo-hoy-es'
-            }}
+          firebaseServiceAccount: ${{ steps.config.outputs.firebaseServiceAccount }}
+          projectId: ${{ steps.config.outputs.projectId }}
           channelId: live
           entryPoint: sites/${{ matrix.site }}
 
