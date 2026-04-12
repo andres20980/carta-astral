@@ -185,6 +185,13 @@ jobs:
               report+="- ❌ homepage missing H1"$'\n'
               failures=$((failures + 1))
             fi
+
+            if echo "$html_checks" | jq -e '.internal_copy_leaked | not' >/dev/null; then
+              report+="- ✅ no internal/meta copy leaked on homepage"$'\n'
+            else
+              report+="- ❌ internal/meta copy leaked on homepage"$'\n'
+              failures=$((failures + 1))
+            fi
           else
             report+="- ⚠️ skipped SEO meta checks because homepage returned ${home_code}"$'\n'
           fi

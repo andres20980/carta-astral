@@ -8,6 +8,15 @@ from pathlib import Path
 
 DOMAIN = os.environ["SEO_SMOKE_DOMAIN"]
 html = Path(sys.argv[1]).read_text(encoding="utf-8", errors="ignore")
+html_lower = html.lower()
+
+INTERNAL_COPY_MARKERS = [
+    "objetivo cluster-first",
+    "si el usuario ya ha mostrado intencion",
+    "no distraer",
+    "oportunidades de monetizacion",
+    "prolonga la sesion",
+]
 
 
 class PageParser(HTMLParser):
@@ -82,6 +91,7 @@ results = {
     "adsense_script_present": parser.has_adsense_script,
     "homepage_not_noindex": "noindex" not in meta_robots,
     "h1_present": bool(h1_text),
+    "internal_copy_leaked": any(marker in html_lower for marker in INTERNAL_COPY_MARKERS),
 }
 
 print(json.dumps(results))

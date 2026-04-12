@@ -216,40 +216,40 @@ EOF
 
 cluster_recirculation_block() {
   local current="$1"
-  local heading="Siguiente mejor paso dentro del cluster"
-  local intro="Si el usuario ya ha mostrado intencion en esta herramienta, el siguiente enlace debe profundizar o ampliar el problema, no distraer."
+  local heading="Tambien te puede interesar"
+  local intro="Si quieres seguir profundizando, aqui tienes otras herramientas relacionadas para conocer mejor tu situacion."
   local cards=""
 
   case "$current" in
     carta-astral)
-      cards+=$(cluster_card "compatibilidad-signos" "Relaciones" "Compatibilidad de Signos" "Usa tu carta natal como punto de partida y contrasta la afinidad entre dos signos con una landing concreta y muy enlazable." "Ver combinaciones ->")
-      cards+=$(cluster_card "tarot-del-dia" "Decision inmediata" "Tarot del Dia" "Cuando el usuario busca una respuesta rapida despues de la carta, la tirada de 3 cartas captura esa intencion y prolonga la sesion." "Hacer una tirada ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Recurrencia diaria" "Horoscopo de Hoy" "Convierte una visita puntual en habito diario con un producto ligero y recurrente por signo." "Leer el horoscopo ->")
+      cards+=$(cluster_card "compatibilidad-signos" "Relaciones" "Compatibilidad de Signos" "Descubre como encajan dos signos y consulta combinaciones concretas en amor, amistad y convivencia." "Ver combinaciones ->")
+      cards+=$(cluster_card "tarot-del-dia" "Guia rapida" "Tarot del Dia" "Haz una tirada breve si buscas una orientacion inmediata para el momento que estas viviendo." "Hacer una tirada ->")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Prediccion diaria" "Horoscopo de Hoy" "Consulta tu energia del dia en amor, trabajo y bienestar segun tu signo." "Leer el horoscopo ->")
       ;;
     compatibilidad-signos)
-      cards+=$(cluster_card "carta-astral" "Profundizar" "Carta Astral Gratis" "Si la compatibilidad interesa de verdad, el siguiente paso natural es ver Venus, Luna, Marte y ascendente con fecha, hora y lugar exactos." "Calcular carta astral ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Seguimiento" "Horoscopo de Hoy" "Despues de leer una combinacion, el horoscopo diario mantiene al usuario activo y genera recurrencia sobre amor, trabajo y salud." "Ver predicciones ->")
-      cards+=$(cluster_card "tarot-del-dia" "Respuesta rapida" "Tarot del Dia" "Ideal para usuarios con duda emocional inmediata: cambia de comparativa racional a lectura breve con contexto simbolico." "Tirar las cartas ->")
+      cards+=$(cluster_card "carta-astral" "Profundizar" "Carta Astral Gratis" "Completa la compatibilidad con Venus, Luna, Marte y ascendente usando tus datos de nacimiento." "Calcular carta astral ->")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Seguimiento" "Horoscopo de Hoy" "Mira el clima del dia para tu signo y suma una lectura rapida sobre amor, trabajo y salud." "Ver predicciones ->")
+      cards+=$(cluster_card "tarot-del-dia" "Respuesta rapida" "Tarot del Dia" "Si necesitas una señal inmediata, haz una tirada corta con una lectura simbolica facil de entender." "Tirar las cartas ->")
       ;;
     tarot-del-dia)
-      cards+=$(cluster_card "carta-astral" "Capa profunda" "Carta Astral Gratis" "La tirada resuelve el momento; la carta astral da contexto estructural sobre personalidad, ciclos y relaciones." "Ir a mi carta ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Rutina" "Horoscopo de Hoy" "Excelente transicion para convertir una consulta puntual en un habito diario de lectura esoterica." "Leer mi signo ->")
-      cards+=$(cluster_card "compatibilidad-signos" "Amor y pareja" "Compatibilidad de Signos" "Cuando la tirada habla de relaciones, el usuario suele querer validar la afinidad con una persona concreta." "Comparar signos ->")
+      cards+=$(cluster_card "carta-astral" "Capa profunda" "Carta Astral Gratis" "Amplia la lectura del tarot con una vision mas completa de tu personalidad, ciclos y relaciones." "Ir a mi carta ->")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Rutina" "Horoscopo de Hoy" "Consulta tu signo para completar la lectura con una prediccion breve del dia." "Leer mi signo ->")
+      cards+=$(cluster_card "compatibilidad-signos" "Amor y pareja" "Compatibilidad de Signos" "Compara dos signos si tu tirada toca temas de relacion, afinidad o decisiones en pareja." "Comparar signos ->")
       ;;
     calcular-numerologia)
-      cards+=$(cluster_card "carta-astral" "Perfil completo" "Carta Astral Gratis" "La numerologia aporta patron; la carta natal completa el mapa con planetas, casas y ascendente." "Completar analisis ->")
-      cards+=$(cluster_card "compatibilidad-signos" "Vinculos" "Compatibilidad de Signos" "Si el numero de vida despierta interes relacional, la compatibilidad zodiacal es la siguiente capa de comparacion." "Explorar afinidad ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Recurrencia" "Horoscopo de Hoy" "Despues del calculo, ofrece un contenido ligero y diario para mantener vivo el retorno al cluster." "Ver hoy ->")
+      cards+=$(cluster_card "carta-astral" "Perfil completo" "Carta Astral Gratis" "Combina tu numero de vida con planetas, casas y ascendente para obtener una lectura mas completa." "Completar analisis ->")
+      cards+=$(cluster_card "compatibilidad-signos" "Vinculos" "Compatibilidad de Signos" "Explora afinidades entre signos si quieres llevar la interpretacion a relaciones y conexiones personales." "Explorar afinidad ->")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Prediccion diaria" "Horoscopo de Hoy" "Añade una lectura ligera del dia para complementar tu perfil personal." "Ver hoy ->")
       ;;
     horoscopo-de-hoy)
-      cards+=$(cluster_card "carta-astral" "Personalizacion" "Carta Astral Gratis" "El horoscopo diario es general; la carta natal convierte esa curiosidad en analisis personal y de alto valor." "Calcular ahora ->")
-      cards+=$(cluster_card "compatibilidad-signos" "Relaciones" "Compatibilidad de Signos" "Muy buena continuacion cuando el usuario viene por amor o quiere entender mejor una relacion concreta." "Ver compatibilidad ->")
-      cards+=$(cluster_card "tarot-del-dia" "Consulta breve" "Tarot del Dia" "El tarot encaja cuando el usuario quiere una señal inmediata despues de leer su prediccion del dia." "Abrir tirada ->")
+      cards+=$(cluster_card "carta-astral" "Personalizado" "Carta Astral Gratis" "Pasa de una prediccion general a una lectura personalizada con fecha, hora y lugar de nacimiento." "Calcular ahora ->")
+      cards+=$(cluster_card "compatibilidad-signos" "Relaciones" "Compatibilidad de Signos" "Consulta la afinidad entre dos signos si quieres entender mejor una relacion o una persona concreta." "Ver compatibilidad ->")
+      cards+=$(cluster_card "tarot-del-dia" "Consulta breve" "Tarot del Dia" "Haz una tirada rapida si buscas una señal adicional para tomar una decision hoy." "Abrir tirada ->")
       ;;
     *)
-      cards+=$(cluster_card "carta-astral" "Cluster" "Carta Astral Gratis" "Herramienta principal del cluster para convertir interes general en analisis completo." "Abrir ->")
-      cards+=$(cluster_card "compatibilidad-signos" "Cluster" "Compatibilidad de Signos" "Landing long-tail para mantener profundidad de navegacion." "Abrir ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Cluster" "Horoscopo de Hoy" "Contenido recurrente para capturar retorno diario." "Abrir ->")
+      cards+=$(cluster_card "carta-astral" "Astrologia" "Carta Astral Gratis" "Descubre tu carta natal completa con una interpretacion personalizada." "Abrir ->")
+      cards+=$(cluster_card "compatibilidad-signos" "Afinidad" "Compatibilidad de Signos" "Compara dos signos y explora como encajan en distintos planos." "Abrir ->")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Prediccion diaria" "Horoscopo de Hoy" "Lee tu horoscopo del dia y consulta la energia de tu signo." "Abrir ->")
       ;;
   esac
 
@@ -261,7 +261,7 @@ cluster_recirculation_block() {
   <div class="cluster-grid">
     ${cards}
   </div>
-  <p class="cluster-note">Objetivo cluster-first: mas profundidad de sesion, mas paginas vistas por usuario y mas oportunidades de monetizacion directa y remanente.</p>
+  <p class="cluster-note">Explora otras herramientas del grupo si quieres ampliar la lectura desde otro angulo.</p>
 </section>
 EOF
 }
