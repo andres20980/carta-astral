@@ -16,6 +16,9 @@ INTERNAL_COPY_MARKERS = [
     "no distraer",
     "oportunidades de monetizacion",
     "prolonga la sesion",
+    "consumo de cluster",
+    "desde aqui conviene empujar",
+    "alta atencion del usuario",
 ]
 
 

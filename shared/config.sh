@@ -255,7 +255,7 @@ cluster_recirculation_block() {
 
   cat <<EOF
 <section class="cluster-journey">
-  <div class="cluster-kicker">✦ Suite esoterica conectada</div>
+  <div class="cluster-kicker">✦ Más herramientas para ti</div>
   <h2>${heading}</h2>
   <p>${intro}</p>
   <div class="cluster-grid">

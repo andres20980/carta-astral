@@ -365,43 +365,12 @@
 
   <!-- MAIN -->
   <main class="main-col">
-
-    <!-- SECCIÓN: Qué es -->
-    <section aria-labelledby="que-es-heading">
+    <section aria-labelledby="empezar-heading">
       <div class="panel">
-        <h2 id="que-es-heading">¿Qué es una Carta Astral?</h2>
-        <p style="line-height:1.7;color:var(--muted);font-size:.9rem">
-          La <strong>carta astral</strong> — también llamada <strong>carta natal</strong> o <strong>mapa astral</strong> — es la fotografía del cielo
-          en el momento exacto de tu nacimiento. Muestra la posición del Sol, la Luna y los planetas
-          en los doce signos del zodíaco y en las doce casas astrológicas.
-          Cada astro refleja una energía: el Sol es tu identidad, la Luna tus emociones,
-          Mercurio tu mente, Venus cómo amas, y Marte tu impulso y forma de actuar.
-          Los planetas lentos — Júpiter, Saturno, Urano, Neptuno y Plutón — marcan
-          las grandes lecciones generacionales, mientras que Quirón señala tu herida y sanación
-          y el Nodo Norte tu propósito de vida.
-        </p>
-      </div>
-    </section>
-
-    <!-- SECCIÓN: Cómo hacerla -->
-    <section aria-labelledby="como-hacerla-heading">
-      <div class="panel">
-        <h2 id="como-hacerla-heading">¿Cómo hacer tu carta astral gratis?</h2>
-        <p style="line-height:1.7;color:var(--muted);font-size:.9rem;margin-bottom:.8rem">
-          Solo necesitas tres datos:
-        </p>
-        <ol style="line-height:1.8;color:var(--muted);font-size:.9rem;padding-left:1.2rem">
-          <li><strong>Fecha de nacimiento</strong> — día, mes y año exacto.</li>
-          <li><strong>Hora de nacimiento</strong> — cuanto más precisa, mejor. La hora determina tu ascendente y las casas astrológicas. Puedes obtenerla de tu certificado literal de nacimiento.</li>
-          <li><strong>Lugar de nacimiento</strong> — la ciudad o pueblo donde naciste.</li>
-        </ol>
-        <p style="line-height:1.7;color:var(--muted);font-size:.9rem;margin-top:.8rem">
-          Con esos datos, nuestra calculadora genera al instante los planetas en signos y casas,
-          tu <strong>ascendente</strong>, tu <strong>medio cielo</strong> y todos los <strong>aspectos natales</strong>.
-          El cálculo usa la Swiss Ephemeris y el sistema de casas Placidus — la misma precisión que usan los astrólogos profesionales.
-        </p>
-        <p style="text-align:center;margin-top:1rem">
-          <strong style="color:var(--accent);font-size:.95rem">👇 Introduce tus datos a continuación y obtén tu carta al instante</strong>
+        <h2 id="empezar-heading">Empieza ahora</h2>
+        <p style="line-height:1.7;color:var(--muted);font-size:.92rem">
+          La forma más rápida es rellenar <strong>fecha</strong>, <strong>hora</strong> y <strong>lugar de nacimiento</strong>.
+          Si ya tienes el certificado literal en PDF, también puedes subirlo para extraer los datos automáticamente.
         </p>
       </div>
     </section>
@@ -418,23 +387,24 @@
       <!-- STEP 1 -->
       <div id="s1">
         <div class="panel">
-          <h2>¿Cómo quieres introducir tus datos?</h2>
+          <h2>Introduce tus datos de nacimiento</h2>
+          <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem">Puedes empezar manualmente ahora mismo. Si prefieres, también admitimos certificado literal en PDF.</p>
           <div class="opt-cards">
+            <div class="opt-card sel" id="optMan" onclick="selOpt('manual')">
+              <div class="ic">✏️</div>
+              <div class="tl">Rellenar manualmente</div>
+              <div class="ds">Fecha, hora y lugar de nacimiento — cuanto más exacto el lugar, mejor el cálculo.</div>
+            </div>
             <div class="opt-card" id="optPdf" onclick="selOpt('pdf')">
               <div class="ic">📄</div>
               <div class="tl">Subir certificado de nacimiento</div>
               <div class="ds">Extraemos automáticamente la fecha, hora y lugar de nacimiento del PDF.</div>
               <a href="#" class="hl" onclick="event.stopPropagation();openModal()">¿Cómo descargarlo?</a>
             </div>
-            <div class="opt-card" id="optMan" onclick="selOpt('manual')">
-              <div class="ic">✏️</div>
-              <div class="tl">Introducir datos manualmente</div>
-              <div class="ds">Fecha, hora y lugar de nacimiento — cuanto más exacto el lugar, mejor el cálculo.</div>
-            </div>
           </div>
         </div>
         <div class="panel hidden" id="pdfSec">
-          <h2>Sube tu certificado</h2>
+          <h2>Sube tu certificado si lo tienes</h2>
           <div class="upload" id="dropzone">
             <div class="ic">📄</div>
             <p><strong>Arrastra el PDF aquí</strong> o haz clic para seleccionar</p>
@@ -444,7 +414,7 @@
           <div class="alert alert-ok hidden" id="upOk">✓ Datos extraídos</div>
           <div class="alert alert-err hidden" id="upErr"></div>
         </div>
-        <div class="panel hidden" id="formSec">
+        <div class="panel" id="formSec">
           <h2>Datos de nacimiento</h2>
           <div class="fg">
             <div class="fgroup"><label for="fdate">Fecha de nacimiento *</label><input type="date" id="fdate"></div>
@@ -471,7 +441,7 @@
             </div>
           </div>
           <div class="acts">
-            <button class="btn btn-s" onclick="goBack()">← Atrás</button>
+            <button class="btn btn-s" type="button" onclick="selOpt('pdf')">Tengo el certificado en PDF</button>
             <button class="btn btn-p" id="btnN1" disabled onclick="goNext()">Siguiente →</button>
           </div>
         </div>
@@ -517,6 +487,33 @@
         </a>
       </div>
     </div>
+    </section>
+
+    <section aria-labelledby="que-es-heading">
+      <div class="panel">
+        <h2 id="que-es-heading">¿Qué es una carta astral?</h2>
+        <p style="line-height:1.7;color:var(--muted);font-size:.9rem">
+          La <strong>carta astral</strong> — también llamada <strong>carta natal</strong> o <strong>mapa astral</strong> — es la fotografía del cielo
+          en el momento exacto de tu nacimiento. Muestra la posición del Sol, la Luna y los planetas
+          en los doce signos del zodíaco y en las doce casas astrológicas.
+          Cada astro refleja una energía: el Sol habla de identidad, la Luna de emociones,
+          Mercurio de la mente, Venus de la forma de amar y Marte del impulso y la acción.
+        </p>
+      </div>
+    </section>
+
+    <section aria-labelledby="como-hacerla-heading">
+      <div class="panel">
+        <h2 id="como-hacerla-heading">¿Qué necesitas para calcularla bien?</h2>
+        <ol style="line-height:1.8;color:var(--muted);font-size:.9rem;padding-left:1.2rem">
+          <li><strong>Fecha de nacimiento</strong> — día, mes y año exacto.</li>
+          <li><strong>Hora de nacimiento</strong> — cuanto más precisa, mejor, porque define el ascendente y las casas.</li>
+          <li><strong>Lugar de nacimiento</strong> — ciudad, pueblo o, mejor aún, hospital o ubicación exacta.</li>
+        </ol>
+        <p style="line-height:1.7;color:var(--muted);font-size:.9rem;margin-top:.8rem">
+          El cálculo usa <strong>Swiss Ephemeris</strong> y el sistema de casas <strong>Placidus</strong>, el estándar que emplean muchos astrólogos profesionales.
+        </p>
+      </div>
     </section>
 
       <!-- SECCIÓN: Las 12 Casas -->
@@ -618,32 +615,32 @@
 </div>
 
 <section class="cluster-suite">
-  <div class="suite-kicker">✦ Suite esoterica conectada</div>
-  <h2>Despues de tu carta, el siguiente paso correcto depende de tu intencion</h2>
-  <p>La carta astral resuelve el mapa completo. Desde aqui conviene empujar al usuario a la siguiente herramienta mas util para ampliar la sesion, aumentar paginas vistas y convertir una visita aislada en consumo de cluster.</p>
+  <div class="suite-kicker">✦ Más herramientas para ti</div>
+  <h2>Después de tu carta, puedes seguir profundizando</h2>
+  <p>Si te apetece seguir explorando, aquí tienes herramientas complementarias para relaciones, predicciones diarias, tarot y numerología.</p>
   <div class="suite-grid">
     <a class="suite-card" href="https://compatibilidad-signos.es/">
       <span class="suite-label">Relaciones</span>
       <span class="suite-title">Compatibilidad de Signos</span>
-      <span class="suite-copy">Perfecta para validar afinidad, pareja y dinamicas amorosas con una landing concreta y muy buscada.</span>
+      <span class="suite-copy">Comprueba la afinidad entre dos signos y entiende mejor la dinámica de pareja, atracción y convivencia.</span>
       <span class="suite-cta">Explorar compatibilidad -></span>
     </a>
     <a class="suite-card" href="https://tarot-del-dia.es/">
-      <span class="suite-label">Respuesta rapida</span>
+      <span class="suite-label">Respuesta rápida</span>
       <span class="suite-title">Tarot del Dia</span>
-      <span class="suite-copy">Convierte curiosidad astrologica en una consulta breve y accionable con alta atencion del usuario.</span>
+      <span class="suite-copy">Haz una tirada breve si quieres una señal simbólica inmediata para el momento que estás viviendo.</span>
       <span class="suite-cta">Hacer una tirada -></span>
     </a>
     <a class="suite-card" href="https://horoscopo-de-hoy.es/">
       <span class="suite-label">Recurrencia</span>
       <span class="suite-title">Horoscopo de Hoy</span>
-      <span class="suite-copy">Crea habito diario y retorno al cluster con un producto ligero, repetible y facil de consumir.</span>
+      <span class="suite-copy">Consulta tu predicción diaria para amor, trabajo y energía general según tu signo.</span>
       <span class="suite-cta">Leer predicciones -></span>
     </a>
     <a class="suite-card" href="https://calcular-numerologia.es/">
       <span class="suite-label">Autoconocimiento</span>
       <span class="suite-title">Calcular Numerologia</span>
-      <span class="suite-copy">Añade una capa simbolica complementaria con calculo inmediato y buena profundidad de lectura.</span>
+      <span class="suite-copy">Añade otra capa de lectura personal calculando tu número de vida y su significado principal.</span>
       <span class="suite-cta">Calcular numero -></span>
     </a>
   </div>
@@ -699,6 +696,7 @@ fetch('/stats.json').then(r=>r.json()).then(d=>{
   updCounters();
 }).catch(()=>updCounters());
 updCounters();
+selOpt('manual');
 
 function openModal(){document.getElementById('certModal').classList.add('open')}
 function closeModal(){document.getElementById('certModal').classList.remove('open')}
@@ -865,7 +863,7 @@ function renderChart(c){
   h+='</div>';
   h+=`<div class="acts" style="margin-top:1.5rem;flex-direction:column;align-items:center;gap:1rem">
     <button class="btn btn-p" id="btnInterpret" onclick="requestInterpretation()" style="width:100%;padding:1rem;font-size:1.05rem;background:var(--gradient);border-radius:14px;box-shadow:0 6px 20px rgba(124,58,237,.35)">🔮 ¿Qué significa todo esto?</button>
-    <button class="btn btn-s" onclick="step=1;mode=null;updSteps();document.getElementById('pdfSec').classList.add('hidden');document.getElementById('formSec').classList.add('hidden');document.getElementById('optPdf').classList.remove('sel');document.getElementById('optMan').classList.remove('sel')" style="font-size:.85rem">✨ Nueva carta</button></div>`;
+    <button class="btn btn-s" onclick="step=1;mode=null;updSteps();document.getElementById('pdfSec').classList.add('hidden');document.getElementById('optPdf').classList.remove('sel');selOpt('manual')" style="font-size:.85rem">✨ Nueva carta</button></div>`;
   el.innerHTML=h;el.classList.remove('hidden');
 }
 
