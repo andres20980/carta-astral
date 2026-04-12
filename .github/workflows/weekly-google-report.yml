@@ -26,7 +26,8 @@ jobs:
         env:
           GA4_PROPERTY: "properties/531527723"
           ADSENSE_ACCOUNT: "accounts/pub-9368517395014039"
-          GSC_SITE_URL: "sc-domain:carta-astral-gratis.es"
+          GSC_SITES_JSON: >-
+            [["carta-astral","carta-astral-gratis.es","sc-domain:carta-astral-gratis.es"],["compatibilidad-signos","compatibilidad-signos.es","sc-domain:compatibilidad-signos.es"],["tarot-del-dia","tarot-del-dia.es","sc-domain:tarot-del-dia.es"],["calcular-numerologia","calcular-numerologia.es","sc-domain:calcular-numerologia.es"],["horoscopo-de-hoy","horoscopo-de-hoy.es","sc-domain:horoscopo-de-hoy.es"]]
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
@@ -186,79 +187,10 @@ jobs:
           # Google Search Console — search performance (requires OAuth)
           echo "### 🔎 Google Search Console (last 28 days)" >> /tmp/report.md
           if [ -n "$OAUTH_TOKEN" ]; then
-            GSC_SITE_ENC=$(python3 -c "import urllib.parse;print(urllib.parse.quote('$GSC_SITE_URL',''))")
             GSC_START=$(date -d '28 days ago' +%Y-%m-%d)
             GSC_END=$(date -d '3 days ago' +%Y-%m-%d)
-
-            # Top queries
-            GSC_QUERIES=$(curl -s -H "Authorization: Bearer $OAUTH_TOKEN" \
-              -H "Content-Type: application/json" \
-              -X POST \
-              -d "{
-                \"startDate\": \"$GSC_START\",
-                \"endDate\": \"$GSC_END\",
-                \"dimensions\": [\"query\"],
-                \"rowLimit\": 15,
-                \"dataState\": \"all\"
-              }" \
-              "https://searchconsole.googleapis.com/webmasters/v3/sites/$GSC_SITE_ENC/searchAnalytics/query" 2>/dev/null || echo "{}")
-
-            GSC_HAS_DATA=$(echo "$GSC_QUERIES" | python3 -c "import sys,json;print(len(json.load(sys.stdin).get('rows',[])))" 2>/dev/null || echo "0")
-
-            if [ "$GSC_HAS_DATA" != "0" ]; then
-              echo "#### Top Search Queries" >> /tmp/report.md
-              echo "| Query | Clicks | Impressions | CTR | Position |" >> /tmp/report.md
-              echo "|-------|--------|-------------|-----|----------|" >> /tmp/report.md
-              echo "$GSC_QUERIES" | python3 -c "
-          import sys,json
-          data=json.load(sys.stdin)
-          for r in data.get('rows',[]):
-            q=r['keys'][0]
-            print(f'| {q} | {r[\"clicks\"]:.0f} | {r[\"impressions\"]:.0f} | {r[\"ctr\"]*100:.1f}% | {r[\"position\"]:.1f} |')
-          " >> /tmp/report.md 2>/dev/null
-
-              # Totals
-              GSC_TOTALS=$(curl -s -H "Authorization: Bearer $OAUTH_TOKEN" \
-                -H "Content-Type: application/json" \
-                -X POST \
-                -d "{\"startDate\": \"$GSC_START\", \"endDate\": \"$GSC_END\", \"dataState\": \"all\"}" \
-                "https://searchconsole.googleapis.com/webmasters/v3/sites/$GSC_SITE_ENC/searchAnalytics/query" 2>/dev/null || echo "{}")
-              echo "" >> /tmp/report.md
-              echo "$GSC_TOTALS" | python3 -c "
-          import sys,json
-          data=json.load(sys.stdin)
-          rows=data.get('rows',[])
-          if rows:
-            r=rows[0]
-            print(f'**Totals**: {r[\"clicks\"]:.0f} clicks, {r[\"impressions\"]:.0f} impressions, {r[\"ctr\"]*100:.1f}% CTR, avg pos {r[\"position\"]:.1f}')
-          " >> /tmp/report.md 2>/dev/null
-
-              # Top pages
-              GSC_PAGES=$(curl -s -H "Authorization: Bearer $OAUTH_TOKEN" \
-                -H "Content-Type: application/json" \
-                -X POST \
-                -d "{
-                  \"startDate\": \"$GSC_START\",
-                  \"endDate\": \"$GSC_END\",
-                  \"dimensions\": [\"page\"],
-                  \"rowLimit\": 10,
-                  \"dataState\": \"all\"
-                }" \
-                "https://searchconsole.googleapis.com/webmasters/v3/sites/$GSC_SITE_ENC/searchAnalytics/query" 2>/dev/null || echo "{}")
-              echo "" >> /tmp/report.md
-              echo "#### Top Pages" >> /tmp/report.md
-              echo "| Page | Clicks | Impressions | Position |" >> /tmp/report.md
-              echo "|------|--------|-------------|----------|" >> /tmp/report.md
-              echo "$GSC_PAGES" | python3 -c "
-          import sys,json
-          data=json.load(sys.stdin)
-          for r in data.get('rows',[]):
-            p=r['keys'][0].replace('https://carta-astral-gratis.es','')
-            print(f'| {p or \"/\"} | {r[\"clicks\"]:.0f} | {r[\"impressions\"]:.0f} | {r[\"position\"]:.1f} |')
-          " >> /tmp/report.md 2>/dev/null
-            else
-              echo "> No search data yet (site too new or no impressions)" >> /tmp/report.md
-            fi
+            OAUTH_TOKEN="$OAUTH_TOKEN" GSC_START="$GSC_START" GSC_END="$GSC_END" GSC_SITES_JSON="$GSC_SITES_JSON" \
+              python3 .github/scripts/weekly_gsc_report.py >> /tmp/report.md
           else
             echo "> GSC not available (add GOOGLE_OAUTH_* secrets)" >> /tmp/report.md
           fi

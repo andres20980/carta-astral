@@ -99,22 +99,32 @@ jobs:
           case "${{ matrix.site }}" in
             carta-astral)
               project_id="carta-astral-f4ab9"
+              domain="carta-astral-gratis.es"
+              gsc_site_url="sc-domain:carta-astral-gratis.es"
               service_account="${FIREBASE_SA_CARTA_ASTRAL:-$FIREBASE_SERVICE_ACCOUNT}"
               ;;
             compatibilidad-signos)
               project_id="compat-signos-es"
+              domain="compatibilidad-signos.es"
+              gsc_site_url="sc-domain:compatibilidad-signos.es"
               service_account="${FIREBASE_SA_COMPATIBILIDAD_SIGNOS:-$FIREBASE_SERVICE_ACCOUNT}"
               ;;
             tarot-del-dia)
               project_id="tarot-del-dia-es"
+              domain="tarot-del-dia.es"
+              gsc_site_url="sc-domain:tarot-del-dia.es"
               service_account="${FIREBASE_SA_TAROT_DEL_DIA:-$FIREBASE_SERVICE_ACCOUNT}"
               ;;
             calcular-numerologia)
               project_id="calc-numerologia-es"
+              domain="calcular-numerologia.es"
+              gsc_site_url="sc-domain:calcular-numerologia.es"
               service_account="${FIREBASE_SA_CALCULAR_NUMEROLOGIA:-$FIREBASE_SERVICE_ACCOUNT}"
               ;;
             horoscopo-de-hoy)
               project_id="horoscopo-hoy-es"
+              domain="horoscopo-de-hoy.es"
+              gsc_site_url="sc-domain:horoscopo-de-hoy.es"
               service_account="${FIREBASE_SA_HOROSCOPO_DE_HOY:-$FIREBASE_SERVICE_ACCOUNT}"
               ;;
             *)
@@ -129,6 +139,8 @@ jobs:
           fi
 
           echo "projectId=$project_id" >> "$GITHUB_OUTPUT"
+          echo "domain=$domain" >> "$GITHUB_OUTPUT"
+          echo "gscSiteUrl=$gsc_site_url" >> "$GITHUB_OUTPUT"
           {
             echo "firebaseServiceAccount<<EOF"
             echo "$service_account"
@@ -166,17 +178,50 @@ jobs:
           cd "sites/${{ matrix.site }}"
           npx firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT_ID" --non-interactive
 
-      - name: "🔔 Ping Sitemap"
+      - name: "📮 Submit sitemap to GSC"
+        shell: bash
+        env:
+          DOMAIN: ${{ steps.config.outputs.domain }}
+          GSC_SITE_URL: ${{ steps.config.outputs.gscSiteUrl }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
         run: |
-          declare -A DOMAINS=(
-            [carta-astral]="carta-astral-gratis.es"
-            [compatibilidad-signos]="compatibilidad-signos.es"
-            [tarot-del-dia]="tarot-del-dia.es"
-            [calcular-numerologia]="calcular-numerologia.es"
-            [horoscopo-de-hoy]="horoscopo-de-hoy.es"
-          )
-          DOMAIN="${DOMAINS[${{ matrix.site }}]}"
-          curl -sS "https://www.google.com/ping?sitemap=https://${DOMAIN}/sitemap.xml" || true
+          set -euo pipefail
+
+          if [ -z "${GOOGLE_OAUTH_CLIENT_ID:-}" ] || [ -z "${GOOGLE_OAUTH_CLIENT_SECRET:-}" ] || [ -z "${GOOGLE_OAUTH_REFRESH_TOKEN:-}" ]; then
+            echo "Skipping GSC sitemap submit: missing GOOGLE_OAUTH_* secrets"
+            exit 0
+          fi
+
+          token_json=$(curl -sS https://oauth2.googleapis.com/token \
+            -d "client_id=$GOOGLE_OAUTH_CLIENT_ID" \
+            -d "client_secret=$GOOGLE_OAUTH_CLIENT_SECRET" \
+            -d "refresh_token=$GOOGLE_OAUTH_REFRESH_TOKEN" \
+            -d "grant_type=refresh_token")
+
+          access_token=$(echo "$token_json" | jq -r '.access_token // empty')
+          if [ -z "$access_token" ]; then
+            echo "$token_json"
+            echo "Skipping GSC sitemap submit: could not mint OAuth access token"
+            exit 0
+          fi
+
+          site_url_enc=$(python3 -c "import urllib.parse;print(urllib.parse.quote('${GSC_SITE_URL}',''))")
+          sitemap_url="https://${DOMAIN}/sitemap.xml"
+          sitemap_enc=$(python3 -c "import urllib.parse;print(urllib.parse.quote('${sitemap_url}',''))")
+
+          code=$(curl -sS -o /tmp/gsc-submit-response.json -w "%{http_code}" \
+            -X PUT \
+            -H "Authorization: Bearer $access_token" \
+            "https://searchconsole.googleapis.com/webmasters/v3/sites/${site_url_enc}/sitemaps/${sitemap_enc}" || true)
+
+          if [ "$code" = "200" ] || [ "$code" = "204" ]; then
+            echo "Sitemap submitted to GSC for ${DOMAIN}"
+          else
+            echo "GSC sitemap submit returned HTTP ${code} for ${DOMAIN}"
+            cat /tmp/gsc-submit-response.json || true
+          fi
 
   lighthouse:
     needs:

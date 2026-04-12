@@ -1,17 +1,69 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck source=../../../shared/config.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shared" && pwd)/config.sh"
+
 # ── Config ───────────────────────────────────────────────────────────
 GA4_PROPERTY="properties/531527723"
 GA4_STREAM="properties/531527723/dataStreams/14325968472"
 ADSENSE_ACCOUNT="accounts/pub-9368517395014039"
-DOMAIN="carta-astral-gratis.es"
-SITE_URL="sc-domain:${DOMAIN}"   # GSC property (domain-level)
-SITE_URL_ENC="sc-domain%3A${DOMAIN}"
-SITEMAP_URL="https://${DOMAIN}/sitemap.xml"
+CURRENT_SITE_KEY="${SITE_KEY:-carta-astral}"
+DOMAIN=""
+SITE_URL=""
+SITE_URL_ENC=""
+SITEMAP_URL=""
 
-_token() { gcloud auth application-default print-access-token; }
-_api()   { curl -s -H "Authorization: Bearer $(_token)" "$@"; }
+set_current_site() {
+  local requested="${1:-carta-astral}"
+  if [[ -n "${DOMAINS[$requested]:-}" ]]; then
+    CURRENT_SITE_KEY="$requested"
+  elif [[ "$requested" =~ \.es$ ]]; then
+    local key
+    for key in "${CLUSTER_SITE_KEYS[@]}"; do
+      if [[ "${DOMAINS[$key]}" == "$requested" ]]; then
+        CURRENT_SITE_KEY="$key"
+        break
+      fi
+    done
+  fi
+
+  if [[ -z "${DOMAINS[$CURRENT_SITE_KEY]:-}" ]]; then
+    echo "Unknown site: $requested" >&2
+    exit 1
+  fi
+
+  DOMAIN="${DOMAINS[$CURRENT_SITE_KEY]}"
+  SITE_URL="$(gsc_site_url_for "$CURRENT_SITE_KEY")"
+  SITE_URL_ENC="$(python3 -c "import urllib.parse;print(urllib.parse.quote('${SITE_URL}',''))")"
+  SITEMAP_URL="$(sitemap_url_for "$CURRENT_SITE_KEY")"
+}
+
+_token() {
+  gcloud auth application-default print-access-token
+}
+
+_oauth_token() {
+  if [[ -n "${GOOGLE_OAUTH_REFRESH_TOKEN:-}" && -n "${GOOGLE_OAUTH_CLIENT_ID:-}" && -n "${GOOGLE_OAUTH_CLIENT_SECRET:-}" ]]; then
+    curl -sS https://oauth2.googleapis.com/token \
+      -d "client_id=${GOOGLE_OAUTH_CLIENT_ID}" \
+      -d "client_secret=${GOOGLE_OAUTH_CLIENT_SECRET}" \
+      -d "refresh_token=${GOOGLE_OAUTH_REFRESH_TOKEN}" \
+      -d "grant_type=refresh_token" | python3 -c "import sys,json;print(json.load(sys.stdin).get('access_token',''))"
+  else
+    _token
+  fi
+}
+
+_api() {
+  curl -s -H "Authorization: Bearer $(_token)" "$@"
+}
+
+_api_oauth() {
+  curl -s -H "Authorization: Bearer $(_oauth_token)" "$@"
+}
+
+set_current_site "$CURRENT_SITE_KEY"
 
 # ── Commands ─────────────────────────────────────────────────────────
 
@@ -25,11 +77,11 @@ cmd_status() {
 
   echo ""
   echo "━━━ AdSense Sites ━━━"
-  _api "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/sites" | python3 -m json.tool
+  _api_oauth "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/sites" | python3 -m json.tool
 
   echo ""
   echo "━━━ AdSense Ad Clients ━━━"
-  _api "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/adclients" | python3 -m json.tool
+  _api_oauth "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/adclients" | python3 -m json.tool
 }
 
 cmd_ga4_realtime() {
@@ -106,7 +158,7 @@ cmd_adsense_earnings() {
   start=$(date -d "$days days ago" +%Y-%m-%d)
   end=$(date +%Y-%m-%d)
   echo "━━━ AdSense Earnings ($start → $end) ━━━"
-  _api "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/reports:generate?\
+  _api_oauth "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/reports:generate?\
 dateRange=CUSTOM&\
 startDate.year=$(date -d "$start" +%Y)&startDate.month=$(date -d "$start" +%-m)&startDate.day=$(date -d "$start" +%-d)&\
 endDate.year=$(date -d "$end" +%Y)&endDate.month=$(date -d "$end" +%-m)&endDate.day=$(date -d "$end" +%-d)&\
@@ -117,19 +169,19 @@ reportingTimeZone=ACCOUNT_TIME_ZONE" | python3 -m json.tool
 
 cmd_adsense_sites() {
   echo "━━━ AdSense Sites ━━━"
-  _api "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/sites" | python3 -m json.tool
+  _api_oauth "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/sites" | python3 -m json.tool
 }
 
 cmd_adsense_alerts() {
   echo "━━━ AdSense Alerts ━━━"
-  _api "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/alerts" | python3 -m json.tool
+  _api_oauth "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/alerts" | python3 -m json.tool
 }
 
 # ── Google Search Console ────────────────────────────────────────────
 
 cmd_gsc_sites() {
   echo "━━━ GSC Verified Sites ━━━"
-  _api "https://searchconsole.googleapis.com/webmasters/v3/sites" | python3 -c "
+  _api_oauth "https://searchconsole.googleapis.com/webmasters/v3/sites" | python3 -c "
 import sys,json
 data=json.load(sys.stdin)
 for s in data.get('siteEntry',[]):
@@ -142,7 +194,7 @@ cmd_gsc_submit_sitemap() {
   echo "  Site: $SITE_URL"
   echo "  Sitemap: $sitemap"
   local resp
-  resp=$(_api -X PUT -w "\n%{http_code}" \
+  resp=$(_api_oauth -X PUT -w "\n%{http_code}" \
     "https://searchconsole.googleapis.com/webmasters/v3/sites/${SITE_URL_ENC}/sitemaps/$(python3 -c "import urllib.parse;print(urllib.parse.quote('$sitemap',''))")")
   local code
   code=$(echo "$resp" | tail -1)
@@ -156,7 +208,7 @@ cmd_gsc_submit_sitemap() {
 
 cmd_gsc_sitemaps() {
   echo "━━━ GSC Sitemaps ━━━"
-  _api "https://searchconsole.googleapis.com/webmasters/v3/sites/${SITE_URL_ENC}/sitemaps" | python3 -c "
+  _api_oauth "https://searchconsole.googleapis.com/webmasters/v3/sites/${SITE_URL_ENC}/sitemaps" | python3 -c "
 import sys,json
 data=json.load(sys.stdin)
 for s in data.get('sitemap',[]):
@@ -168,10 +220,19 @@ for s in data.get('sitemap',[]):
 " 2>/dev/null || echo "  (no sitemaps found)"
 }
 
+cmd_gsc_submit_sitemaps_all() {
+  local site_key
+  for site_key in "${CLUSTER_SITE_KEYS[@]}"; do
+    set_current_site "$site_key"
+    cmd_gsc_submit_sitemap
+    echo ""
+  done
+}
+
 cmd_gsc_inspect() {
   local url="${1:-https://${DOMAIN}/}"
   echo "━━━ URL Inspection: $url ━━━"
-  _api -X POST \
+  _api_oauth -X POST \
     -H "Content-Type: application/json" \
     -d "{\"inspectionUrl\": \"$url\", \"siteUrl\": \"$SITE_URL\"}" \
     "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect" | python3 -c "
@@ -193,10 +254,19 @@ if rich:
   print(f\"  Rich results:   {rich.get('verdict','-')}\")
   for d in rich.get('detectedItems',[]):
     print(f\"    - {d.get('richResultType','-')}: {[i.get('name','') for i in d.get('items',[])]}\")
-" 2>/dev/null || _api -X POST \
+" 2>/dev/null || _api_oauth -X POST \
     -H "Content-Type: application/json" \
     -d "{\"inspectionUrl\": \"$url\", \"siteUrl\": \"$SITE_URL\"}" \
     "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect" | python3 -m json.tool
+}
+
+cmd_gsc_cluster_inspect() {
+  local site_key
+  for site_key in "${CLUSTER_SITE_KEYS[@]}"; do
+    set_current_site "$site_key"
+    cmd_gsc_inspect "https://${DOMAIN}/"
+    echo ""
+  done
 }
 
 cmd_gsc_performance() {
@@ -205,7 +275,7 @@ cmd_gsc_performance() {
   start=$(date -d "$days days ago" +%Y-%m-%d)
   end=$(date +%Y-%m-%d)
   echo "━━━ GSC Performance ($start → $end) ━━━"
-  _api -X POST \
+  _api_oauth -X POST \
     -H "Content-Type: application/json" \
     -d "{
       \"startDate\": \"$start\",
@@ -235,7 +305,7 @@ cmd_gsc_pages() {
   start=$(date -d "$days days ago" +%Y-%m-%d)
   end=$(date +%Y-%m-%d)
   echo "━━━ GSC Top Pages ($start → $end) ━━━"
-  _api -X POST \
+  _api_oauth -X POST \
     -H "Content-Type: application/json" \
     -d "{
       \"startDate\": \"$start\",
@@ -257,32 +327,12 @@ else:
 " 2>/dev/null || echo "  (no data or no access)"
 }
 
-cmd_gsc_ping_sitemap() {
-  echo "━━━ Ping Search Engines ━━━"
-  echo "  Pinging Google..."
-  local g_code
-  g_code=$(curl -s -o /dev/null -w "%{http_code}" "https://www.google.com/ping?sitemap=${SITEMAP_URL}")
-  echo "  Google: HTTP $g_code $([ "$g_code" = "200" ] && echo '✅' || echo '⚠️')"
-
-  echo "  Pinging Bing..."
-  local b_code
-  b_code=$(curl -s -o /dev/null -w "%{http_code}" "https://www.bing.com/indexnow?url=${SITEMAP_URL}")
-  echo "  Bing: HTTP $b_code $([ "$b_code" = "200" ] && echo '✅' || echo '⚠️')"
-
-  echo "  Pinging IndexNow (Yandex/Bing)..."
-  local i_code
-  i_code=$(curl -s -o /dev/null -w "%{http_code}" "https://yandex.com/indexnow?url=https://${DOMAIN}/&key=${DOMAIN}")
-  echo "  IndexNow: HTTP $i_code $([ "$i_code" = "200" ] && echo '✅' || echo '⚠️')"
-}
-
 cmd_gsc_full_index() {
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "  FULL INDEXING PUSH for $DOMAIN"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo ""
   cmd_gsc_submit_sitemap
-  echo ""
-  cmd_gsc_ping_sitemap
   echo ""
   cmd_gsc_inspect "https://${DOMAIN}/"
   echo ""
@@ -363,6 +413,7 @@ cmd_finops_summary() {
 cmd_help() {
   cat <<EOF
 Usage: $(basename "$0") <command> [args]
+       $(basename "$0") --site <site-key|domain> <command> [args]
 
   GA4:
     status              Full status (GA4 + AdSense)
@@ -380,12 +431,13 @@ Usage: $(basename "$0") <command> [args]
   Google Search Console:
     gsc-sites           List verified sites
     gsc-submit-sitemap  Submit sitemap.xml to GSC
+    gsc-submit-sitemaps-all Submit sitemap.xml for all cluster sites
     gsc-sitemaps        Show sitemap status in GSC
     gsc-inspect [url]   URL Inspection (indexing, mobile, rich results)
+    gsc-cluster-inspect Inspect the homepage for all cluster sites
     gsc-performance [d] Search queries + clicks + impressions (default: 28d)
     gsc-pages [d]       Top pages by search performance
-    gsc-ping-sitemap    Ping Google + Bing + IndexNow with sitemap
-    gsc-full-index      Full indexing push (submit + ping + inspect)
+    gsc-full-index      Full indexing push (submit + inspect)
 
   FinOps:
     finops              Full FinOps dashboard (Cloud Run + Billing)
@@ -397,6 +449,11 @@ EOF
 }
 
 # ── Dispatch ─────────────────────────────────────────────────────────
+if [[ "${1:-}" == "--site" ]]; then
+  set_current_site "${2:-}"
+  shift 2
+fi
+
 case "${1:-help}" in
   status)               cmd_status ;;
   ga4-realtime)         cmd_ga4_realtime ;;
@@ -409,11 +466,12 @@ case "${1:-help}" in
   adsense-alerts)       cmd_adsense_alerts ;;
   gsc-sites)            cmd_gsc_sites ;;
   gsc-submit-sitemap)   cmd_gsc_submit_sitemap "${2:-}" ;;
+  gsc-submit-sitemaps-all) cmd_gsc_submit_sitemaps_all ;;
   gsc-sitemaps)         cmd_gsc_sitemaps ;;
   gsc-inspect)          cmd_gsc_inspect "${2:-}" ;;
+  gsc-cluster-inspect)  cmd_gsc_cluster_inspect ;;
   gsc-performance)      cmd_gsc_performance "${2:-28}" ;;
   gsc-pages)            cmd_gsc_pages "${2:-28}" ;;
-  gsc-ping-sitemap)     cmd_gsc_ping_sitemap ;;
   gsc-full-index)       cmd_gsc_full_index ;;
   finops)               cmd_finops_summary ;;
   finops-cloud-run)     cmd_finops_cloud_run ;;

@@ -73,6 +73,17 @@ jobs:
             fi
           done
 
+          WWW_SITE="https://www.${{ matrix.domain }}"
+          for url in "$WWW_SITE/" "$WWW_SITE/ads.txt"; do
+            code=$(http_code "$url")
+            if [[ "$code" == "200" ]]; then
+              report+="- ✅ ${url} -> ${code}"$'\n'
+            else
+              report+="- ❌ ${url} -> ${code}"$'\n'
+              failures=$((failures + 1))
+            fi
+          done
+
           # Check robots.txt declares Sitemap
           robots_content=$(fetch "$SITE/robots.txt" || true)
           if echo "$robots_content" | grep -iq 'Sitemap:'; then
@@ -88,6 +99,14 @@ jobs:
             report+="- ✅ ads.txt OK"$'\n'
           else
             report+="- ❌ ads.txt missing pub ID"$'\n'
+            failures=$((failures + 1))
+          fi
+
+          ads_www_content=$(fetch "$WWW_SITE/ads.txt" || true)
+          if echo "$ads_www_content" | grep -q 'pub-9368517395014039'; then
+            report+="- ✅ www ads.txt OK"$'\n'
+          else
+            report+="- ❌ www ads.txt missing pub ID"$'\n'
             failures=$((failures + 1))
           fi
 
@@ -146,6 +165,13 @@ jobs:
               failures=$((failures + 1))
             else
               report+="- ✅ homepage not marked noindex"$'\n'
+            fi
+
+            if echo "$html" | grep -Eiq '<h1[^>]*>[^<]'; then
+              report+="- ✅ homepage has H1"$'\n'
+            else
+              report+="- ❌ homepage missing H1"$'\n'
+              failures=$((failures + 1))
             fi
           else
             report+="- ⚠️ skipped SEO meta checks because homepage returned ${home_code}"$'\n'

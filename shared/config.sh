@@ -24,6 +24,14 @@ declare -A DOMAINS=(
   [horoscopo-de-hoy]="horoscopo-de-hoy.es"
 )
 
+declare -a CLUSTER_SITE_KEYS=(
+  "carta-astral"
+  "compatibilidad-signos"
+  "tarot-del-dia"
+  "calcular-numerologia"
+  "horoscopo-de-hoy"
+)
+
 declare -a TRACKING_DOMAINS=(
   "carta-astral-gratis.es"
   "compatibilidad-signos.es"
@@ -31,6 +39,24 @@ declare -a TRACKING_DOMAINS=(
   "calcular-numerologia.es"
   "horoscopo-de-hoy.es"
 )
+
+declare -A GSC_SITE_URLS=(
+  [carta-astral]="sc-domain:carta-astral-gratis.es"
+  [compatibilidad-signos]="sc-domain:compatibilidad-signos.es"
+  [tarot-del-dia]="sc-domain:tarot-del-dia.es"
+  [calcular-numerologia]="sc-domain:calcular-numerologia.es"
+  [horoscopo-de-hoy]="sc-domain:horoscopo-de-hoy.es"
+)
+
+gsc_site_url_for() {
+  local site_key="$1"
+  echo "${GSC_SITE_URLS[$site_key]}"
+}
+
+sitemap_url_for() {
+  local site_key="$1"
+  echo "https://${DOMAINS[$site_key]}/sitemap.xml"
+}
 
 # — Shared brand
 BRAND_FONTS="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap"
