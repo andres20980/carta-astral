@@ -42,6 +42,7 @@ Cluster de sitios estáticos SEO en español sobre astrología, tarot, numerolog
 - Los workflows del cluster reutilizan `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` y `GOOGLE_OAUTH_REFRESH_TOKEN`.
 - Para GSC, el refresh token debe incluir `https://www.googleapis.com/auth/webmasters` y `https://www.googleapis.com/auth/siteverification`.
 - Para AdSense, ese mismo refresh token debe incluir además `https://www.googleapis.com/auth/adsense.readonly`.
+- Para depuración manual de Analytics vía OAuth, es recomendable añadir también `https://www.googleapis.com/auth/analytics.readonly`, aunque el pipeline principal usa service account.
 - Si el refresh token no tiene esos scopes, los workflows seguirán generando issues canónicos explicando el bloqueo exacto.
 
 ## Desarrollo local
@@ -94,6 +95,7 @@ astro-cluster/
 - `weekly-google-report.yml`: genera informe con GA4, GSC y AdSense, con bloque agregado del cluster y detalle por dominio.
 - `gsc-index-watch.yml`: mantiene un issue canónico con el estado de indexación de las home del cluster.
 - `adsense-site-watch.yml`: mantiene un issue canónico con el estado de los sitios del cluster en la API de AdSense y sus alertas activas.
+- `google-auth-audit.yml`: audita los scopes reales del OAuth del cluster y la salud del acceso a Analytics por service account.
 
 ## Principios operativos
 

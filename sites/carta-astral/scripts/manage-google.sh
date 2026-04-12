@@ -13,6 +13,7 @@ DOMAIN=""
 SITE_URL=""
 SITE_URL_ENC=""
 SITEMAP_URL=""
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../" && pwd)"
 
 set_current_site() {
   local requested="${1:-carta-astral}"
@@ -61,6 +62,29 @@ _api() {
 
 _api_oauth() {
   curl -s -H "Authorization: Bearer $(_oauth_token)" "$@"
+}
+
+_analytics_status_local() {
+  local resp
+  resp=$(_api "https://analyticsadmin.googleapis.com/v1beta/${GA4_PROPERTY}" 2>/dev/null || true)
+  python3 -c "
+import json,sys
+raw=sys.stdin.read().strip()
+if not raw:
+  print('Pendiente: no se recibió respuesta de Analytics Admin API')
+  raise SystemExit(0)
+try:
+  data=json.loads(raw)
+except Exception:
+  print('Pendiente: respuesta no JSON desde Analytics Admin API')
+  raise SystemExit(0)
+if data.get('name'):
+  print('OK: service account / ADC con acceso a GA4')
+else:
+  err=data.get('error',{})
+  msg=err.get('message') or 'sin detalle'
+  print(f'Pendiente: {msg}')
+" <<< "$resp"
 }
 
 set_current_site "$CURRENT_SITE_KEY"
@@ -175,6 +199,16 @@ cmd_adsense_sites() {
 cmd_adsense_alerts() {
   echo "━━━ AdSense Alerts ━━━"
   _api_oauth "https://adsense.googleapis.com/v2/$ADSENSE_ACCOUNT/alerts" | python3 -m json.tool
+}
+
+cmd_google_auth_audit() {
+  local oauth_token analytics_status
+  oauth_token="$(_oauth_token)"
+  analytics_status="$(_analytics_status_local)"
+  OAUTH_TOKEN="$oauth_token" \
+  ANALYTICS_SA_STATUS="$analytics_status" \
+  GOOGLE_AUTH_INCLUDE_RAW_JSON=0 \
+  python3 "${REPO_ROOT}/.github/scripts/google_auth_audit.py"
 }
 
 # ── Google Search Console ────────────────────────────────────────────
@@ -427,6 +461,7 @@ Usage: $(basename "$0") <command> [args]
     adsense-earnings [d] Earnings report (default: 7 days)
     adsense-sites       Site approval status
     adsense-alerts      Active alerts/warnings
+    google-auth-audit   OAuth scopes + Analytics auth status
 
   Google Search Console:
     gsc-sites           List verified sites
@@ -464,6 +499,7 @@ case "${1:-help}" in
   adsense-earnings)     cmd_adsense_earnings "${2:-7}" ;;
   adsense-sites)        cmd_adsense_sites ;;
   adsense-alerts)       cmd_adsense_alerts ;;
+  google-auth-audit)    cmd_google_auth_audit ;;
   gsc-sites)            cmd_gsc_sites ;;
   gsc-submit-sitemap)   cmd_gsc_submit_sitemap "${2:-}" ;;
   gsc-submit-sitemaps-all) cmd_gsc_submit_sitemaps_all ;;

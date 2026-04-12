@@ -56,6 +56,20 @@ jobs:
           echo "## 📊 Informe semanal del cluster — $(date +%Y-%m-%d)" > /tmp/report.md
           echo "" >> /tmp/report.md
 
+          # Google auth health
+          ANALYTICS_SA_STATUS="Pendiente: no se pudo comprobar Analytics por service account"
+          if [ -n "$TOKEN" ]; then
+            ANALYTICS_SA_STATUS="OK: service account / ADC con acceso a GA4"
+          fi
+
+          OAUTH_TOKEN="$OAUTH_TOKEN" \
+          ANALYTICS_SA_STATUS="$ANALYTICS_SA_STATUS" \
+          GOOGLE_AUTH_INCLUDE_RAW_JSON=0 \
+          GOOGLE_AUTH_HEADING_LEVEL="###" \
+          GOOGLE_AUTH_REPORT_TITLE="Estado de autenticación Google" \
+          python3 .github/scripts/google_auth_audit.py >> /tmp/report.md
+          echo "" >> /tmp/report.md
+
           # GA4 traffic
           echo "### 🔍 Tráfico de GA4 (últimos 7 días)" >> /tmp/report.md
           TRAFFIC=$(curl -s -H "Authorization: Bearer $TOKEN" \

@@ -1,0 +1,160 @@
+name: "🔐 Auditoría de Auth Google"
+
+on:
+  schedule:
+    - cron: '5 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: "🔐 Obtener token OAuth"
+        id: oauth
+        env:
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GOOGLE_OAUTH_CLIENT_ID:-}" ] || [ -z "${GOOGLE_OAUTH_CLIENT_SECRET:-}" ] || [ -z "${GOOGLE_OAUTH_REFRESH_TOKEN:-}" ]; then
+            echo "missing=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          token_json=$(curl -sS https://oauth2.googleapis.com/token \
+            -d "client_id=$GOOGLE_OAUTH_CLIENT_ID" \
+            -d "client_secret=$GOOGLE_OAUTH_CLIENT_SECRET" \
+            -d "refresh_token=$GOOGLE_OAUTH_REFRESH_TOKEN" \
+            -d "grant_type=refresh_token")
+
+          access_token=$(echo "$token_json" | jq -r '.access_token // empty')
+          if [ -z "$access_token" ]; then
+            echo "$token_json"
+            echo "missing=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "missing=false" >> "$GITHUB_OUTPUT"
+          {
+            echo "token<<EOF"
+            echo "$access_token"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: "🔑 Auth service account para Analytics"
+        id: saauth
+        continue-on-error: true
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+
+      - name: "📈 Probar acceso a Analytics Data API"
+        id: analytics
+        if: steps.saauth.outcome == 'success'
+        env:
+          GA4_PROPERTY: "properties/531527723"
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.saauth.outputs.credentials_file_path }}
+        run: |
+          set -euo pipefail
+          pip -q install google-auth
+          token=$(python3 -c "
+          import google.auth
+          import google.auth.transport.requests
+          creds, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/analytics.readonly'])
+          creds.refresh(google.auth.transport.requests.Request())
+          print(creds.token)
+          ")
+
+          probe=$(curl -sS -H "Authorization: Bearer $token" \
+            -H "Content-Type: application/json" \
+            -X POST \
+            -d '{"dateRanges":[{"startDate":"1daysAgo","endDate":"today"}],"metrics":[{"name":"totalUsers"}]}' \
+            "https://analyticsdata.googleapis.com/v1beta/$GA4_PROPERTY:runReport")
+
+          if echo "$probe" | jq -e '.rows or .rowCount == 0' >/dev/null; then
+            echo "status=OK: service account / ADC con acceso a GA4" >> "$GITHUB_OUTPUT"
+          else
+            msg=$(echo "$probe" | jq -r '.error.message // "sin detalle"' 2>/dev/null)
+            echo "status=Pendiente: $msg" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: "🧾 Generar auditoría"
+        env:
+          OAUTH_TOKEN: ${{ steps.oauth.outputs.token }}
+          ANALYTICS_SA_STATUS: ${{ steps.analytics.outputs.status }}
+        run: |
+          status="${ANALYTICS_SA_STATUS:-}"
+          if [ -z "$status" ]; then
+            if [ "${{ steps.saauth.outcome }}" = "success" ]; then
+              status="Pendiente: no se pudo determinar el acceso de Analytics"
+            else
+              status="Pendiente: falta o falla FIREBASE_SERVICE_ACCOUNT"
+            fi
+          fi
+
+          OAUTH_TOKEN="${OAUTH_TOKEN:-}" \
+          ANALYTICS_SA_STATUS="$status" \
+          python3 .github/scripts/google_auth_audit.py > /tmp/google-auth-audit.md
+          cat /tmp/google-auth-audit.md
+
+      - name: "📝 Sincronizar issue de auth"
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const titlePrefix = '🔐 Auditoría de autenticación Google';
+            const today = new Date().toISOString().slice(0, 10);
+            const body = fs.readFileSync('/tmp/google-auth-audit.md', 'utf8');
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'report',
+              per_page: 100
+            });
+
+            const matching = issues.filter(issue => issue.title.startsWith(titlePrefix));
+            const title = `${titlePrefix} — ${today}`;
+
+            if (matching.length > 0) {
+              const primary = matching[0];
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: primary.number,
+                title,
+                body
+              });
+
+              for (const duplicate of matching.slice(1)) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  body: `Sustituido por #${primary.number}. Mantenemos un único issue canónico de auditoría de auth.`
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  state: 'closed'
+                });
+              }
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['report']
+              });
+            }
