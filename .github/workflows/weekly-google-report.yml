@@ -240,14 +240,58 @@ jobs:
 
           cat /tmp/report.md
 
-      - name: "📝 Create issue"
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh issue create \
-            --title "📊 Weekly Report — $(date +%Y-%m-%d)" \
-            --body-file /tmp/report.md \
-            --label "report"
+      - name: "📝 Sync weekly report issue"
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const titlePrefix = '📊 Weekly Cluster Report';
+            const today = new Date().toISOString().slice(0, 10);
+            const fs = require('fs');
+            const body = fs.readFileSync('/tmp/report.md', 'utf8');
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'report',
+              per_page: 100
+            });
+
+            const matching = issues.filter(issue => issue.title.startsWith(titlePrefix));
+            const title = `${titlePrefix} — ${today}`;
+
+            if (matching.length > 0) {
+              const primary = matching[0];
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: primary.number,
+                title,
+                body
+              });
+
+              for (const duplicate of matching.slice(1)) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  body: `Superseded by #${primary.number}. Keeping one canonical weekly report issue.`
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  state: 'closed'
+                });
+              }
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['report']
+              });
+            }
 
       - name: "💾 Commit milestone updates"
         env:

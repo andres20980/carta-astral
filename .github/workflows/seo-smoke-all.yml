@@ -32,6 +32,8 @@ jobs:
             domain: horoscopo-de-hoy.es
       fail-fast: false
     steps:
+      - uses: actions/checkout@v6
+
       - name: "🔎 Check ${{ matrix.domain }}"
         id: smoke
         shell: bash
@@ -125,49 +127,52 @@ jobs:
           home_code=$(http_code "$SITE/")
           if [[ "$home_code" == "200" ]]; then
             html=$(fetch "$SITE/" || true)
+            home_file="$(mktemp)"
+            printf '%s' "$html" > "$home_file"
+            html_checks=$(SEO_SMOKE_DOMAIN="${{ matrix.domain }}" python3 .github/scripts/seo_smoke_html_checks.py "$home_file")
 
-            if echo "$html" | grep -Eiq '<title[^>]*>[^<]'; then
+            if echo "$html_checks" | jq -e '.title_present' >/dev/null; then
               report+="- ✅ <title> present"$'\n'
             else
               report+="- ❌ <title> missing"$'\n'
               failures=$((failures + 1))
             fi
 
-            if echo "$html" | grep -Eiq "<meta[^>]+name=['\"]description['\"][^>]*content=['\"][^'\"]+['\"]|<meta[^>]+content=['\"][^'\"]+['\"][^>]*name=['\"]description['\"]"; then
+            if echo "$html_checks" | jq -e '.meta_description_present' >/dev/null; then
               report+="- ✅ meta description present"$'\n'
             else
               report+="- ❌ meta description missing"$'\n'
               failures=$((failures + 1))
             fi
 
-            if echo "$html" | grep -Eiq "<link[^>]+rel=['\"]canonical['\"][^>]*href=['\"]https://${{ matrix.domain }}(/|['\"])|<link[^>]+href=['\"]https://${{ matrix.domain }}(/|['\"])[^>]*rel=['\"]canonical['\"]"; then
+            if echo "$html_checks" | jq -e '.canonical_ok' >/dev/null; then
               report+="- ✅ canonical points to primary domain"$'\n'
             else
               report+="- ❌ canonical missing or wrong host"$'\n'
               failures=$((failures + 1))
             fi
 
-            if echo "$html" | grep -Eiq "type=['\"]application/ld\\+json['\"]"; then
+            if echo "$html_checks" | jq -e '.structured_data_present' >/dev/null; then
               report+="- ✅ structured data present"$'\n'
             else
               report+="- ⚠️ no structured data"$'\n'
             fi
 
-            if echo "$html" | grep -Eiq "pagead2\.googlesyndication\.com/pagead/js/adsbygoogle\.js\?client=ca-pub-9368517395014039"; then
+            if echo "$html_checks" | jq -e '.adsense_script_present' >/dev/null; then
               report+="- ✅ AdSense script present on homepage"$'\n'
             else
               report+="- ❌ AdSense script missing on homepage"$'\n'
               failures=$((failures + 1))
             fi
 
-            if echo "$html" | grep -Eiq "<meta[^>]+name=['\"]robots['\"][^>]*content=['\"][^'\"]*noindex|<meta[^>]+content=['\"][^'\"]*noindex[^'\"]*['\"][^>]*name=['\"]robots['\"]"; then
+            if echo "$html_checks" | jq -e '.homepage_not_noindex' >/dev/null; then
+              report+="- ✅ homepage not marked noindex"$'\n'
+            else
               report+="- ❌ homepage contains noindex"$'\n'
               failures=$((failures + 1))
-            else
-              report+="- ✅ homepage not marked noindex"$'\n'
             fi
 
-            if echo "$html" | grep -Eiq '<h1[^>]*>[^<]'; then
+            if echo "$html_checks" | jq -e '.h1_present' >/dev/null; then
               report+="- ✅ homepage has H1"$'\n'
             else
               report+="- ❌ homepage missing H1"$'\n'
