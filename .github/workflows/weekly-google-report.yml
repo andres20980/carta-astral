@@ -109,6 +109,33 @@ jobs:
           echo "| Rebote | $BOUNCE |" >> /tmp/report.md
           echo "" >> /tmp/report.md
 
+          echo "### 🧩 Rendimiento por dominio del cluster" >> /tmp/report.md
+          HOSTS=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "dateRanges": [{"startDate": "7daysAgo", "endDate": "today"}],
+              "dimensions": [{"name": "hostName"}],
+              "metrics": [{"name": "sessions"}, {"name": "totalUsers"}, {"name": "screenPageViews"}],
+              "orderBys": [{"metric": {"metricName": "sessions"}, "desc": true}],
+              "limit": 10
+            }' \
+            "https://analyticsdata.googleapis.com/v1beta/$GA4_PROPERTY:runReport")
+
+          echo "| Dominio | Sesiones | Usuarios | Páginas vistas |" >> /tmp/report.md
+          echo "|---------|----------|----------|----------------|" >> /tmp/report.md
+          echo "$HOSTS" | python3 -c "
+          import sys,json
+          r=json.load(sys.stdin)
+          for row in r.get('rows',[]):
+            host=row['dimensionValues'][0]['value']
+            sessions=row['metricValues'][0]['value']
+            users=row['metricValues'][1]['value']
+            views=row['metricValues'][2]['value']
+            print(f'| {host} | {sessions} | {users} | {views} |')
+          " >> /tmp/report.md 2>/dev/null || echo "| Sin datos aún | — | — | — |" >> /tmp/report.md
+          echo "" >> /tmp/report.md
+
           # GA4 key events
           echo "### 🎯 Conversiones (últimos 7 días)" >> /tmp/report.md
           EVENTS=$(curl -s -H "Authorization: Bearer $TOKEN" \
@@ -121,7 +148,14 @@ jobs:
               "dimensionFilter": {
                 "orGroup": {
                   "expressions": [
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "tool_start"}}},
                     {"filter": {"fieldName": "eventName", "stringFilter": {"value": "chart_calculated"}}},
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "compatibility_view"}}},
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "numerology_calculated"}}},
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "tarot_reading_complete"}}},
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "internal_tool_click"}}},
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "advertiser_cta_click"}}},
+                    {"filter": {"fieldName": "eventName", "stringFilter": {"value": "interpretation_requested"}}},
                     {"filter": {"fieldName": "eventName", "stringFilter": {"value": "interpretation_generated"}}},
                     {"filter": {"fieldName": "eventName", "stringFilter": {"value": "upload_certificate"}}}
                   ]

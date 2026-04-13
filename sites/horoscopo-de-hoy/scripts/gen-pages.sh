@@ -96,7 +96,7 @@ stars_html() {
 
 # ── Common helpers ───────────────────────────────────────────
 gen_head() {
-  local title="$1" desc="$2" canonical="$3"
+  local title="$1" desc="$2" canonical="$3" page_type="${4:-page}" content_group="${5:-content}" entity_slug="${6:-}"
   cat <<ENDHEAD
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,7 +113,7 @@ gen_head() {
   <link href="${BRAND_FONTS}" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
   <script>if(location.hostname.endsWith('.web.app'))location.replace('https://${DOMAIN}'+location.pathname+location.search);</script>
-$(ga4_head_snippet "$GA4")
+$(ga4_head_snippet "$GA4" "$SITE_KEY" "$page_type" "$content_group" "$entity_slug")
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://pagead2.googlesyndication.com">
   <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
@@ -209,7 +209,7 @@ for idx in "${!SLUGS[@]}"; do
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "$title" "$desc" "$url_path")
+$(gen_head "$title" "$desc" "$url_path" "daily_sign" "daily_content" "$s")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Article","headline":"Horóscopo ${n} Hoy","description":"${desc}","datePublished":"${TODAY}","dateModified":"${TODAY}","author":{"@type":"Organization","name":"Horóscopo de Hoy"},"publisher":{"@type":"Organization","name":"Horóscopo de Hoy","url":"https://${DOMAIN}/"},"mainEntityOfPage":"https://${DOMAIN}${url_path}","inLanguage":"es"}
   </script>
@@ -319,7 +319,7 @@ cat > "$PUBLIC/index.html" <<ENDINDEX
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "$INDEX_TITLE" "$INDEX_DESC" "/")
+$(gen_head "$INDEX_TITLE" "$INDEX_DESC" "/" "tool_home" "daily_hub")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebSite","name":"Horóscopo de Hoy","url":"https://${DOMAIN}/","description":"Horóscopo diario gratis para los 12 signos del zodíaco.","inLanguage":"es"}
   </script>

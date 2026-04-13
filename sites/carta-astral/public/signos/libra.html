@@ -18,7 +18,73 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <!-- GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DEWMQ73FH5"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DEWMQ73FH5',{linker:{domains:['carta-astral-gratis.es','compatibilidad-signos.es','tarot-del-dia.es','calcular-numerologia.es','horoscopo-de-hoy.es']}});</script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    window.clusterSitesByDomain={'carta-astral-gratis.es':'carta-astral','compatibilidad-signos.es':'compatibilidad-signos','tarot-del-dia.es':'tarot-del-dia','calcular-numerologia.es':'calcular-numerologia','horoscopo-de-hoy.es':'horoscopo-de-hoy'};
+    window.clusterAnalyticsMeta={
+      cluster_name:'astro-cluster',
+      site_key:'carta-astral',
+      site_domain:'carta-astral-gratis.es',
+      tool_type:'astrology_chart',
+      page_type:'sign_profile',
+      content_group:'evergreen',
+      entity_slug:'libra'
+    };
+    window.clusterTrack=function(eventName,params){
+      const payload=Object.assign({},window.clusterAnalyticsMeta,params||{});
+      Object.keys(payload).forEach(key=>{
+        if(payload[key]===''||payload[key]===null||payload[key]===undefined)delete payload[key];
+      });
+      payload.transport_type='beacon';
+      gtag('event',eventName,payload);
+    };
+    gtag('js',new Date());
+    gtag('config','G-DEWMQ73FH5',{
+      send_page_view:false,
+      linker:{domains:['carta-astral-gratis.es','compatibilidad-signos.es','tarot-del-dia.es','calcular-numerologia.es','horoscopo-de-hoy.es']}
+    });
+    window.clusterTrack('page_view',{
+      page_title:document.title,
+      page_location:location.href,
+      page_path:location.pathname,
+      page_hostname:location.hostname,
+      page_referrer:document.referrer||undefined
+    });
+    document.addEventListener('click',function(event){
+      const anchor=event.target.closest('a[href]');
+      if(!anchor||anchor.dataset.analyticsIgnore==='1')return;
+      const rawHref=anchor.getAttribute('href')||'';
+      if(!rawHref||rawHref.startsWith('#')||rawHref.startsWith('mailto:')||rawHref.startsWith('tel:'))return;
+      let url;
+      try{url=new URL(anchor.href,location.href);}catch{return;}
+      const normalizeHost=host=>(host||'').replace(/^www\./,'');
+      const destinationDomain=normalizeHost(url.hostname);
+      const currentDomain=normalizeHost(location.hostname);
+      const destinationSite=anchor.dataset.destinationSite||window.clusterSitesByDomain[destinationDomain]||'';
+      const linkText=(anchor.textContent||'').replace(/\s+/g,' ').trim().slice(0,120);
+      const linkContext=anchor.dataset.linkContext||'';
+      const adSlot=anchor.dataset.adSlot||'';
+      if(anchor.matches('.ad-ph,.ad-link,[data-ad-slot]')||url.pathname==='/publicidad'){
+        window.clusterTrack('advertiser_cta_click',{
+          link_url:url.href,
+          link_text:linkText,
+          link_context:linkContext||'advertiser_cta',
+          ad_slot:adSlot||'direct_advertiser_cta'
+        });
+        return;
+      }
+      if(destinationSite&&destinationDomain!==currentDomain){
+        window.clusterTrack('internal_tool_click',{
+          link_url:url.href,
+          link_text:linkText,
+          link_context:linkContext||'cluster_crosslink',
+          destination_site:destinationSite,
+          destination_domain:destinationDomain
+        });
+      }
+    },{capture:true});
+  </script>
   <!-- AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9368517395014039" crossorigin="anonymous"></script>
   <script type="application/ld+json">

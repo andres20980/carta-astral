@@ -24,6 +24,14 @@ declare -A DOMAINS=(
   [horoscopo-de-hoy]="horoscopo-de-hoy.es"
 )
 
+declare -A TOOL_TYPES=(
+  [carta-astral]="astrology_chart"
+  [compatibilidad-signos]="compatibility"
+  [tarot-del-dia]="tarot"
+  [calcular-numerologia]="numerology"
+  [horoscopo-de-hoy]="daily_horoscope"
+)
+
 declare -a CLUSTER_SITE_KEYS=(
   "carta-astral"
   "compatibilidad-signos"
@@ -109,7 +117,7 @@ crosslink_footer() {
     local domain="${DOMAINS[$key]}"
     local name="${CROSSLINKS[$key]}"
     $first || html+=" · "
-    html+="<a href=\"https://${domain}/\" rel=\"noopener\">${name}</a>"
+    html+="<a href=\"https://${domain}/\" rel=\"noopener\" data-link-context=\"network_footer\" data-destination-site=\"${key}\" data-destination-domain=\"${domain}\">${name}</a>"
     first=false
   done
   html+='</div>'
@@ -118,16 +126,92 @@ crosslink_footer() {
 
 ga4_head_snippet() {
   local measurement_id="$1"
+  local site_key="${2:-cluster}"
+  local page_type="${3:-page}"
+  local content_group="${4:-content}"
+  local entity_slug="${5:-}"
   local domains_js=""
+  local site_map_js=""
   local domain
+  local key
   for domain in "${TRACKING_DOMAINS[@]}"; do
     domains_js+="'${domain}',"
   done
   domains_js="${domains_js%,}"
+  for key in "${CLUSTER_SITE_KEYS[@]}"; do
+    site_map_js+="'${DOMAINS[$key]}':'${key}',"
+  done
+  site_map_js="${site_map_js%,}"
 
   cat <<EOF
   <script async src="https://www.googletagmanager.com/gtag/js?id=${measurement_id}"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${measurement_id}',{linker:{domains:[${domains_js}]}});</script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    window.clusterSitesByDomain={${site_map_js}};
+    window.clusterAnalyticsMeta={
+      cluster_name:'astro-cluster',
+      site_key:'${site_key}',
+      site_domain:'${DOMAINS[$site_key]}',
+      tool_type:'${TOOL_TYPES[$site_key]}',
+      page_type:'${page_type}',
+      content_group:'${content_group}',
+      entity_slug:'${entity_slug}'
+    };
+    window.clusterTrack=function(eventName,params){
+      const payload=Object.assign({},window.clusterAnalyticsMeta,params||{});
+      Object.keys(payload).forEach(key=>{
+        if(payload[key]===''||payload[key]===null||payload[key]===undefined)delete payload[key];
+      });
+      payload.transport_type='beacon';
+      gtag('event',eventName,payload);
+    };
+    gtag('js',new Date());
+    gtag('config','${measurement_id}',{
+      send_page_view:false,
+      linker:{domains:[${domains_js}]}
+    });
+    window.clusterTrack('page_view',{
+      page_title:document.title,
+      page_location:location.href,
+      page_path:location.pathname,
+      page_hostname:location.hostname,
+      page_referrer:document.referrer||undefined
+    });
+    document.addEventListener('click',function(event){
+      const anchor=event.target.closest('a[href]');
+      if(!anchor||anchor.dataset.analyticsIgnore==='1')return;
+      const rawHref=anchor.getAttribute('href')||'';
+      if(!rawHref||rawHref.startsWith('#')||rawHref.startsWith('mailto:')||rawHref.startsWith('tel:'))return;
+      let url;
+      try{url=new URL(anchor.href,location.href);}catch{return;}
+      const normalizeHost=host=>(host||'').replace(/^www\./,'');
+      const destinationDomain=normalizeHost(url.hostname);
+      const currentDomain=normalizeHost(location.hostname);
+      const destinationSite=anchor.dataset.destinationSite||window.clusterSitesByDomain[destinationDomain]||'';
+      const linkText=(anchor.textContent||'').replace(/\s+/g,' ').trim().slice(0,120);
+      const linkContext=anchor.dataset.linkContext||'';
+      const adSlot=anchor.dataset.adSlot||'';
+      if(anchor.matches('.ad-ph,.ad-link,[data-ad-slot]')||url.pathname==='/publicidad'){
+        window.clusterTrack('advertiser_cta_click',{
+          link_url:url.href,
+          link_text:linkText,
+          link_context:linkContext||'advertiser_cta',
+          ad_slot:adSlot||'direct_advertiser_cta'
+        });
+        return;
+      }
+      if(destinationSite&&destinationDomain!==currentDomain){
+        window.clusterTrack('internal_tool_click',{
+          link_url:url.href,
+          link_text:linkText,
+          link_context:linkContext||'cluster_crosslink',
+          destination_site:destinationSite,
+          destination_domain:destinationDomain
+        });
+      }
+    },{capture:true});
+  </script>
 EOF
 }
 
@@ -159,7 +243,7 @@ ad_block() {
   local cta="${4:-Ver espacios y tarifas ->}"
   cat <<EOF
 <div class="ad-h">
-  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui">
+  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui" data-ad-slot="premium_direct_cta" data-link-context="ad_block">
     <span class="ad-kicker">Espacio publicitario premium</span>
     <span class="ad-icon">${icon}</span>
     <span class="ad-label">${label}</span>
@@ -173,7 +257,7 @@ EOF
 footer_publicidad_line() {
   local current="$1"
   local name="${CROSSLINKS[$current]}"
-  echo "<p style=\"margin-top:.6rem\"><a href=\"/publicidad\" class=\"ad-link\">✦ Quiero anunciarme en ${name}: ver espacios y tarifas</a></p>"
+  echo "<p style=\"margin-top:.6rem\"><a href=\"/publicidad\" class=\"ad-link\" data-ad-slot=\"footer_publicidad_cta\" data-link-context=\"footer_publicidad\">✦ Quiero anunciarme en ${name}: ver espacios y tarifas</a></p>"
 }
 
 cluster_css() {
@@ -204,8 +288,8 @@ cluster_card() {
   local copy="$4"
   local cta="$5"
   local domain="${DOMAINS[$site_key]}"
-  cat <<EOF
-<a class="cluster-card" href="https://${domain}/">
+cat <<EOF
+<a class="cluster-card" href="https://${domain}/" data-link-context="cluster_recirculation" data-destination-site="${site_key}" data-destination-domain="${domain}">
   <span class="cluster-label">${label}</span>
   <span class="cluster-title">${title}</span>
   <span class="cluster-copy">${copy}</span>

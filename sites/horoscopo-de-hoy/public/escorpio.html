@@ -17,7 +17,73 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
   <script>if(location.hostname.endsWith('.web.app'))location.replace('https://horoscopo-de-hoy.es'+location.pathname+location.search);</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DEWMQ73FH5"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DEWMQ73FH5',{linker:{domains:['carta-astral-gratis.es','compatibilidad-signos.es','tarot-del-dia.es','calcular-numerologia.es','horoscopo-de-hoy.es']}});</script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    window.clusterSitesByDomain={'carta-astral-gratis.es':'carta-astral','compatibilidad-signos.es':'compatibilidad-signos','tarot-del-dia.es':'tarot-del-dia','calcular-numerologia.es':'calcular-numerologia','horoscopo-de-hoy.es':'horoscopo-de-hoy'};
+    window.clusterAnalyticsMeta={
+      cluster_name:'astro-cluster',
+      site_key:'horoscopo-de-hoy',
+      site_domain:'horoscopo-de-hoy.es',
+      tool_type:'daily_horoscope',
+      page_type:'daily_sign',
+      content_group:'daily_content',
+      entity_slug:'escorpio'
+    };
+    window.clusterTrack=function(eventName,params){
+      const payload=Object.assign({},window.clusterAnalyticsMeta,params||{});
+      Object.keys(payload).forEach(key=>{
+        if(payload[key]===''||payload[key]===null||payload[key]===undefined)delete payload[key];
+      });
+      payload.transport_type='beacon';
+      gtag('event',eventName,payload);
+    };
+    gtag('js',new Date());
+    gtag('config','G-DEWMQ73FH5',{
+      send_page_view:false,
+      linker:{domains:['carta-astral-gratis.es','compatibilidad-signos.es','tarot-del-dia.es','calcular-numerologia.es','horoscopo-de-hoy.es']}
+    });
+    window.clusterTrack('page_view',{
+      page_title:document.title,
+      page_location:location.href,
+      page_path:location.pathname,
+      page_hostname:location.hostname,
+      page_referrer:document.referrer||undefined
+    });
+    document.addEventListener('click',function(event){
+      const anchor=event.target.closest('a[href]');
+      if(!anchor||anchor.dataset.analyticsIgnore==='1')return;
+      const rawHref=anchor.getAttribute('href')||'';
+      if(!rawHref||rawHref.startsWith('#')||rawHref.startsWith('mailto:')||rawHref.startsWith('tel:'))return;
+      let url;
+      try{url=new URL(anchor.href,location.href);}catch{return;}
+      const normalizeHost=host=>(host||'').replace(/^www\./,'');
+      const destinationDomain=normalizeHost(url.hostname);
+      const currentDomain=normalizeHost(location.hostname);
+      const destinationSite=anchor.dataset.destinationSite||window.clusterSitesByDomain[destinationDomain]||'';
+      const linkText=(anchor.textContent||'').replace(/\s+/g,' ').trim().slice(0,120);
+      const linkContext=anchor.dataset.linkContext||'';
+      const adSlot=anchor.dataset.adSlot||'';
+      if(anchor.matches('.ad-ph,.ad-link,[data-ad-slot]')||url.pathname==='/publicidad'){
+        window.clusterTrack('advertiser_cta_click',{
+          link_url:url.href,
+          link_text:linkText,
+          link_context:linkContext||'advertiser_cta',
+          ad_slot:adSlot||'direct_advertiser_cta'
+        });
+        return;
+      }
+      if(destinationSite&&destinationDomain!==currentDomain){
+        window.clusterTrack('internal_tool_click',{
+          link_url:url.href,
+          link_text:linkText,
+          link_context:linkContext||'cluster_crosslink',
+          destination_site:destinationSite,
+          destination_domain:destinationDomain
+        });
+      }
+    },{capture:true});
+  </script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9368517395014039" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://pagead2.googlesyndication.com">
   <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
@@ -120,7 +186,7 @@
   </div>
 
 <div class="ad-h">
-  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui">
+  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui" data-ad-slot="premium_direct_cta" data-link-context="ad_block">
     <span class="ad-kicker">Espacio publicitario premium</span>
     <span class="ad-icon">⭐</span>
     <span class="ad-label">¿Quieres visibilidad diaria en una audiencia recurrente?</span>
@@ -150,7 +216,7 @@
   </div>
 
 <div class="ad-h">
-  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui">
+  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui" data-ad-slot="premium_direct_cta" data-link-context="ad_block">
     <span class="ad-kicker">Espacio publicitario premium</span>
     <span class="ad-icon">🌙</span>
     <span class="ad-label">Patrocina un signo o el trafico diario del sitio</span>
@@ -182,17 +248,17 @@
   <h2>Tambien te puede interesar</h2>
   <p>Si quieres seguir profundizando, aqui tienes otras herramientas relacionadas para conocer mejor tu situacion.</p>
   <div class="cluster-grid">
-    <a class="cluster-card" href="https://carta-astral-gratis.es/">
+    <a class="cluster-card" href="https://carta-astral-gratis.es/" data-link-context="cluster_recirculation" data-destination-site="carta-astral" data-destination-domain="carta-astral-gratis.es">
   <span class="cluster-label">Personalizado</span>
   <span class="cluster-title">Carta Astral Gratis</span>
   <span class="cluster-copy">Pasa de una prediccion general a una lectura personalizada con fecha, hora y lugar de nacimiento.</span>
   <span class="cluster-cta">Calcular ahora -></span>
-</a><a class="cluster-card" href="https://compatibilidad-signos.es/">
+</a><a class="cluster-card" href="https://compatibilidad-signos.es/" data-link-context="cluster_recirculation" data-destination-site="compatibilidad-signos" data-destination-domain="compatibilidad-signos.es">
   <span class="cluster-label">Relaciones</span>
   <span class="cluster-title">Compatibilidad de Signos</span>
   <span class="cluster-copy">Consulta la afinidad entre dos signos si quieres entender mejor una relacion o una persona concreta.</span>
   <span class="cluster-cta">Ver compatibilidad -></span>
-</a><a class="cluster-card" href="https://tarot-del-dia.es/">
+</a><a class="cluster-card" href="https://tarot-del-dia.es/" data-link-context="cluster_recirculation" data-destination-site="tarot-del-dia" data-destination-domain="tarot-del-dia.es">
   <span class="cluster-label">Consulta breve</span>
   <span class="cluster-title">Tarot del Dia</span>
   <span class="cluster-copy">Haz una tirada rapida si buscas una señal adicional para tomar una decision hoy.</span>
@@ -205,8 +271,8 @@
 <footer>
   <p>© 2026 Horóscopo de Hoy — Actualizado diariamente</p>
   <p><a href="/privacy">Privacidad</a> · <a href="/terms">Términos</a></p>
-  <p style="margin-top:.6rem"><a href="/publicidad" class="ad-link">✦ Quiero anunciarme en Horóscopo de Hoy: ver espacios y tarifas</a></p>
-  <div class="network">Nuestras herramientas: <a href="https://carta-astral-gratis.es/" rel="noopener">Carta Astral Gratis</a> · <a href="https://compatibilidad-signos.es/" rel="noopener">Compatibilidad de Signos</a> · <a href="https://tarot-del-dia.es/" rel="noopener">Tarot del Día</a> · <a href="https://calcular-numerologia.es/" rel="noopener">Calcular Numerología</a></div>
+  <p style="margin-top:.6rem"><a href="/publicidad" class="ad-link" data-ad-slot="footer_publicidad_cta" data-link-context="footer_publicidad">✦ Quiero anunciarme en Horóscopo de Hoy: ver espacios y tarifas</a></p>
+  <div class="network">Nuestras herramientas: <a href="https://carta-astral-gratis.es/" rel="noopener" data-link-context="network_footer" data-destination-site="carta-astral" data-destination-domain="carta-astral-gratis.es">Carta Astral Gratis</a> · <a href="https://compatibilidad-signos.es/" rel="noopener" data-link-context="network_footer" data-destination-site="compatibilidad-signos" data-destination-domain="compatibilidad-signos.es">Compatibilidad de Signos</a> · <a href="https://tarot-del-dia.es/" rel="noopener" data-link-context="network_footer" data-destination-site="tarot-del-dia" data-destination-domain="tarot-del-dia.es">Tarot del Día</a> · <a href="https://calcular-numerologia.es/" rel="noopener" data-link-context="network_footer" data-destination-site="calcular-numerologia" data-destination-domain="calcular-numerologia.es">Calcular Numerología</a></div>
 </footer>
 </div>
 </body>

@@ -33,7 +33,78 @@
   <script>if(location.hostname.endsWith('.web.app'))location.replace('https://carta-astral-gratis.es'+location.pathname+location.search);</script>
   <!-- GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DEWMQ73FH5"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DEWMQ73FH5',{linker:{domains:['carta-astral-gratis.es','compatibilidad-signos.es','tarot-del-dia.es','calcular-numerologia.es','horoscopo-de-hoy.es']}});</script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    window.clusterSitesByDomain={
+      'carta-astral-gratis.es':'carta-astral',
+      'compatibilidad-signos.es':'compatibilidad-signos',
+      'tarot-del-dia.es':'tarot-del-dia',
+      'calcular-numerologia.es':'calcular-numerologia',
+      'horoscopo-de-hoy.es':'horoscopo-de-hoy'
+    };
+    window.clusterAnalyticsMeta={
+      cluster_name:'astro-cluster',
+      site_key:'carta-astral',
+      site_domain:'carta-astral-gratis.es',
+      tool_type:'astrology_chart',
+      page_type:'tool_home',
+      content_group:'tool'
+    };
+    window.clusterTrack=function(eventName,params){
+      const payload=Object.assign({},window.clusterAnalyticsMeta,params||{});
+      Object.keys(payload).forEach(key=>{
+        if(payload[key]===''||payload[key]===null||payload[key]===undefined)delete payload[key];
+      });
+      payload.transport_type='beacon';
+      gtag('event',eventName,payload);
+    };
+    gtag('js',new Date());
+    gtag('config','G-DEWMQ73FH5',{
+      send_page_view:false,
+      linker:{domains:['carta-astral-gratis.es','compatibilidad-signos.es','tarot-del-dia.es','calcular-numerologia.es','horoscopo-de-hoy.es']}
+    });
+    window.clusterTrack('page_view',{
+      page_title:document.title,
+      page_location:location.href,
+      page_path:location.pathname,
+      page_hostname:location.hostname,
+      page_referrer:document.referrer||undefined
+    });
+    document.addEventListener('click',function(event){
+      const anchor=event.target.closest('a[href]');
+      if(!anchor||anchor.dataset.analyticsIgnore==='1')return;
+      const rawHref=anchor.getAttribute('href')||'';
+      if(!rawHref||rawHref.startsWith('#')||rawHref.startsWith('mailto:')||rawHref.startsWith('tel:'))return;
+      let url;
+      try{url=new URL(anchor.href,location.href);}catch{return;}
+      const normalizeHost=host=>(host||'').replace(/^www\./,'');
+      const destinationDomain=normalizeHost(url.hostname);
+      const currentDomain=normalizeHost(location.hostname);
+      const destinationSite=anchor.dataset.destinationSite||window.clusterSitesByDomain[destinationDomain]||'';
+      const linkText=(anchor.textContent||'').replace(/\s+/g,' ').trim().slice(0,120);
+      const linkContext=anchor.dataset.linkContext||'';
+      const adSlot=anchor.dataset.adSlot||'';
+      if(anchor.matches('.ad-ph,.ad-link,[data-ad-slot]')||url.pathname==='/publicidad'){
+        window.clusterTrack('advertiser_cta_click',{
+          link_url:url.href,
+          link_text:linkText,
+          link_context:linkContext||'advertiser_cta',
+          ad_slot:adSlot||'direct_advertiser_cta'
+        });
+        return;
+      }
+      if(destinationSite&&destinationDomain!==currentDomain){
+        window.clusterTrack('internal_tool_click',{
+          link_url:url.href,
+          link_text:linkText,
+          link_context:linkContext||'cluster_crosslink',
+          destination_site:destinationSite,
+          destination_domain:destinationDomain
+        });
+      }
+    },{capture:true});
+  </script>
   <!-- AdSense Auto Ads (defer to improve LCP) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9368517395014039" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://pagead2.googlesyndication.com">
@@ -619,25 +690,25 @@
   <h2>Después de tu carta, puedes seguir profundizando</h2>
   <p>Si te apetece seguir explorando, aquí tienes herramientas complementarias para relaciones, predicciones diarias, tarot y numerología.</p>
   <div class="suite-grid">
-    <a class="suite-card" href="https://compatibilidad-signos.es/">
+    <a class="suite-card" href="https://compatibilidad-signos.es/" data-link-context="tool_suite" data-destination-site="compatibilidad-signos" data-destination-domain="compatibilidad-signos.es">
       <span class="suite-label">Relaciones</span>
       <span class="suite-title">Compatibilidad de Signos</span>
       <span class="suite-copy">Comprueba la afinidad entre dos signos y entiende mejor la dinámica de pareja, atracción y convivencia.</span>
       <span class="suite-cta">Explorar compatibilidad -></span>
     </a>
-    <a class="suite-card" href="https://tarot-del-dia.es/">
+    <a class="suite-card" href="https://tarot-del-dia.es/" data-link-context="tool_suite" data-destination-site="tarot-del-dia" data-destination-domain="tarot-del-dia.es">
       <span class="suite-label">Respuesta rápida</span>
       <span class="suite-title">Tarot del Dia</span>
       <span class="suite-copy">Haz una tirada breve si quieres una señal simbólica inmediata para el momento que estás viviendo.</span>
       <span class="suite-cta">Hacer una tirada -></span>
     </a>
-    <a class="suite-card" href="https://horoscopo-de-hoy.es/">
+    <a class="suite-card" href="https://horoscopo-de-hoy.es/" data-link-context="tool_suite" data-destination-site="horoscopo-de-hoy" data-destination-domain="horoscopo-de-hoy.es">
       <span class="suite-label">Recurrencia</span>
       <span class="suite-title">Horoscopo de Hoy</span>
       <span class="suite-copy">Consulta tu predicción diaria para amor, trabajo y energía general según tu signo.</span>
       <span class="suite-cta">Leer predicciones -></span>
     </a>
-    <a class="suite-card" href="https://calcular-numerologia.es/">
+    <a class="suite-card" href="https://calcular-numerologia.es/" data-link-context="tool_suite" data-destination-site="calcular-numerologia" data-destination-domain="calcular-numerologia.es">
       <span class="suite-label">Autoconocimiento</span>
       <span class="suite-title">Calcular Numerologia</span>
       <span class="suite-copy">Añade otra capa de lectura personal calculando tu número de vida y su significado principal.</span>
@@ -648,7 +719,7 @@
 
 <!-- Ad before footer (Auto Ads fills this area) -->
 <div class="ad-h" style="max-width:780px;margin:1rem auto">
-  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anúnciate aquí">
+  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anúnciate aquí" data-ad-slot="footer_hero_cta" data-link-context="footer_banner">
     <span class="ad-icon">⚶</span>
     <span class="ad-label">¿Quieres tu publicidad aquí?</span>
     <span class="ad-cta">Escríbenos →</span>
@@ -658,7 +729,7 @@
 <footer>
   <p>© 2026 Carta Astral Gratis · Cálculo con Swiss Ephemeris · Sistema Placidus</p>
   <p style="margin-top:.3rem"><a href="/privacy">Política de privacidad</a> · <a href="/terms">Términos de uso</a> · <a href="/#casas-info">Sobre nosotros</a></p>
-  <p style="margin-top:.6rem"><a href="/publicidad" class="ad-link">✦ ¿Quieres anunciarte en nuestra web? Ver espacios y tarifas</a></p>
+  <p style="margin-top:.6rem"><a href="/publicidad" class="ad-link" data-ad-slot="footer_publicidad_cta" data-link-context="footer_publicidad">✦ ¿Quieres anunciarte en nuestra web? Ver espacios y tarifas</a></p>
   <p style="margin-top:.3rem;font-size:.7rem;color:var(--muted)">Desarrollado por especialistas en astronomía computacional. Los cálculos utilizan la Swiss Ephemeris con precisión de segundos de arco.</p>
   <p style="margin-top:.5rem;font-style:italic">"Las estrellas no obligan, inclinan."</p>
   <p style="margin-top:.8rem;font-size:.72rem;color:var(--muted)">Nuestras herramientas: <a href="https://compatibilidad-signos.es/">Compatibilidad de Signos</a> · <a href="https://tarot-del-dia.es/">Tarot del Día</a> · <a href="https://calcular-numerologia.es/">Calcular Numerología</a> · <a href="https://horoscopo-de-hoy.es/">Horóscopo de Hoy</a></p>
@@ -679,6 +750,7 @@ function loadLeaflet(){return new Promise(res=>{
 </script>
 <script>
 let step=1,bLat=null,bLng=null,bCity='',map=null,marker=null,geoT=null,chartData=null,mode=null;
+let toolStarted=false;
 
 // Social proof counters — fetched from GA4 via /stats.json + localStorage delta
 let CHART_BASE=0,VISITOR_BASE=0;
@@ -726,7 +798,17 @@ function valStep(){
   else if(step===2){document.getElementById('btnN2').disabled=!(bLat!==null&&bLng!==null)}
 }
 
-function goNext(){if(step===1){step=2;updSteps();loadLeaflet().then(()=>{setTimeout(()=>{initMap();autoGeoPlace()},100)})}else if(step===2){step=3;updSteps();calcChart()}}
+function goNext(){
+  if(step===1){
+    if(!toolStarted&&window.clusterTrack){
+      toolStarted=true;
+      window.clusterTrack('tool_start',{tool_action:'chart_flow_started',input_mode:mode||'manual'});
+    }
+    step=2;updSteps();loadLeaflet().then(()=>{setTimeout(()=>{initMap();autoGeoPlace()},100)})
+  }else if(step===2){
+    step=3;updSteps();calcChart()
+  }
+}
 async function autoGeoPlace(){
   const p=document.getElementById('fplace')?document.getElementById('fplace').value.trim():'';
   if(!p)return;
@@ -754,7 +836,7 @@ async function handleFile(f){
     const r=await fetch('/api/parse-pdf',{method:'POST',body:fd});
     if(!r.ok){const e=await r.json();throw new Error(e.detail||'Error al procesar')}
     const d=await r.json(),ext=fillPdf(d);
-    gtag('event','upload_certificate',{fields_extracted:ext,ocr_used:!!d.ocr_used});
+    if(window.clusterTrack)window.clusterTrack('upload_certificate',{fields_extracted:String(ext),ocr_used:!!d.ocr_used});
     if(ext===0){er.textContent='No se pudieron extraer datos. Rellena los campos manualmente.';er.classList.remove('hidden');dz.innerHTML=`<div class="ic">⚠️</div><p><strong>${f.name}</strong></p><p style="font-size:.8rem;color:var(--muted)">Rellena manualmente</p>`}
     else{const ocr=d.ocr_used?' (OCR — revisa)':'',part=ext<3?' ⚠️ Completa los campos vacíos.':'';ok.textContent='✓ Datos extraídos'+ocr+part;ok.classList.remove('hidden');dz.innerHTML=`<div class="ic">✅</div><p><strong>${f.name}</strong></p><p style="font-size:.8rem;color:var(--muted)">Verifica abajo${ocr}</p>`}
   }catch(e){
@@ -813,7 +895,7 @@ async function calcChart(){
     const r=await fetch('/api/calculate-chart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     if(!r.ok)throw new Error((await r.json()).detail||'Error');
     chartData=await r.json();renderChart(chartData);incChartCount();
-    gtag('event','chart_calculated',{sign:chartData.ascendant?.sign||''});
+    if(window.clusterTrack)window.clusterTrack('chart_calculated',{sign:chartData.ascendant?.sign||'',city:body.city||'',input_mode:mode||'manual'});
   }catch(e){rs.innerHTML=`<p class="alert alert-err">Error: ${e.message}</p>`;rs.classList.remove('hidden')}
   ld.classList.add('hidden');
 }
@@ -839,7 +921,7 @@ function renderChart(c){
   if(c.chiron)h+=`<tr><td class="glyph">⚷</td><td>Quirón</td><td>${c.chiron.sign}</td><td>${c.chiron.degree_dms}</td><td>${c.chiron.house}</td><td>—</td><td>—</td></tr>`;
   h+='</tbody></table>';
   // Ad between planets and houses
-  h+=`<div class="ad-h" style="margin:1.5rem 0"><div class="ad-ph ad-ph-h" onclick="location.href='/publicidad'"><span class="ad-icon">✦</span><span class="ad-label">¿Vendes cristales, tarot o incienso?</span><span class="ad-cta">Anúnciate aquí</span></div></div>`;
+  h+=`<div class="ad-h" style="margin:1.5rem 0"><a class="ad-ph ad-ph-h" href="/publicidad" data-ad-slot="chart_planets_cta" data-link-context="chart_result"><span class="ad-icon">✦</span><span class="ad-label">¿Vendes cristales, tarot o incienso?</span><span class="ad-cta">Anúnciate aquí</span></a></div>`;
   // Houses
   h+=`<h3>🏠 Cúspides de las Casas</h3><table><thead><tr><th>Casa</th><th>Signo</th><th>Grado</th></tr></thead><tbody>`;
   for(const x of c.houses)h+=`<tr><td>${x.number}</td><td>${x.sign}</td><td>${x.degree_dms}</td></tr>`;
@@ -850,7 +932,7 @@ function renderChart(c){
   for(const a of c.aspects)h+=`<tr><td>${a.p1}</td><td class="glyph ${ac[a.aspect]||''}">${a.glyph}</td><td class="${ac[a.aspect]||''}">${a.aspect}</td><td>${a.p2}</td><td>${a.orb}°</td></tr>`;
   h+='</tbody></table>';
   // Ad between aspects and elements
-  h+=`<div class="ad-h" style="margin:1.5rem 0"><div class="ad-ph ad-ph-h" onclick="location.href='/publicidad'"><span class="ad-icon">☆</span><span class="ad-label">¿Ofreces consultas astrológicas?</span><span class="ad-cta">Tu anuncio aquí</span></div></div>`;
+  h+=`<div class="ad-h" style="margin:1.5rem 0"><a class="ad-ph ad-ph-h" href="/publicidad" data-ad-slot="chart_aspects_cta" data-link-context="chart_result"><span class="ad-icon">☆</span><span class="ad-label">¿Ofreces consultas astrológicas?</span><span class="ad-cta">Tu anuncio aquí</span></a></div>`;
   // Elements
   const ec={'Fuego':'fire','Tierra':'earth','Aire':'air','Agua':'water'};
   h+=`<h3>🔥 Distribución Elemental</h3><div class="elem-bars">`;
@@ -880,6 +962,7 @@ document.getElementById('interpModal').addEventListener('click',e=>{if(e.target=
 
 async function requestInterpretation(){
   const btn=document.getElementById('btnInterpret');
+  if(window.clusterTrack)window.clusterTrack('interpretation_requested',{sign:chartData?.ascendant?.sign||''});
   btn.disabled=true;btn.textContent='🔮 Leyendo las estrellas...';
   const ic=document.getElementById('interpContent'),ia=document.getElementById('interpActions');
   ic.innerHTML='<div class="interp-loading"><div class="spinner"></div><p style="color:var(--muted)">Preparando tu interpretación exhaustiva...</p><p style="color:var(--muted);font-size:.8rem">Estamos analizando cada planeta, casa y aspecto en profundidad. Puede tardar 30-60 segundos.</p></div>';
@@ -899,7 +982,7 @@ async function requestInterpretation(){
     const data=await r.json();
     ic.innerHTML='<div class="interp-body">'+data.interpretation+'</div>';
     ia.style.display='';
-    gtag('event','interpretation_generated',{sign:chartData.ascendant?.sign||''});
+    if(window.clusterTrack)window.clusterTrack('interpretation_generated',{sign:chartData.ascendant?.sign||''});
   }catch(e){
     ic.innerHTML=`<div style="text-align:center;padding:2rem"><p class="alert alert-err">❌ ${e.message}</p><p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">Inténtalo de nuevo en unos segundos.</p></div>`;
     ia.style.display='';

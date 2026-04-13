@@ -108,7 +108,7 @@ element_desc() {
 
 # ── Generate common <head> ───────────────────────────────────
 gen_head() {
-  local title="$1" desc="$2" canonical="$3"
+  local title="$1" desc="$2" canonical="$3" page_type="${4:-page}" content_group="${5:-content}" entity_slug="${6:-}"
   cat <<ENDHEAD
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,7 +125,7 @@ gen_head() {
   <link href="${BRAND_FONTS}" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
   <script>if(location.hostname.endsWith('.web.app'))location.replace('https://${DOMAIN}'+location.pathname+location.search);</script>
-$(ga4_head_snippet "$GA4")
+$(ga4_head_snippet "$GA4" "$SITE_KEY" "$page_type" "$content_group" "$entity_slug")
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://pagead2.googlesyndication.com">
   <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
@@ -214,7 +214,7 @@ for s1 in "${SLUGS[@]}"; do
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "$title" "$desc" "$url_path")
+$(gen_head "$title" "$desc" "$url_path" "compatibility_landing" "long_tail" "$slug_page")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Article","headline":"Compatibilidad ${n1} y ${n2}","description":"${desc}","author":{"@type":"Organization","name":"Compatibilidad Signos"},"publisher":{"@type":"Organization","name":"Compatibilidad Signos","url":"https://${DOMAIN}/"},"mainEntityOfPage":"https://${DOMAIN}${url_path}","inLanguage":"es"}
   </script>
@@ -330,7 +330,7 @@ cat > "$PUBLIC/index.html" <<ENDINDEX
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "$INDEX_TITLE" "$INDEX_DESC" "/")
+$(gen_head "$INDEX_TITLE" "$INDEX_DESC" "/" "tool_home" "tool")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebSite","name":"Compatibilidad de Signos","url":"https://${DOMAIN}/","description":"${INDEX_DESC}","inLanguage":"es"}
   </script>
@@ -376,7 +376,7 @@ ${COMMON_CSS}
       <span style="font-size:1.2rem;color:var(--accent)">❤️</span>
       <select id="s2">$(for s in "${SLUGS[@]}"; do echo "<option value=\"$s\">${GLYPH[$s]} ${NAME[$s]}</option>"; done)</select>
     </div>
-    <button class="btn" onclick="location.href='/'+document.getElementById('s1').value+'-'+document.getElementById('s2').value">Ver compatibilidad →</button>
+    <button class="btn" onclick="openCompatibilityFromHome()">Ver compatibilidad →</button>
   </div>
 
 $(ad_block "❤" "Publicidad premium en un nicho de amor y afinidad" "La ubicacion mas visible para captar usuarios antes de que profundicen en la tabla completa." "Informarme ->")
@@ -424,6 +424,21 @@ $(cluster_recirculation_block "$SITE_KEY")
 
 $(gen_footer)
 </div>
+<script>
+function openCompatibilityFromHome(){
+  const s1=document.getElementById('s1').value;
+  const s2=document.getElementById('s2').value;
+  const target='/' + s1 + '-' + s2;
+  if(window.clusterTrack){
+    window.clusterTrack('compatibility_view',{
+      selected_sign_1:s1,
+      selected_sign_2:s2,
+      target_path:target
+    });
+  }
+  setTimeout(()=>{ location.href=target; },80);
+}
+</script>
 </body>
 </html>
 ENDINDEX

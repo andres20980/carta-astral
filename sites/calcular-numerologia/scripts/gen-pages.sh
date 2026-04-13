@@ -22,7 +22,7 @@ CROSSLINKS_HTML=$(crosslink_footer "$SITE_KEY")
 
 # ── Common head ──────────────────────────────────────────────
 gen_head() {
-  local title="$1" desc="$2" canonical="$3"
+  local title="$1" desc="$2" canonical="$3" page_type="${4:-page}" content_group="${5:-content}" entity_slug="${6:-}"
   cat <<ENDHEAD
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,7 +39,7 @@ gen_head() {
   <link href="${BRAND_FONTS}" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
   <script>if(location.hostname.endsWith('.web.app'))location.replace('https://${DOMAIN}'+location.pathname+location.search);</script>
-$(ga4_head_snippet "$GA4")
+$(ga4_head_snippet "$GA4" "$SITE_KEY" "$page_type" "$content_group" "$entity_slug")
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://pagead2.googlesyndication.com">
   <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
@@ -141,7 +141,7 @@ for n in $(seq 1 9); do
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "$title" "$desc" "$url_path")
+$(gen_head "$title" "$desc" "$url_path" "number_profile" "evergreen" "$n")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Article","headline":"Número de Vida ${n}: ${NUM_TITLES[$n]}","description":"${desc}","author":{"@type":"Organization","name":"Calcular Numerología"},"publisher":{"@type":"Organization","name":"Calcular Numerología","url":"https://${DOMAIN}/"},"mainEntityOfPage":"https://${DOMAIN}${url_path}","inLanguage":"es"}
   </script>
@@ -239,7 +239,7 @@ cat > "$PUBLIC/numero-de-vida/index.html" <<ENDNUMIDX
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "Los 9 Números de Vida — Significado en Numerología" "Descubre el significado de los 9 números de vida en numerología. Del 1 al 9: personalidad, amor, trabajo y compatibilidad." "/numero-de-vida/")
+$(gen_head "Los 9 Números de Vida — Significado en Numerología" "Descubre el significado de los 9 números de vida en numerología. Del 1 al 9: personalidad, amor, trabajo y compatibilidad." "/numero-de-vida/" "content_hub" "hub" "numero-de-vida")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Números de Vida","item":"https://${DOMAIN}/numero-de-vida/"}]}
   </script>
@@ -292,7 +292,7 @@ cat > "$PUBLIC/index.html" <<ENDIDX
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "$INDEX_TITLE" "$INDEX_DESC" "/")
+$(gen_head "$INDEX_TITLE" "$INDEX_DESC" "/" "tool_home" "tool")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebSite","name":"Calcular Numerología","url":"https://${DOMAIN}/","description":"Calculadora de numerología gratis online.","inLanguage":"es"}
   </script>
@@ -386,10 +386,15 @@ $(gen_footer)
 
 <script>
 const TITLES=["","El Líder","El Diplomático","El Creativo","El Constructor","El Aventurero","El Responsable","El Buscador","El Poderoso","El Humanitario"];
+let numerologyStarted=false;
 function reduce(n){while(n>9)n=[...String(n)].reduce((a,b)=>a+ +b,0);return n}
 function calculate(){
   const d=document.getElementById('birthdate').value;
   if(!d)return;
+  if(!numerologyStarted){
+    numerologyStarted=true;
+    if(window.clusterTrack)window.clusterTrack('tool_start',{tool_action:'numerology_calculate'});
+  }
   const digits=d.replace(/-/g,'');
   const sum=[...digits].reduce((a,b)=>a+ +b,0);
   const num=reduce(sum);
@@ -397,6 +402,12 @@ function calculate(){
   const steps=parts[2]+'/'+parts[1]+'/'+parts[0]+' → '+[...digits].join('+')+' = '+sum+(sum>9?' → '+num:'');
   document.getElementById('result').innerHTML='<div class="big-num">'+num+'</div><div class="title">'+TITLES[num]+'</div><div class="steps">'+steps+'</div><a class="link" href="/numero-de-vida/'+num+'">Leer significado completo →</a>';
   document.getElementById('result').classList.add('show');
+  if(window.clusterTrack){
+    window.clusterTrack('numerology_calculated',{
+      life_number:String(num),
+      calculation_sum:String(sum)
+    });
+  }
 }
 </script>
 </body>

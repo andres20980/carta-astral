@@ -22,7 +22,7 @@ CROSSLINKS_HTML=$(crosslink_footer "$SITE_KEY")
 
 # ── Common head ──────────────────────────────────────────────
 gen_head() {
-  local title="$1" desc="$2" canonical="$3"
+  local title="$1" desc="$2" canonical="$3" page_type="${4:-page}" content_group="${5:-content}" entity_slug="${6:-}"
   cat <<ENDHEAD
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,7 +39,7 @@ gen_head() {
   <link href="${BRAND_FONTS}" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
   <script>if(location.hostname.endsWith('.web.app'))location.replace('https://${DOMAIN}'+location.pathname+location.search);</script>
-$(ga4_head_snippet "$GA4")
+$(ga4_head_snippet "$GA4" "$SITE_KEY" "$page_type" "$content_group" "$entity_slug")
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://pagead2.googlesyndication.com">
   <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
@@ -122,7 +122,7 @@ for i in "${!MAJOR_SLUGS[@]}"; do
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "$title" "$meta_desc" "$url_path")
+$(gen_head "$title" "$meta_desc" "$url_path" "arcana_profile" "evergreen" "$slug")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Article","headline":"${name} — Significado en el Tarot","description":"${meta_desc}","author":{"@type":"Organization","name":"Tarot del Día"},"publisher":{"@type":"Organization","name":"Tarot del Día","url":"https://${DOMAIN}/"},"mainEntityOfPage":"https://${DOMAIN}${url_path}","inLanguage":"es"}
   </script>
@@ -236,7 +236,7 @@ cat > "$PUBLIC/arcanos-mayores/index.html" <<ENDMAJOR
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "Los 22 Arcanos Mayores del Tarot — Significado Completo" "Guía completa de los 22 Arcanos Mayores del tarot. Significado, interpretación al derecho e invertida de cada carta. De El Loco a El Mundo." "/arcanos-mayores/")
+$(gen_head "Los 22 Arcanos Mayores del Tarot — Significado Completo" "Guía completa de los 22 Arcanos Mayores del tarot. Significado, interpretación al derecho e invertida de cada carta. De El Loco a El Mundo." "/arcanos-mayores/" "content_hub" "hub" "arcanos-mayores")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Arcanos Mayores","item":"https://${DOMAIN}/arcanos-mayores/"}]}
   </script>
@@ -300,7 +300,7 @@ cat > "$PUBLIC/index.html" <<'ENDINDEX_START'
 <head>
 ENDINDEX_START
 
-gen_head "$INDEX_TITLE" "$INDEX_DESC" "/" >> "$PUBLIC/index.html"
+gen_head "$INDEX_TITLE" "$INDEX_DESC" "/" "tool_home" "tool" >> "$PUBLIC/index.html"
 
 cat >> "$PUBLIC/index.html" <<ENDINDEX
   <script type="application/ld+json">
@@ -396,6 +396,7 @@ $(gen_footer)
   const CARDS=${JS_CARDS};
   const POS=['Pasado','Presente','Futuro'];
   let chosen=[];
+  let started=false;
   const deck=document.getElementById('deck');
   const shuffled=[...Array(CARDS.length).keys()].sort(()=>Math.random()-.5);
 
@@ -410,6 +411,10 @@ $(gen_footer)
 
   function pickCard(el,ci){
     if(chosen.length>=3)return;
+    if(!started){
+      started=true;
+      if(window.clusterTrack)window.clusterTrack('tool_start',{tool_action:'tarot_draw_start'});
+    }
     el.classList.add('picked');
     const isReversed=Math.random()<.35;
     const card={...CARDS[ci],reversed:isReversed};
@@ -424,6 +429,14 @@ $(gen_footer)
     document.getElementById('instruction').textContent='✨ Tu lectura está lista';
     const res=document.getElementById('result');
     let html='';
+    if(window.clusterTrack){
+      window.clusterTrack('tarot_reading_complete',{
+        cards_chosen:String(chosen.length),
+        first_card:chosen[0]?.slug||'',
+        second_card:chosen[1]?.slug||'',
+        third_card:chosen[2]?.slug||''
+      });
+    }
     chosen.forEach((c,i)=>{
       const meaning=c.reversed?c.rev:c.up;
       html+='<div class="reading"><h3>'+POS[i]+': '+c.n+' ('+c.num+')'+(c.reversed?' ↕ Invertida':'')+'</h3><p>'+meaning+'</p><a class="link" href="/arcanos-mayores/'+c.slug+'">Leer significado completo de '+c.n+' →</a></div>';
