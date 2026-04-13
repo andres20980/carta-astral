@@ -39,12 +39,30 @@
       "file": "public/index.html",
       "title": "Carta Astral Gratis — Calcula tu mapa natal con hora exacta",
       "description": "Genera tu carta astral gratis con la hora exacta de nacimiento. Cálculo preciso con Swiss Ephemeris: planetas, casas, ascendente y aspectos. Online sin registro.",
+      "extraTargets": [
+        {
+          "file": "scripts/gen-sign-pages.sh",
+          "shellVariables": {
+            "SIGN_PAGE_TITLE_TEMPLATE": "Carta Astral {{name}} {{glyph}} — Signo, rasgos y significado natal",
+            "SIGN_PAGE_DESC_TEMPLATE": "Carta astral de {{name}} {{glyph}}: fechas ({{dates}}), elemento {{element}}, planeta regente {{ruler}} y significado en tu carta natal. Calcula tu carta astral gratis."
+          }
+        }
+      ],
       "h1": "Descubre tu Carta Astral"
     },
     "carta astral": {
       "file": "public/index.html",
       "title": "Carta Astral Gratis Online — Calcular con hora y lugar exacto de nacimiento",
       "description": "Carta astral gratis online con cálculo astronómico preciso. Introduce tu fecha, hora y lugar de nacimiento. Planetas en signos y casas, ascendente y aspectos natales.",
+      "extraTargets": [
+        {
+          "file": "scripts/gen-sign-pages.sh",
+          "shellVariables": {
+            "SIGN_PAGE_TITLE_TEMPLATE": "Carta Astral {{name}} {{glyph}} — Características y lectura del signo",
+            "SIGN_PAGE_DESC_TEMPLATE": "Descubre {{name}} en la carta astral: fechas ({{dates}}), elemento {{element}}, regente {{ruler}} y cómo influye este signo en tu mapa natal."
+          }
+        }
+      ],
       "h1": "Descubre tu Carta Astral"
     },
     "carta natal gratis": {
@@ -122,18 +140,30 @@
       "rulesByQuery": {
         "compatibilidad de signos": {
           "file": "scripts/gen-pages.sh",
-          "title": "Compatibilidad de Signos Zodiacales — Calculadora Gratis",
-          "description": "Descubre la compatibilidad entre los 12 signos del zodíaco. 144 combinaciones analizadas: fortalezas, retos y porcentaje de afinidad. Herramienta gratuita."
+          "shellVariables": {
+            "INDEX_TITLE": "Compatibilidad de Signos Zodiacales — Calculadora Gratis",
+            "INDEX_DESC": "Descubre la compatibilidad entre los 12 signos del zodíaco. 144 combinaciones analizadas: fortalezas, retos y porcentaje de afinidad. Herramienta gratuita.",
+            "PAIR_TITLE_TEMPLATE": "Compatibilidad {{name1}} y {{name2}} {{glyphs}} — {{score}}% {{label}}",
+            "PAIR_DESC_TEMPLATE": "¿Son compatibles {{name1}} y {{name2}}? Descubre su afinidad amorosa ({{score}}%), fortalezas, retos y cómo se complementan según sus elementos y planetas regentes."
+          }
         },
         "compatibilidad signos": {
           "file": "scripts/gen-pages.sh",
-          "title": "Compatibilidad de Signos Gratis — Calcula tu Afinidad Amorosa",
-          "description": "Calcula la compatibilidad de signos gratis y compara las 144 combinaciones del zodíaco con porcentaje, puntos fuertes, retos y consejos."
+          "shellVariables": {
+            "INDEX_TITLE": "Compatibilidad de Signos Gratis — Calcula tu Afinidad Amorosa",
+            "INDEX_DESC": "Calcula la compatibilidad de signos gratis y compara las 144 combinaciones del zodíaco con porcentaje, puntos fuertes, retos y consejos.",
+            "PAIR_TITLE_TEMPLATE": "Compatibilidad amorosa entre {{name1}} y {{name2}} {{glyphs}} — {{score}}% de afinidad",
+            "PAIR_DESC_TEMPLATE": "Calcula la compatibilidad amorosa entre {{name1}} y {{name2}}. Revisa su porcentaje de afinidad ({{score}}%), fortalezas de pareja y retos según el zodíaco."
+          }
         },
         "compatibilidad amorosa signos": {
           "file": "scripts/gen-pages.sh",
-          "title": "Compatibilidad Amorosa de Signos — Porcentaje y Afinidad",
-          "description": "Consulta la compatibilidad amorosa de signos con afinidad, química elemental y claves para entender mejor cada combinación zodiacal."
+          "shellVariables": {
+            "INDEX_TITLE": "Compatibilidad Amorosa de Signos — Porcentaje y Afinidad",
+            "INDEX_DESC": "Consulta la compatibilidad amorosa de signos con afinidad, química elemental y claves para entender mejor cada combinación zodiacal.",
+            "PAIR_TITLE_TEMPLATE": "{{name1}} y {{name2}} en el amor {{glyphs}} — Compatibilidad {{score}}%",
+            "PAIR_DESC_TEMPLATE": "Descubre cómo encajan {{name1}} y {{name2}} en el amor: porcentaje de compatibilidad ({{score}}%), química emocional y consejos para la relación."
+          }
         }
       }
     },
@@ -162,18 +192,30 @@
       "rulesByQuery": {
         "tarot del día": {
           "file": "scripts/gen-pages.sh",
-          "title": "Tarot del Día Gratis — Tirada de 3 Cartas Online",
-          "description": "Haz tu tarot del día gratis con una tirada online de 3 cartas. Descubre el mensaje del pasado, presente y futuro con interpretación inmediata."
+          "shellVariables": {
+            "INDEX_TITLE": "Tarot del Día Gratis — Tirada de 3 Cartas Online",
+            "INDEX_DESC": "Haz tu tarot del día gratis con una tirada online de 3 cartas. Descubre el mensaje del pasado, presente y futuro con interpretación inmediata.",
+            "MAJOR_TITLE_TEMPLATE": "{{name}} ({{num}}) — Significado en el Tarot | Tarot del Día",
+            "MAJOR_DESC_TEMPLATE": "Significado de {{name}} (Arcano Mayor {{num}}) en el tarot. Al derecho: {{upright}}. Invertida: {{reversed}}. Descubre su mensaje para hoy."
+          }
         },
         "tarot gratis": {
           "file": "scripts/gen-pages.sh",
-          "title": "Tarot Gratis Online — Tirada del Día con 3 Cartas",
-          "description": "Consulta tu tarot gratis online y elige 3 cartas para recibir una lectura rápida sobre amor, trabajo y energía del momento."
+          "shellVariables": {
+            "INDEX_TITLE": "Tarot Gratis Online — Tirada del Día con 3 Cartas",
+            "INDEX_DESC": "Consulta tu tarot gratis online y elige 3 cartas para recibir una lectura rápida sobre amor, trabajo y energía del momento.",
+            "MAJOR_TITLE_TEMPLATE": "{{name}} ({{num}}) — Tarot Gratis y Significado de la Carta",
+            "MAJOR_DESC_TEMPLATE": "Descubre el significado de {{name}} en el tarot gratis. Arcano Mayor {{num}}, interpretación al derecho ({{upright}}) e invertida ({{reversed}})."
+          }
         },
         "tirada de tarot gratis": {
           "file": "scripts/gen-pages.sh",
-          "title": "Tirada de Tarot Gratis — Lectura Online del Día",
-          "description": "Haz una tirada de tarot gratis y descubre el significado de tus cartas con una lectura clara, inmediata y pensada para hoy."
+          "shellVariables": {
+            "INDEX_TITLE": "Tirada de Tarot Gratis — Lectura Online del Día",
+            "INDEX_DESC": "Haz una tirada de tarot gratis y descubre el significado de tus cartas con una lectura clara, inmediata y pensada para hoy.",
+            "MAJOR_TITLE_TEMPLATE": "{{name}} ({{num}}) — Interpretación de la Carta en una Tirada de Tarot",
+            "MAJOR_DESC_TEMPLATE": "Lee la interpretación de {{name}} en una tirada de tarot: Arcano {{num}}, mensaje al derecho ({{upright}}) e invertido ({{reversed}})."
+          }
         }
       }
     },
@@ -202,18 +244,30 @@
       "rulesByQuery": {
         "calcular numerología": {
           "file": "scripts/gen-pages.sh",
-          "title": "Calcular Numerología Gratis — Tu Número de Vida y Nombre",
-          "description": "Calculadora de numerología gratis. Descubre tu número de vida a partir de tu fecha de nacimiento y el significado numerológico de tu nombre."
+          "shellVariables": {
+            "INDEX_TITLE": "Calcular Numerología Gratis — Tu Número de Vida y Nombre",
+            "INDEX_DESC": "Calculadora de numerología gratis. Descubre tu número de vida a partir de tu fecha de nacimiento y el significado numerológico de tu nombre.",
+            "NUMBER_TITLE_TEMPLATE": "Número de Vida {{number}}: {{title}} — Significado en Numerología",
+            "NUMBER_DESC_TEMPLATE": "¿Tu número de vida es {{number}}? Descubre el significado de {{title}}: {{keys}}. Amor, trabajo y compatibilidad del número {{number}}."
+          }
         },
         "numerología gratis": {
           "file": "scripts/gen-pages.sh",
-          "title": "Numerología Gratis Online — Calcula tu Número de Vida",
-          "description": "Haz tu numerología gratis online y descubre tu número de vida, rasgos de personalidad, compatibilidad y claves de crecimiento personal."
+          "shellVariables": {
+            "INDEX_TITLE": "Numerología Gratis Online — Calcula tu Número de Vida",
+            "INDEX_DESC": "Haz tu numerología gratis online y descubre tu número de vida, rasgos de personalidad, compatibilidad y claves de crecimiento personal.",
+            "NUMBER_TITLE_TEMPLATE": "Numerología del Número {{number}} — {{title}} y Significado Personal",
+            "NUMBER_DESC_TEMPLATE": "Explora la numerología del número {{number}} y entiende {{title}}: rasgos principales, amor, trabajo y compatibilidad numerológica."
+          }
         },
         "número de vida": {
           "file": "scripts/gen-pages.sh",
-          "title": "Número de Vida Gratis — Calculadora de Numerología",
-          "description": "Calcula tu número de vida gratis con tu fecha de nacimiento y entiende su significado en amor, trabajo, personalidad y propósito."
+          "shellVariables": {
+            "INDEX_TITLE": "Número de Vida Gratis — Calculadora de Numerología",
+            "INDEX_DESC": "Calcula tu número de vida gratis con tu fecha de nacimiento y entiende su significado en amor, trabajo, personalidad y propósito.",
+            "NUMBER_TITLE_TEMPLATE": "Número de Vida {{number}} — Personalidad, Amor y Trabajo",
+            "NUMBER_DESC_TEMPLATE": "Conoce el número de vida {{number}}: significado de {{title}}, fortalezas, compatibilidad y claves para amor, trabajo y propósito personal."
+          }
         }
       }
     },
@@ -242,18 +296,30 @@
       "rulesByQuery": {
         "horóscopo de hoy": {
           "file": "scripts/gen-pages.sh",
-          "title": "Horóscopo de Hoy Gratis — ${TODAY_DISPLAY}",
-          "description": "Horóscopo de hoy gratis para los 12 signos del zodíaco. Predicciones diarias de amor, trabajo y salud. Actualizado el ${TODAY_DISPLAY}."
+          "shellVariables": {
+            "INDEX_TITLE": "Horóscopo de Hoy Gratis — ${TODAY_DISPLAY}",
+            "INDEX_DESC": "Horóscopo de hoy gratis para los 12 signos del zodíaco. Predicciones diarias de amor, trabajo y salud. Actualizado el ${TODAY_DISPLAY}.",
+            "SIGN_TITLE_TEMPLATE": "Horóscopo {{name}} Hoy {{glyph}} — ${TODAY_DISPLAY}",
+            "SIGN_DESC_TEMPLATE": "Horóscopo de {{name}} para hoy ${TODAY_DISPLAY}. Predicciones de amor, trabajo y salud. Números de la suerte: {{lucky_number}}. Color del día: {{lucky_color}}."
+          }
         },
         "horóscopo diario": {
           "file": "scripts/gen-pages.sh",
-          "title": "Horóscopo Diario Gratis — ${TODAY_DISPLAY}",
-          "description": "Consulta tu horóscopo diario gratis con predicciones actualizadas para amor, trabajo y salud en los 12 signos del zodíaco."
+          "shellVariables": {
+            "INDEX_TITLE": "Horóscopo Diario Gratis — ${TODAY_DISPLAY}",
+            "INDEX_DESC": "Consulta tu horóscopo diario gratis con predicciones actualizadas para amor, trabajo y salud en los 12 signos del zodíaco.",
+            "SIGN_TITLE_TEMPLATE": "Horóscopo diario de {{name}} {{glyph}} — ${TODAY_DISPLAY}",
+            "SIGN_DESC_TEMPLATE": "Lee el horóscopo diario de {{name}} para hoy ${TODAY_DISPLAY}. Amor, trabajo y salud con números de la suerte ({{lucky_number}}) y color del día ({{lucky_color}})."
+          }
         },
         "horóscopo gratis": {
           "file": "scripts/gen-pages.sh",
-          "title": "Horóscopo Gratis de Hoy — Predicciones por Signo",
-          "description": "Lee tu horóscopo gratis de hoy y revisa las predicciones diarias de amor, trabajo, salud, color y números de la suerte."
+          "shellVariables": {
+            "INDEX_TITLE": "Horóscopo Gratis de Hoy — Predicciones por Signo",
+            "INDEX_DESC": "Lee tu horóscopo gratis de hoy y revisa las predicciones diarias de amor, trabajo, salud, color y números de la suerte.",
+            "SIGN_TITLE_TEMPLATE": "{{name}} hoy {{glyph}} — Horóscopo gratis actualizado",
+            "SIGN_DESC_TEMPLATE": "Consulta el horóscopo gratis de {{name}} para hoy ${TODAY_DISPLAY}. Predicciones diarias con amor, trabajo, salud, color {{lucky_color}} y número {{lucky_number}}."
+          }
         }
       }
     }

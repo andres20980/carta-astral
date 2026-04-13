@@ -23,6 +23,8 @@ DOW=$(date +%u)  # 1=Mon..7=Sun
 mkdir -p "$PUBLIC"
 
 CROSSLINKS_HTML=$(crosslink_footer "$SITE_KEY")
+SIGN_TITLE_TEMPLATE="Horóscopo {{name}} Hoy {{glyph}} — ${TODAY_DISPLAY}"
+SIGN_DESC_TEMPLATE="Horóscopo de {{name}} para hoy ${TODAY_DISPLAY}. Predicciones de amor, trabajo y salud. Números de la suerte: {{lucky_number}}. Color del día: {{lucky_color}}."
 
 # ── Sign data ────────────────────────────────────────────────
 SLUGS=(aries tauro geminis cancer leo virgo libra escorpio sagitario capricornio acuario piscis)
@@ -196,8 +198,11 @@ for idx in "${!SLUGS[@]}"; do
   r_overall=$(( (r_love + r_work + r_health + 1) / 3 ))
 
   url_path="/${s}"
-  title="Horóscopo ${n} Hoy ${g} — ${TODAY_DISPLAY}"
-  desc="Horóscopo de ${n} para hoy ${TODAY_DISPLAY}. Predicciones de amor, trabajo y salud. Números de la suerte: ${lucky_n}. Color del día: ${lucky_c}."
+  title="${SIGN_TITLE_TEMPLATE//\{\{name\}\}/$n}"
+  title="${title//\{\{glyph\}\}/$g}"
+  desc="${SIGN_DESC_TEMPLATE//\{\{name\}\}/$n}"
+  desc="${desc//\{\{lucky_number\}\}/$lucky_n}"
+  desc="${desc//\{\{lucky_color\}\}/$lucky_c}"
 
   # Prev/next sign
   prev_idx=$(( (idx - 1 + 12) % 12 ))

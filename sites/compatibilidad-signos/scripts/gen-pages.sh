@@ -190,6 +190,8 @@ mkdir -p "$PUBLIC"
 
 SITEMAP_URLS=""
 PAGE_COUNT=0
+PAIR_TITLE_TEMPLATE="Compatibilidad {{name1}} y {{name2}} {{glyphs}} — {{score}}% {{label}}"
+PAIR_DESC_TEMPLATE="¿Son compatibles {{name1}} y {{name2}}? Descubre su afinidad amorosa ({{score}}%), fortalezas, retos y cómo se complementan según sus elementos y planetas regentes."
 
 for s1 in "${SLUGS[@]}"; do
   for s2 in "${SLUGS[@]}"; do
@@ -207,8 +209,15 @@ for s1 in "${SLUGS[@]}"; do
     file="$PUBLIC/${slug_page}.html"
     url_path="/${slug_page}"
 
-    title="Compatibilidad ${n1} y ${n2} ${g1}${g2} — ${score}% ${label}"
-    desc="¿Son compatibles ${n1} y ${n2}? Descubre su afinidad amorosa (${score}%), fortalezas, retos y cómo se complementan según sus elementos y planetas regentes."
+    title="${PAIR_TITLE_TEMPLATE//\{\{name1\}\}/$n1}"
+    title="${title//\{\{name2\}\}/$n2}"
+    title="${title//\{\{glyphs\}\}/$g1$g2}"
+    title="${title//\{\{score\}\}/$score}"
+    title="${title//\{\{label\}\}/$label}"
+
+    desc="${PAIR_DESC_TEMPLATE//\{\{name1\}\}/$n1}"
+    desc="${desc//\{\{name2\}\}/$n2}"
+    desc="${desc//\{\{score\}\}/$score}"
 
     cat > "$file" <<ENDHTML
 <!DOCTYPE html>

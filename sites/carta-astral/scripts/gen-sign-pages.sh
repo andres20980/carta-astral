@@ -9,6 +9,8 @@ DIR="$SITE_DIR/public/signos"
 source "$REPO_ROOT/shared/config.sh"
 GA4="${GA4_IDS[carta-astral]}"
 mkdir -p "$DIR"
+SIGN_PAGE_TITLE_TEMPLATE="Carta Astral {{name}} {{glyph}} — Características, Fechas y Significado Natal"
+SIGN_PAGE_DESC_TEMPLATE="Carta astral de {{name}} {{glyph}}: fechas ({{dates}}), elemento {{element}}, planeta regente {{ruler}}. Descubre cómo influye {{name}} en tu carta natal. Calcula tu carta astral gratis."
 
 declare -A SIGNS=(
   [aries]="Aries|♈|21 de marzo – 19 de abril|Fuego|Marte|Cardinal|El primer signo del zodíaco. Aries es pura energía de inicio, impulso y coraje. Los nacidos bajo este signo son pioneros naturales, directos y apasionados. Su regente Marte les da una fuerza de voluntad imparable.|independencia, coraje, entusiasmo, determinación|impaciencia, impulsividad, tendencia a la confrontación|En la carta astral, tener el Sol, la Luna o el Ascendente en Aries indica una personalidad que necesita liderar, actuar y no quedarse quieta. Marte en Aries está domiciliado: su energía es pura y directa."
@@ -27,15 +29,22 @@ declare -A SIGNS=(
 
 for slug in aries tauro geminis cancer leo virgo libra escorpio sagitario capricornio acuario piscis; do
   IFS='|' read -r name glyph dates element ruler modality desc strengths weaknesses chart_meaning <<< "${SIGNS[$slug]}"
+  page_title="${SIGN_PAGE_TITLE_TEMPLATE//\{\{name\}\}/$name}"
+  page_title="${page_title//\{\{glyph\}\}/$glyph}"
+  page_desc="${SIGN_PAGE_DESC_TEMPLATE//\{\{name\}\}/$name}"
+  page_desc="${page_desc//\{\{glyph\}\}/$glyph}"
+  page_desc="${page_desc//\{\{dates\}\}/$dates}"
+  page_desc="${page_desc//\{\{element\}\}/$element}"
+  page_desc="${page_desc//\{\{ruler\}\}/$ruler}"
   cat > "$DIR/$slug.html" <<HEREDOC
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carta Astral ${name} ${glyph} — Características, Fechas y Significado Natal</title>
+  <title>${page_title}</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <meta name="description" content="Carta astral de ${name} ${glyph}: fechas (${dates}), elemento ${element}, planeta regente ${ruler}. Descubre cómo influye ${name} en tu carta natal. Calcula tu carta astral gratis.">
+  <meta name="description" content="${page_desc}">
   <meta name="keywords" content="carta astral ${slug}, ${slug} carta natal, ${slug} caracteristicas, signo ${slug}, ascendente ${slug}, ${slug} planeta regente, carta astral gratis ${slug}">
   <link rel="canonical" href="https://carta-astral-gratis.es/signos/${slug}">
   <meta property="og:title" content="Carta Astral ${name} ${glyph} — Significado en tu carta natal">

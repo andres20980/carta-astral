@@ -125,14 +125,19 @@ NUM_COMPAT=("" "1, 3, 5" "2, 4, 8" "1, 3, 5" "2, 4, 8" "1, 3, 5" "2, 6, 9" "5, 7
 
 SITEMAP_URLS=""
 PAGE_COUNT=0
+NUMBER_TITLE_TEMPLATE="Número de Vida {{number}}: {{title}} — Significado en Numerología"
+NUMBER_DESC_TEMPLATE="¿Tu número de vida es {{number}}? Descubre el significado de {{title}}: {{keys}}. Amor, trabajo y compatibilidad del número {{number}}."
 
 # ── Generate 9 number pages ─────────────────────────────────
 echo "Generating 9 number-of-life pages..."
 for n in $(seq 1 9); do
   slug="numero-de-vida/${n}"
   url_path="/${slug}"
-  title="Número de Vida ${n}: ${NUM_TITLES[$n]} — Significado en Numerología"
-  desc="¿Tu número de vida es ${n}? Descubre el significado de ${NUM_TITLES[$n]}: ${NUM_KEYS[$n]}. Amor, trabajo y compatibilidad del número ${n}."
+  title="${NUMBER_TITLE_TEMPLATE//\{\{number\}\}/$n}"
+  title="${title//\{\{title\}\}/${NUM_TITLES[$n]}}"
+  desc="${NUMBER_DESC_TEMPLATE//\{\{number\}\}/$n}"
+  desc="${desc//\{\{title\}\}/${NUM_TITLES[$n]}}"
+  desc="${desc//\{\{keys\}\}/${NUM_KEYS[$n]}}"
 
   prev=$(( n == 1 ? 9 : n - 1 ))
   next=$(( n == 9 ? 1 : n + 1 ))

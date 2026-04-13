@@ -98,6 +98,8 @@ MAJOR_DESC=("El Loco representa el espíritu libre que da el salto al vacío con
 
 SITEMAP_URLS=""
 PAGE_COUNT=0
+MAJOR_TITLE_TEMPLATE="{{name}} ({{num}}) — Significado en el Tarot | Tarot del Día"
+MAJOR_DESC_TEMPLATE="Significado de {{name}} (Arcano Mayor {{num}}) en el tarot. Al derecho: {{upright}}. Invertida: {{reversed}}. Descubre su mensaje para hoy."
 
 # ── Generate Major Arcana pages ──────────────────────────────
 echo "Generating 22 major arcana pages..."
@@ -111,8 +113,13 @@ for i in "${!MAJOR_SLUGS[@]}"; do
   desc="${MAJOR_DESC[$i]}"
 
   url_path="/arcanos-mayores/${slug}"
-  title="${name} (${num}) — Significado en el Tarot | Tarot del Día"
-  meta_desc="Significado de ${name} (Arcano Mayor ${num}) en el tarot. Al derecho: ${upright}. Invertida: ${reversed}. Descubre su mensaje para hoy."
+  title="${MAJOR_TITLE_TEMPLATE//\{\{name\}\}/$name}"
+  title="${title//\{\{num\}\}/$num}"
+
+  meta_desc="${MAJOR_DESC_TEMPLATE//\{\{name\}\}/$name}"
+  meta_desc="${meta_desc//\{\{num\}\}/$num}"
+  meta_desc="${meta_desc//\{\{upright\}\}/$upright}"
+  meta_desc="${meta_desc//\{\{reversed\}\}/$reversed}"
 
   # Prev/next navigation
   prev_idx=$(( (i - 1 + 22) % 22 ))

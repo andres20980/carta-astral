@@ -86,6 +86,23 @@ function replaceGeneratorIndexMeta(content, rule) {
   return { next, changed };
 }
 
+function replaceShellVariables(content, shellVariables) {
+  let next = content;
+  let changed = false;
+
+  for (const [name, value] of Object.entries(shellVariables || {})) {
+    const res = replaceWithFunction(
+      next,
+      new RegExp(`^${escapeRegex(name)}=".*"$`, 'm'),
+      () => `${name}="${value}"`
+    );
+    next = res.next;
+    changed = changed || res.changed;
+  }
+
+  return { next, changed };
+}
+
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -213,7 +230,9 @@ function optimizeFile(siteConfig, rule) {
   if (fp.endsWith('.html')) {
     result = replaceTitleAndDescription(original, rule);
   } else if (fp.endsWith('.sh')) {
-    result = replaceGeneratorIndexMeta(original, rule);
+    result = rule.shellVariables
+      ? replaceShellVariables(original, rule.shellVariables)
+      : replaceGeneratorIndexMeta(original, rule);
   } else {
     return { file: rule.file, changed: false, reason: 'unsupported_file' };
   }
@@ -301,9 +320,15 @@ function main() {
     const rule = rules[key];
     if (!rule) continue;
 
-    const res = optimizeFile(siteConfig, rule);
-    results.push({ query: key, matchedSignals: rec.matchedSignals || [], ...res });
-    if (res.changed) {
+    const targets = [rule, ...(Array.isArray(rule.extraTargets) ? rule.extraTargets : [])];
+    const ruleResults = targets.map((target) => optimizeFile(siteConfig, target));
+    const changed = ruleResults.some((result) => result.changed);
+
+    for (const res of ruleResults) {
+      results.push({ query: key, matchedSignals: rec.matchedSignals || [], ...res });
+    }
+
+    if (changed) {
       applied += 1;
       lastQuery = key;
     }
