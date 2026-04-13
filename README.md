@@ -94,6 +94,7 @@ astro-cluster/
 - `daily-horoscope.yml`: regenera y publica `horoscopo-de-hoy`.
 - `seo-auto-pr.yml`: aplica mejoras SEO automáticas de forma rotatoria sobre un site del cluster por ejecución y prioriza intents validados por competitor intel y señales GSC (CTR bajo con impresiones relevantes).
 - El auto-SEO ignora señales de GSC/competencia envejecidas para no optimizar con datos stale.
+- La selección automática del site a optimizar usa GSC + GA4 cuando hay señal fresca; si no, vuelve al fallback rotatorio.
 - `seo-competitor-intel.yml`: captura señales de competidores de forma rotatoria para un site del cluster por ejecución, con guardia de recencia para evitar gasto innecesario en GitHub Actions.
 - `weekly-google-report.yml`: genera informe con GA4, GSC y AdSense, con bloque agregado del cluster y detalle por dominio.
 - `ga4-admin-sync.yml`: sincroniza mensualmente o bajo demanda las custom dimensions y key events de GA4 contra los manifiestos del repo.

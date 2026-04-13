@@ -150,6 +150,15 @@ jobs:
           " >> /tmp/report.md 2>/dev/null || echo "| Sin datos aún | — | — | — |" >> /tmp/report.md
           echo "" >> /tmp/report.md
 
+          GA4_GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+          python3 .github/scripts/ga4_seo_signals.py \
+            --property "$GA4_PROPERTY" \
+            --token "$TOKEN" \
+            --sites-json "$GSC_SITES_JSON" \
+            --output-dir "sites" \
+            --start-date "7daysAgo" \
+            --end-date "today"
+
           # GA4 key events
           echo "### 🎯 Conversiones (últimos 7 días)" >> /tmp/report.md
           EVENTS=$(curl -s -H "Authorization: Bearer $TOKEN" \
@@ -465,5 +474,5 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/GROWTH_MILESTONES.json sites/carta-astral/public/stats.json sites/*/docs/SEO_GSC_QUERIES.json
+          git add docs/GROWTH_MILESTONES.json sites/carta-astral/public/stats.json sites/*/docs/SEO_GSC_QUERIES.json sites/*/docs/SEO_GA4_PAGES.json
           git diff --cached --quiet || git commit -m "chore: update growth milestone + public stats" && git push || true

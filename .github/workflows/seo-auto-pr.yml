@@ -42,13 +42,11 @@ jobs:
         id: select
         shell: bash
         run: |
-          sites=(carta-astral compatibilidad-signos tarot-del-dia calcular-numerologia horoscopo-de-hoy)
-
+          set -euo pipefail
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.site }}" != "auto" ] && [ -n "${{ inputs.site }}" ]; then
             site="${{ inputs.site }}"
           else
-            idx=$(( (10#$(date -u +%j) - 1) % ${#sites[@]} ))
-            site="${sites[$idx]}"
+            site=$(python3 .github/scripts/select_seo_site.py)
           fi
 
           echo "site=$site" >> "$GITHUB_OUTPUT"
