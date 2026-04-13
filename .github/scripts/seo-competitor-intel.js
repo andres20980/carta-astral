@@ -21,6 +21,8 @@ const RULES_PATH = path.join(REPO_ROOT, '.github', 'config', 'seo-autopatch-rule
 const SITE_KEY = process.env.SITE_KEY || 'carta-astral';
 const SITE_ROOT = path.join(REPO_ROOT, 'sites', SITE_KEY);
 const OUTPUT_PATH = path.join(SITE_ROOT, 'docs', 'SEO_COMPETITOR_INTEL.json');
+const MAX_AGE_DAYS = Number(process.env.COMPETITOR_INTEL_MAX_AGE_DAYS || 7);
+const FORCE_RUN = ['1', 'true', 'yes'].includes(String(process.env.FORCE || '').toLowerCase());
 
 const DEFAULT_COMPETITOR_URLS = [
   'https://www.losarcanos.com/carta-astral.php',
@@ -49,6 +51,18 @@ function readJson(fp, fallback) {
   } catch (_) {
     return fallback;
   }
+}
+
+function getExistingIntel() {
+  return readJson(OUTPUT_PATH, null);
+}
+
+function isRecentIntel(existing) {
+  if (!existing || !existing.generatedAt) return false;
+  const lastRun = new Date(existing.generatedAt).getTime();
+  if (!Number.isFinite(lastRun)) return false;
+  const ageDays = (Date.now() - lastRun) / (1000 * 60 * 60 * 24);
+  return ageDays < MAX_AGE_DAYS;
 }
 
 function loadSiteConfig() {
@@ -275,6 +289,17 @@ function buildSeoInsights(results, keywordsContext) {
 }
 
 async function main() {
+  if (!fs.existsSync(SITE_ROOT)) {
+    console.error(`Unknown site key: ${SITE_KEY}`);
+    process.exit(1);
+  }
+
+  const existingIntel = getExistingIntel();
+  if (!FORCE_RUN && isRecentIntel(existingIntel)) {
+    console.log(`⏭️  Competitor intel reciente para ${SITE_KEY}. Saltando ejecución.`);
+    return;
+  }
+
   const siteConfig = loadSiteConfig();
   const urls = loadCompetitorUrls(siteConfig);
   const keywordsContext = loadKeywordsContext(siteConfig);
@@ -301,6 +326,10 @@ async function main() {
   }
 
   const insights = buildSeoInsights(results, keywordsContext);
+  if (!insights && existingIntel && !FORCE_RUN) {
+    console.log('⚠️  Sin resultados válidos. Manteniendo último intel disponible.');
+    return;
+  }
   const outputId = crypto.randomBytes(4).toString('hex');
 
   const output = {

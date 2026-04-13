@@ -17,6 +17,11 @@ on:
           - tarot-del-dia
           - calcular-numerologia
           - horoscopo-de-hoy
+      force:
+        description: 'Force run even if intel is recent'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -52,6 +57,7 @@ jobs:
       - name: "🕵️ Crawl competitors"
         env:
           SITE_KEY: ${{ steps.select.outputs.site }}
+          FORCE: ${{ inputs.force }}
         run: node .github/scripts/seo-competitor-intel.js
 
       - name: "📤 Commit results"
