@@ -9,6 +9,7 @@ sites = json.loads(os.environ["GSC_SITES_JSON"])
 token = os.environ["OAUTH_TOKEN"]
 start = os.environ["GSC_START"]
 end = os.environ["GSC_END"]
+output_dir = os.environ.get("GSC_OUTPUT_DIR", "").strip()
 
 
 def fetch(site_url, payload):
@@ -32,6 +33,30 @@ def fetch(site_url, payload):
 def safe_text(value):
     return str(value).replace("|", "\\|")
 
+def ensure_dir(path):
+    os.makedirs(path, exist_ok=True)
+
+def build_query_rows(rows):
+    results = []
+    for row in rows or []:
+        query = row.get("keys", [""])[0]
+        clicks = float(row.get("clicks", 0) or 0)
+        impressions = float(row.get("impressions", 0) or 0)
+        ctr = float(row.get("ctr", 0) or 0)
+        position = float(row.get("position", 0) or 0)
+        opportunity = impressions * (1 - ctr)
+        results.append(
+            {
+                "query": query,
+                "clicks": clicks,
+                "impressions": impressions,
+                "ctr": ctr,
+                "position": position,
+                "opportunity": opportunity,
+            }
+        )
+    results.sort(key=lambda item: item["opportunity"], reverse=True)
+    return results
 
 cluster = {"clicks": 0.0, "impressions": 0.0}
 site_reports = []
@@ -85,6 +110,21 @@ for site_key, domain, site_url in sites:
             "pages": pages.get("rows", []),
         }
     )
+
+    if output_dir:
+        query_rows = build_query_rows(queries.get("rows", []))
+        payload = {
+            "generatedAt": os.environ.get("GSC_GENERATED_AT", ""),
+            "site": site_key,
+            "domain": domain,
+            "range": {"start": start, "end": end},
+            "queries": query_rows,
+            "topOpportunities": query_rows[:5],
+        }
+        target_dir = os.path.join(output_dir, site_key, "docs")
+        ensure_dir(target_dir)
+        with open(os.path.join(target_dir, "SEO_GSC_QUERIES.json"), "w") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
 
 site_reports.sort(key=lambda item: item["clicks"], reverse=True)
 cluster_ctr = (cluster["clicks"] / cluster["impressions"]) if cluster["impressions"] else 0.0

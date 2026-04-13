@@ -9,6 +9,7 @@ const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const SITE_KEY = process.env.SITE_KEY || 'carta-astral';
 const RECS_PATH = path.join(SITE_ROOT, 'docs', 'SEO_AGENT_RECOMMENDATIONS.json');
 const COMPETITOR_INTEL_PATH = path.join(SITE_ROOT, 'docs', 'SEO_COMPETITOR_INTEL.json');
+const GSC_SIGNAL_PATH = path.join(SITE_ROOT, 'docs', 'SEO_GSC_QUERIES.json');
 const RULES_PATH = path.join(REPO_ROOT, '.github', 'config', 'seo-autopatch-rules.json');
 const STATE_PATH = path.join(SITE_ROOT, 'docs', 'SEO_AGENT_STATE.json');
 const MAX_CHANGES = Number(process.env.SEO_AUTO_PR_MAX_CHANGES || 1);
@@ -140,6 +141,42 @@ function scoreKeywordByCompetitorIntel(keyword, competitorIntel) {
   return { score, matchedSignals };
 }
 
+function scoreKeywordByGsc(keyword, gscSignals) {
+  const query = String(keyword.query || '').trim();
+  const normalizedQuery = normalizeText(query);
+  const rows = (gscSignals && Array.isArray(gscSignals.queries)) ? gscSignals.queries : [];
+  if (!normalizedQuery || rows.length === 0) {
+    return { score: (keyword.priority || 99) * 100, matchedSignals: [] };
+  }
+
+  const match = rows.find((row) => normalizeText(row.query) === normalizedQuery);
+  if (!match) {
+    return { score: (keyword.priority || 99) * 100, matchedSignals: [] };
+  }
+
+  const impressions = Number(match.impressions || 0);
+  const ctr = Number(match.ctr || 0);
+  const position = Number(match.position || 0);
+  let boost = 0;
+  const matchedSignals = [];
+
+  if (impressions >= 50 && ctr < 0.01) {
+    boost += 40;
+    matchedSignals.push('gsc_low_ctr_50');
+  }
+  if (impressions >= 200 && ctr < 0.005) {
+    boost += 40;
+    matchedSignals.push('gsc_low_ctr_200');
+  }
+  if (position >= 8 && position <= 20) {
+    boost += 20;
+    matchedSignals.push('gsc_mid_position');
+  }
+
+  const base = (keyword.priority || 99) * 100;
+  return { score: base - boost, matchedSignals };
+}
+
 function updateSitemapLastmod(siteConfig, dateStr) {
   if (!siteConfig.sitemapFile || !siteConfig.homeUrl) return false;
   const sitemapPath = path.join(SITE_ROOT, siteConfig.sitemapFile);
@@ -181,7 +218,7 @@ function optimizeFile(siteConfig, rule) {
   return { file: rule.file, changed: true, reason: 'optimized' };
 }
 
-function pickRecommendations(siteConfig, state, payload, competitorIntel) {
+function pickRecommendations(siteConfig, state, payload, competitorIntel, gscSignals) {
   const rules = siteConfig.rulesByQuery || {};
 
   if (payload && Array.isArray(payload.topRecommendations) && payload.topRecommendations.length > 0) {
@@ -192,14 +229,18 @@ function pickRecommendations(siteConfig, state, payload, competitorIntel) {
     .filter((keyword) => rules[keyword.query])
     .map((keyword) => {
       const competitorScore = scoreKeywordByCompetitorIntel(keyword, competitorIntel);
+      const gscScore = scoreKeywordByGsc(keyword, gscSignals);
+      const combinedScore = Math.min(competitorScore.score, gscScore.score);
       return {
         ...keyword,
         competitorScore: competitorScore.score,
-        matchedSignals: competitorScore.matchedSignals,
+        gscScore: gscScore.score,
+        combinedScore,
+        matchedSignals: [...(competitorScore.matchedSignals || []), ...(gscScore.matchedSignals || [])],
       };
     })
     .sort((a, b) => {
-      if (a.competitorScore !== b.competitorScore) return a.competitorScore - b.competitorScore;
+      if (a.combinedScore !== b.combinedScore) return a.combinedScore - b.combinedScore;
       return (a.priority || 99) - (b.priority || 99);
     });
 
@@ -235,7 +276,8 @@ function main() {
   const state = readJson(STATE_PATH, { site: SITE_KEY, lastRun: null, lastQuery: null, results: [] });
   const payload = readJson(RECS_PATH, null);
   const competitorIntel = readJson(COMPETITOR_INTEL_PATH, null);
-  const recs = pickRecommendations(siteConfig, state, payload, competitorIntel);
+  const gscSignals = readJson(GSC_SIGNAL_PATH, null);
+  const recs = pickRecommendations(siteConfig, state, payload, competitorIntel, gscSignals);
 
   const runAt = new Date().toISOString();
   const results = [];
@@ -268,6 +310,7 @@ function main() {
     changedCount: results.filter((result) => result.changed).length,
     totalChecked: results.length,
     competitorIntelLoaded: Boolean(competitorIntel && competitorIntel.insights),
+    gscSignalsLoaded: Boolean(gscSignals && Array.isArray(gscSignals.queries)),
     runAt,
   }));
 }

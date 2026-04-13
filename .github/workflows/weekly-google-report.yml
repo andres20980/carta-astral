@@ -289,7 +289,9 @@ jobs:
           if [ -n "$OAUTH_TOKEN" ]; then
             GSC_START=$(date -d '28 days ago' +%Y-%m-%d)
             GSC_END=$(date -d '3 days ago' +%Y-%m-%d)
+            GSC_GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
             OAUTH_TOKEN="$OAUTH_TOKEN" GSC_START="$GSC_START" GSC_END="$GSC_END" GSC_SITES_JSON="$GSC_SITES_JSON" \
+              GSC_OUTPUT_DIR="sites" GSC_GENERATED_AT="$GSC_GENERATED_AT" \
               python3 .github/scripts/weekly_gsc_report.py >> /tmp/report.md
           else
             echo "> GSC no disponible (faltan los secretos GOOGLE_OAUTH_*)" >> /tmp/report.md
@@ -463,5 +465,5 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/GROWTH_MILESTONES.json sites/carta-astral/public/stats.json
+          git add docs/GROWTH_MILESTONES.json sites/carta-astral/public/stats.json sites/*/docs/SEO_GSC_QUERIES.json
           git diff --cached --quiet || git commit -m "chore: update growth milestone + public stats" && git push || true
