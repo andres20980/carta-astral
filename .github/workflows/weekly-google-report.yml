@@ -454,11 +454,11 @@ jobs:
           # Write public stats JSON for the commercial carta-astral landing
           python3 -c "
           import json
-          from datetime import datetime
+          from datetime import datetime, UTC
           stats = {
             'charts_calculated': int('${TOTAL_CHARTS}' or 0),
             'visitors': int('${TOTAL_VISITORS}' or 0),
-            'updated': datetime.utcnow().strftime('%Y-%m-%dT%H:%MZ')
+            'updated': datetime.now(UTC).strftime('%Y-%m-%dT%H:%MZ')
           }
           with open('sites/carta-astral/public/stats.json','w') as f: json.dump(stats, f)
           "

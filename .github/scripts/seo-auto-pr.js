@@ -13,6 +13,7 @@ const GSC_SIGNAL_PATH = path.join(SITE_ROOT, 'docs', 'SEO_GSC_QUERIES.json');
 const RULES_PATH = path.join(REPO_ROOT, '.github', 'config', 'seo-autopatch-rules.json');
 const STATE_PATH = path.join(SITE_ROOT, 'docs', 'SEO_AGENT_STATE.json');
 const MAX_CHANGES = Number(process.env.SEO_AUTO_PR_MAX_CHANGES || 1);
+const MAX_SIGNAL_AGE_DAYS = Number(process.env.SEO_SIGNAL_MAX_AGE_DAYS || 21);
 
 function readJson(fp, fallback) {
   try {
@@ -20,6 +21,14 @@ function readJson(fp, fallback) {
   } catch {
     return fallback;
   }
+}
+
+function isFreshSignal(payload) {
+  if (!payload || !payload.generatedAt) return false;
+  const generatedAt = new Date(payload.generatedAt).getTime();
+  if (!Number.isFinite(generatedAt)) return false;
+  const ageDays = (Date.now() - generatedAt) / (1000 * 60 * 60 * 24);
+  return ageDays <= MAX_SIGNAL_AGE_DAYS;
 }
 
 function writeJson(fp, data) {
@@ -275,8 +284,10 @@ function main() {
   const rules = siteConfig.rulesByQuery || {};
   const state = readJson(STATE_PATH, { site: SITE_KEY, lastRun: null, lastQuery: null, results: [] });
   const payload = readJson(RECS_PATH, null);
-  const competitorIntel = readJson(COMPETITOR_INTEL_PATH, null);
-  const gscSignals = readJson(GSC_SIGNAL_PATH, null);
+  const competitorIntelRaw = readJson(COMPETITOR_INTEL_PATH, null);
+  const gscSignalsRaw = readJson(GSC_SIGNAL_PATH, null);
+  const competitorIntel = isFreshSignal(competitorIntelRaw) ? competitorIntelRaw : null;
+  const gscSignals = isFreshSignal(gscSignalsRaw) ? gscSignalsRaw : null;
   const recs = pickRecommendations(siteConfig, state, payload, competitorIntel, gscSignals);
 
   const runAt = new Date().toISOString();
@@ -311,6 +322,10 @@ function main() {
     totalChecked: results.length,
     competitorIntelLoaded: Boolean(competitorIntel && competitorIntel.insights),
     gscSignalsLoaded: Boolean(gscSignals && Array.isArray(gscSignals.queries)),
+    staleSignalsIgnored: {
+      competitorIntel: Boolean(competitorIntelRaw && !competitorIntel),
+      gscSignals: Boolean(gscSignalsRaw && !gscSignals),
+    },
     runAt,
   }));
 }
