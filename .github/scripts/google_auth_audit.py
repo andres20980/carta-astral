@@ -78,7 +78,12 @@ else:
     oauth_detail = "Faltan GOOGLE_OAUTH_*"
 print(f"| OAuth de usuario | OAuth 2.0 refresh token | {oauth_status} | {oauth_detail} |")
 
-analytics_state = "OK" if analytics_sa_status.startswith("OK") else "Pendiente"
+if analytics_sa_status.startswith("OK"):
+    analytics_state = "OK"
+elif analytics_sa_status.startswith("No comprobado"):
+    analytics_state = "No comprobado"
+else:
+    analytics_state = "Pendiente"
 print(f"| Analytics CI | Service account / ADC | {analytics_state} | {analytics_sa_status} |")
 
 for system, required in REQUIRED_SCOPES.items():

@@ -79,19 +79,22 @@ _analytics_status_local() {
 import json,sys
 raw=sys.stdin.read().strip()
 if not raw:
-  print('Pendiente: no se recibió respuesta de Analytics Admin API')
+  print('No comprobado localmente: sin respuesta de Analytics Admin API; el check canónico corre en GitHub Actions')
   raise SystemExit(0)
 try:
   data=json.loads(raw)
 except Exception:
-  print('Pendiente: respuesta no JSON desde Analytics Admin API')
+  print('No comprobado localmente: respuesta no JSON desde Analytics Admin API')
   raise SystemExit(0)
 if data.get('name'):
   print('OK: service account / ADC con acceso a GA4')
 else:
   err=data.get('error',{})
   msg=err.get('message') or 'sin detalle'
-  print(f'Pendiente: {msg}')
+  if 'insufficient authentication scopes' in msg.lower():
+    print('No comprobado localmente: ADC sin scopes de Analytics; el check canónico corre en GitHub Actions con FIREBASE_SERVICE_ACCOUNT')
+  else:
+    print(f'Pendiente: {msg}')
 " <<< "$resp"
 }
 
