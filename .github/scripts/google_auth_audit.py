@@ -22,9 +22,12 @@ REQUIRED_SCOPES = {
     ],
 }
 
-OPTIONAL_SCOPES = {
+OPTIONAL_SCOPE_GROUPS = {
     "Analytics OAuth (opcional)": [
-        "https://www.googleapis.com/auth/analytics.readonly",
+        [
+            "https://www.googleapis.com/auth/analytics.readonly",
+            "https://www.googleapis.com/auth/analytics.edit",
+        ],
     ],
 }
 
@@ -52,6 +55,14 @@ if token:
 def scope_status(required_scopes):
     missing = [scope for scope in required_scopes if scope not in scopes]
     return ("OK", missing) if not missing else ("Falta scope", missing)
+
+
+def grouped_scope_status(scope_groups):
+    missing_groups = []
+    for group in scope_groups:
+        if not any(scope in scopes for scope in group):
+            missing_groups.append(group)
+    return ("OK", missing_groups) if not missing_groups else ("Falta scope", missing_groups)
 
 
 print(f"{heading_level} {heading_title}")
@@ -82,7 +93,7 @@ for system, required in REQUIRED_SCOPES.items():
         detail = "Todos los scopes presentes" if not missing else ", ".join(missing)
     print(f"| {system} | OAuth de usuario | {status} | {detail} |")
 
-for system, required in OPTIONAL_SCOPES.items():
+for system, scope_groups in OPTIONAL_SCOPE_GROUPS.items():
     if not token:
         status = "No configurado"
         detail = "No hay refresh token disponible"
@@ -90,15 +101,18 @@ for system, required in OPTIONAL_SCOPES.items():
         status = "Error"
         detail = tokeninfo_error
     else:
-        status, missing = scope_status(required)
-        detail = "Disponible" if not missing else ", ".join(missing)
+        status, missing_groups = grouped_scope_status(scope_groups)
+        if not missing_groups:
+            detail = "Disponible"
+        else:
+            detail = " o ".join(" / ".join(group) for group in missing_groups)
     print(f"| {system} | OAuth de usuario | {status} | {detail} |")
 
 print("")
 print(f"{subheading_level} Modelo recomendado del cluster")
 print("- `Analytics / GA4`: service account en CI para reporting estable y sin interacción.")
 print("- `Search Console`, `Site Verification` y `AdSense`: OAuth de usuario porque son APIs ligadas a la cuenta propietaria.")
-print("- `analytics.readonly` en OAuth es opcional; útil para depuración manual, pero no necesario para el pipeline principal.")
+print("- `analytics.readonly` o `analytics.edit` en OAuth es opcional; útil para depuración y Admin API, pero no necesario para el pipeline principal.")
 
 if token and not tokeninfo_error:
     missing_required = {
