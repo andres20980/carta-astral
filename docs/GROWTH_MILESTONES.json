@@ -245,15 +245,15 @@
     "current_stage_id": "M1",
     "next_stage_id": "M2",
     "weekly_metrics": {
-      "sessions": 207,
-      "users": 194,
-      "views": 270,
+      "sessions": 219,
+      "users": 205,
+      "views": 284,
       "organic_sessions": 0,
       "organic_share": 0,
-      "bounce_rate": 0.8841,
-      "avg_duration_s": 99.2,
+      "bounce_rate": 0.8904,
+      "avg_duration_s": 95.9,
       "chart_calculated": 17,
-      "interpretation_generated": 12
+      "interpretation_generated": 13
     },
     "capability_signals": {
       "ga4_unified": true,
