@@ -1,0 +1,86 @@
+[
+  {
+    "parameterName": "site_key",
+    "displayName": "Site key",
+    "description": "Clave interna del site dentro del cluster.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "site_domain",
+    "displayName": "Site domain",
+    "description": "Dominio del site que origina el evento.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "tool_type",
+    "displayName": "Tool type",
+    "description": "Tipo de herramienta del cluster.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "page_type",
+    "displayName": "Page type",
+    "description": "Tipo de pagina dentro del funnel o contenido.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "content_group",
+    "displayName": "Content group",
+    "description": "Grupo editorial o funcional de la pagina.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "entity_slug",
+    "displayName": "Entity slug",
+    "description": "Slug de la entidad principal de la pagina.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "link_context",
+    "displayName": "Link context",
+    "description": "Contexto del clic interno o publicitario.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "destination_site",
+    "displayName": "Destination site",
+    "description": "Site de destino en la recirculacion del cluster.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "destination_domain",
+    "displayName": "Destination domain",
+    "description": "Dominio de destino del clic dentro del cluster.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "ad_slot",
+    "displayName": "Ad slot",
+    "description": "Identificador del slot o CTA publicitario.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "input_mode",
+    "displayName": "Input mode",
+    "description": "Modo de entrada del usuario en la herramienta.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "tool_action",
+    "displayName": "Tool action",
+    "description": "Accion concreta ejecutada dentro de la herramienta.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "sign",
+    "displayName": "Sign",
+    "description": "Signo principal asociado al evento cuando aplica.",
+    "scope": "EVENT"
+  },
+  {
+    "parameterName": "life_number",
+    "displayName": "Life number",
+    "description": "Numero de vida calculado en numerologia.",
+    "scope": "EVENT"
+  }
+]

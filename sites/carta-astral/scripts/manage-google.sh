@@ -64,6 +64,14 @@ _api_oauth() {
   curl -s -H "Authorization: Bearer $(_oauth_token)" "$@"
 }
 
+_ga4_admin_token() {
+  if [[ -n "${GOOGLE_OAUTH_REFRESH_TOKEN:-}" && -n "${GOOGLE_OAUTH_CLIENT_ID:-}" && -n "${GOOGLE_OAUTH_CLIENT_SECRET:-}" ]]; then
+    _oauth_token
+  else
+    _token
+  fi
+}
+
 _analytics_status_local() {
   local resp
   resp=$(_api "https://analyticsadmin.googleapis.com/v1beta/${GA4_PROPERTY}" 2>/dev/null || true)
@@ -165,6 +173,21 @@ cmd_ga4_top_pages() {
 cmd_ga4_key_events() {
   echo "━━━ GA4 Key Events ━━━"
   _api "https://analyticsadmin.googleapis.com/v1beta/$GA4_PROPERTY/keyEvents" | python3 -m json.tool
+}
+
+cmd_ga4_custom_dimensions() {
+  python3 "${REPO_ROOT}/.github/scripts/ga4_custom_definitions.py" \
+    --property "$GA4_PROPERTY" \
+    --token "$(_ga4_admin_token)" \
+    --manifest "${REPO_ROOT}/shared/ga4_custom_dimensions.json"
+}
+
+cmd_ga4_apply_custom_dimensions() {
+  python3 "${REPO_ROOT}/.github/scripts/ga4_custom_definitions.py" \
+    --property "$GA4_PROPERTY" \
+    --token "$(_ga4_admin_token)" \
+    --manifest "${REPO_ROOT}/shared/ga4_custom_dimensions.json" \
+    --apply
 }
 
 cmd_ga4_create_key_event() {
@@ -455,6 +478,8 @@ Usage: $(basename "$0") <command> [args]
     ga4-report [days]   Traffic report (default: 7 days)
     ga4-top-pages [d]   Top pages by views (default: 30 days)
     ga4-key-events      List key events (conversions)
+    ga4-custom-dimensions      List current vs desired custom dimensions
+    ga4-apply-custom-dimensions Create missing GA4 custom dimensions
     ga4-create-key-event <name>  Create a key event
 
   AdSense:
@@ -495,6 +520,8 @@ case "${1:-help}" in
   ga4-report)           cmd_ga4_report "${2:-7}" ;;
   ga4-top-pages)        cmd_ga4_top_pages "${2:-30}" ;;
   ga4-key-events)       cmd_ga4_key_events ;;
+  ga4-custom-dimensions) cmd_ga4_custom_dimensions ;;
+  ga4-apply-custom-dimensions) cmd_ga4_apply_custom_dimensions ;;
   ga4-create-key-event) cmd_ga4_create_key_event "${2:-}" ;;
   adsense-earnings)     cmd_adsense_earnings "${2:-7}" ;;
   adsense-sites)        cmd_adsense_sites ;;
