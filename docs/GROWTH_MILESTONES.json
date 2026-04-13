@@ -1,7 +1,17 @@
 {
-  "version": "1.1",
-  "updated": "2026-04-12",
+  "version": "1.2",
+  "updated": "2026-04-13",
   "goal": "Operar el cluster como una suite unica de herramientas esotericas con medicion y monetizacion unificadas",
+  "expansion_policy": {
+    "principle": "Ampliar el cluster solo cuando la suite actual ya demuestre traccion y monetizacion suficiente",
+    "rules": [
+      "No abrir nuevas herramientas o dominios antes de consolidar M2",
+      "Priorizar mejoras de CRO, interlinking, indexacion y RPM sobre expansion prematura",
+      "Validar nuevas ideas como seccion interna o landing antes de crear un sexto site",
+      "Abrir una nueva herramienta solo si aporta nueva intencion de busqueda y recircula hacia el cluster principal"
+    ],
+    "next_candidate": "Test de arquetipos o tipo creativo, primero como experimento interno y no como nuevo dominio"
+  },
   "milestones": [
     {
       "id": "M1",
@@ -146,6 +156,11 @@
         "Abrir afiliacion y patrocinios recurrentes",
         "Optimizar RPM combinando banner directo y remanente"
       ],
+      "expansion_gate": {
+        "min_stage": "M2",
+        "min_weekly_sessions": 1500,
+        "condition": "Solo ampliar el cluster cuando la suite actual tenga traccion organica demostrable y medicion estable"
+      },
       "monetization": "direct+adsense+afiliacion",
       "kpis": {
         "organic_share_min": 0.65,
