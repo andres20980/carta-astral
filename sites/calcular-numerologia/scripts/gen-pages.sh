@@ -38,7 +38,7 @@ gen_head() {
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link href="${BRAND_FONTS}" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
-  <script>if(location.hostname.endsWith('.web.app'))location.replace('https://${DOMAIN}'+location.pathname+location.search);</script>
+$(canonical_host_redirect_script "$DOMAIN")
 $(ga4_head_snippet "$GA4" "$SITE_KEY" "$page_type" "$content_group" "$entity_slug")
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://pagead2.googlesyndication.com">
@@ -449,6 +449,7 @@ cat > "$PUBLIC/404.html" <<END404
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Página no encontrada — Calcular Numerología</title>
   <meta name="robots" content="noindex">
+$(canonical_host_redirect_script "$DOMAIN")
   <style>${COMMON_CSS}</style>
 </head>
 <body>

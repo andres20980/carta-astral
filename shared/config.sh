@@ -66,6 +66,13 @@ sitemap_url_for() {
   echo "https://${DOMAINS[$site_key]}/sitemap.xml"
 }
 
+canonical_host_redirect_script() {
+  local domain="$1"
+  cat <<EOF
+  <script>if(location.hostname==='www.${domain}'||location.hostname.endsWith('.web.app'))location.replace('https://${domain}'+location.pathname+location.search);</script>
+EOF
+}
+
 # — Shared brand
 BRAND_FONTS="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap"
 CONTACT_EMAIL="contacto@carta-astral-gratis.es"
@@ -377,6 +384,7 @@ gen_publicidad_page() {
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link href="${BRAND_FONTS}" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
+$(canonical_host_redirect_script "$domain")
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebPage","name":"Publicidad en ${name}","url":"https://${domain}/publicidad","description":"Media kit y espacios premium para anunciantes en ${domain}","inLanguage":"es"}
   </script>

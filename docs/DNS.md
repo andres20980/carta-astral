@@ -125,7 +125,9 @@ Estado documentado:
 ## Buenas prácticas operativas
 
 1. Mantén `A @`, `CNAME www`, `TXT _acme-challenge` y `TXT hosting-site` alineados con Firebase Hosting.
-2. Si Firebase pide un reto adicional para `www`, añade el `TXT _acme-challenge.www` exacto que muestre la consola. No inventes ni reutilices valores.
-3. Mantén el `google-site-verification` una vez el dominio ya esté verificado en Search Console.
-4. No mezcles varios `hosting-site=...` en un mismo dominio.
-5. Tras cambios DNS, valida por fuera con `dig` y por aplicación con `https://dominio/ads.txt`, `https://www.dominio/ads.txt`, `https://dominio/sitemap.xml` y `https://dominio/publicidad`.
+2. El dominio canónico público es siempre el apex sin `www`. `www` y `*.web.app` deben redirigir al apex, no competir como URLs indexables.
+3. Si Firebase permite configurar el dominio `www` como redirect-only desde Hosting, úsalo para conseguir un `301` real `www -> apex`. No añadas una regla global en `firebase.json` para esto: Firebase Hosting no condiciona esas reglas por hostname y puedes crear un bucle sobre el apex.
+4. Si Firebase pide un reto adicional para `www`, añade el `TXT _acme-challenge.www` exacto que muestre la consola. No inventes ni reutilices valores.
+5. Mantén el `google-site-verification` una vez el dominio ya esté verificado en Search Console.
+6. No mezcles varios `hosting-site=...` en un mismo dominio.
+7. Tras cambios DNS o deploy, valida por fuera con `dig` y por aplicación con `https://dominio/ads.txt`, `https://www.dominio/ads.txt`, `https://dominio/sitemap.xml` y `https://dominio/publicidad`.

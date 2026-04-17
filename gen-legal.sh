@@ -85,6 +85,7 @@ for site_key in "${SITE_KEYS[@]}"; do
   <meta name="robots" content="noindex, follow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="${BRAND_FONTS}" rel="stylesheet">
+$(canonical_host_redirect_script "$domain")
   <style>${CSS}</style>
 </head>
 <body>
@@ -158,6 +159,7 @@ ENDPRIV
   <meta name="robots" content="noindex, follow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="${BRAND_FONTS}" rel="stylesheet">
+$(canonical_host_redirect_script "$domain")
   <style>${CSS}</style>
 </head>
 <body>

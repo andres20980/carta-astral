@@ -56,6 +56,7 @@ for slug in aries tauro geminis cancer leo virgo libra escorpio sagitario capric
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <!-- GA4 -->
+$(canonical_host_redirect_script "carta-astral-gratis.es")
 $(ga4_head_snippet "$GA4" "carta-astral" "sign_profile" "evergreen" "$slug")
   <!-- AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
@@ -167,6 +168,7 @@ cat > "$DIR/index.html" <<HEREDOC
   <meta name="robots" content="index, follow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+$(canonical_host_redirect_script "carta-astral-gratis.es")
 $(ga4_head_snippet "$GA4" "carta-astral" "content_hub" "hub" "signos")
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
   <script type="application/ld+json">
