@@ -134,7 +134,7 @@ $(gen_head "$title" "$meta_desc" "$url_path" "arcana_profile" "evergreen" "$slug
   {"@context":"https://schema.org","@type":"Article","headline":"${name} — Significado en el Tarot","description":"${meta_desc}","author":{"@type":"Organization","name":"Tarot del Día"},"publisher":{"@type":"Organization","name":"Tarot del Día","url":"https://${DOMAIN}/"},"mainEntityOfPage":"https://${DOMAIN}${url_path}","inLanguage":"es"}
   </script>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Arcanos Mayores","item":"https://${DOMAIN}/arcanos-mayores/"},{"@type":"ListItem","position":3,"name":"${name}","item":"https://${DOMAIN}${url_path}"}]}
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Arcanos Mayores","item":"https://${DOMAIN}/arcanos-mayores"},{"@type":"ListItem","position":3,"name":"${name}","item":"https://${DOMAIN}${url_path}"}]}
   </script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué significa ${name} en el tarot?","acceptedAnswer":{"@type":"Answer","text":"${name} (Arcano ${num}) representa: ${keys}. Al derecho indica ${upright}. Invertida señala ${reversed}."}},{"@type":"Question","name":"¿${name} es una carta positiva o negativa?","acceptedAnswer":{"@type":"Answer","text":"Ninguna carta del tarot es intrínsecamente positiva o negativa. ${name} tiene un mensaje que depende del contexto de la tirada y las cartas que le acompañan."}}]}
@@ -163,7 +163,7 @@ ${COMMON_CSS}
 </head>
 <body>
 <div class="container">
-  <nav class="breadcrumb"><a href="/">Tarot del Día</a> › <a href="/arcanos-mayores/">Arcanos Mayores</a> › ${name}</nav>
+  <nav class="breadcrumb"><a href="/">Tarot del Día</a> › <a href="/arcanos-mayores">Arcanos Mayores</a> › ${name}</nav>
 
   <div class="card-hero">
     <div class="card-face">
@@ -209,7 +209,7 @@ $(ad_block "🃏" "Patrocina una lectura de alta atencion" "Ubicacion premium en
 
   <div class="nav-cards">
     <a href="/arcanos-mayores/${MAJOR_SLUGS[$prev_idx]}">← ${MAJOR_NAMES[$prev_idx]}</a>
-    <a href="/arcanos-mayores/">Todos los Arcanos</a>
+    <a href="/arcanos-mayores">Todos los Arcanos</a>
     <a href="/arcanos-mayores/${MAJOR_SLUGS[$next_idx]}">${MAJOR_NAMES[$next_idx]} →</a>
   </div>
 
@@ -243,9 +243,9 @@ cat > "$PUBLIC/arcanos-mayores/index.html" <<ENDMAJOR
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "Los 22 Arcanos Mayores del Tarot — Significado Completo" "Guía completa de los 22 Arcanos Mayores del tarot. Significado, interpretación al derecho e invertida de cada carta. De El Loco a El Mundo." "/arcanos-mayores/" "content_hub" "hub" "arcanos-mayores")
+$(gen_head "Los 22 Arcanos Mayores del Tarot — Significado Completo" "Guía completa de los 22 Arcanos Mayores del tarot. Significado, interpretación al derecho e invertida de cada carta. De El Loco a El Mundo." "/arcanos-mayores" "content_hub" "hub" "arcanos-mayores")
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Arcanos Mayores","item":"https://${DOMAIN}/arcanos-mayores/"}]}
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Arcanos Mayores","item":"https://${DOMAIN}/arcanos-mayores"}]}
   </script>
   <style>
 ${COMMON_CSS}
@@ -282,7 +282,7 @@ $(gen_footer)
 </html>
 ENDMAJOR
 
-SITEMAP_URLS+="  <url><loc>https://${DOMAIN}/arcanos-mayores/</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n"
+SITEMAP_URLS+="  <url><loc>https://${DOMAIN}/arcanos-mayores</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n"
 echo "  ✓ arcanos-mayores/index.html"
 
 # ══════════════════════════════════════════════════════════════
@@ -374,7 +374,7 @@ $(ad_block "🔮" "¿Quieres llegar a usuarios que consultan tarot hoy?" "Espaci
 
   <div class="panel" style="text-align:center">
     <h2>Explora los Arcanos</h2>
-    <p><a href="/arcanos-mayores/" style="color:var(--accent);font-weight:600;text-decoration:none">Ver los 22 Arcanos Mayores →</a></p>
+    <p><a href="/arcanos-mayores" style="color:var(--accent);font-weight:600;text-decoration:none">Ver los 22 Arcanos Mayores →</a></p>
   </div>
 
   <div class="seo-text panel">

@@ -46,14 +46,34 @@ _token() {
 
 _oauth_token() {
   if [[ -n "${GOOGLE_OAUTH_REFRESH_TOKEN:-}" && -n "${GOOGLE_OAUTH_CLIENT_ID:-}" && -n "${GOOGLE_OAUTH_CLIENT_SECRET:-}" ]]; then
-    curl -sS https://oauth2.googleapis.com/token \
+    local resp token
+    resp=$(curl -sS https://oauth2.googleapis.com/token \
       -d "client_id=${GOOGLE_OAUTH_CLIENT_ID}" \
       -d "client_secret=${GOOGLE_OAUTH_CLIENT_SECRET}" \
       -d "refresh_token=${GOOGLE_OAUTH_REFRESH_TOKEN}" \
-      -d "grant_type=refresh_token" | python3 -c "import sys,json;print(json.load(sys.stdin).get('access_token',''))"
+      -d "grant_type=refresh_token")
+    token=$(python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))" <<< "$resp")
+    if [[ -z "$token" ]]; then
+      echo "Could not mint Google OAuth access token:" >&2
+      python3 -m json.tool <<< "$resp" >&2 2>/dev/null || echo "$resp" >&2
+      return 1
+    fi
+    echo "$token"
   else
     _token
   fi
+}
+
+_oauth_uses_adc() {
+  [[ -z "${GOOGLE_OAUTH_REFRESH_TOKEN:-}" || -z "${GOOGLE_OAUTH_CLIENT_ID:-}" || -z "${GOOGLE_OAUTH_CLIENT_SECRET:-}" ]]
+}
+
+_adc_quota_project() {
+  if [[ -n "${GOOGLE_CLOUD_QUOTA_PROJECT:-}" ]]; then
+    echo "$GOOGLE_CLOUD_QUOTA_PROJECT"
+    return
+  fi
+  gcloud auth application-default get-quota-project 2>/dev/null || true
 }
 
 _api() {
@@ -61,7 +81,16 @@ _api() {
 }
 
 _api_oauth() {
-  curl -s -H "Authorization: Bearer $(_oauth_token)" "$@"
+  local token quota
+  token="$(_oauth_token)" || return
+  if _oauth_uses_adc; then
+    quota="$(_adc_quota_project)"
+    if [[ -n "$quota" ]]; then
+      curl -sS -H "Authorization: Bearer $token" -H "X-Goog-User-Project: $quota" "$@"
+      return
+    fi
+  fi
+  curl -sS -H "Authorization: Bearer $token" "$@"
 }
 
 _ga4_admin_token() {
@@ -285,6 +314,14 @@ cmd_gsc_submit_sitemap() {
   else
     echo "  Response (HTTP $code):"
     echo "$resp" | head -n -1 | python3 -m json.tool 2>/dev/null || echo "$resp"
+    if _oauth_uses_adc && [[ -z "$(_adc_quota_project)" ]]; then
+      echo ""
+      echo "  Hint: ADC is being used without a quota project."
+      echo "  Run: gcloud auth application-default set-quota-project <project-with-searchconsole-api>"
+      echo "  Or export GOOGLE_CLOUD_QUOTA_PROJECT=<project-with-searchconsole-api>."
+      echo "  Prefer GOOGLE_OAUTH_* env vars for unattended GSC automation."
+    fi
+    return 1
   fi
 }
 
@@ -303,12 +340,18 @@ for s in data.get('sitemap',[]):
 }
 
 cmd_gsc_submit_sitemaps_all() {
-  local site_key
+  local site_key failures=0
   for site_key in "${CLUSTER_SITE_KEYS[@]}"; do
     set_current_site "$site_key"
-    cmd_gsc_submit_sitemap
+    if ! cmd_gsc_submit_sitemap; then
+      failures=$((failures + 1))
+    fi
     echo ""
   done
+  if [[ "$failures" -gt 0 ]]; then
+    echo "GSC sitemap submit failed for ${failures} site(s)" >&2
+    return 1
+  fi
 }
 
 cmd_gsc_inspect() {

@@ -151,7 +151,7 @@ $(gen_head "$title" "$desc" "$url_path" "number_profile" "evergreen" "$n")
   {"@context":"https://schema.org","@type":"Article","headline":"Número de Vida ${n}: ${NUM_TITLES[$n]}","description":"${desc}","author":{"@type":"Organization","name":"Calcular Numerología"},"publisher":{"@type":"Organization","name":"Calcular Numerología","url":"https://${DOMAIN}/"},"mainEntityOfPage":"https://${DOMAIN}${url_path}","inLanguage":"es"}
   </script>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Número de Vida","item":"https://${DOMAIN}/numero-de-vida/"},{"@type":"ListItem","position":3,"name":"Número ${n}","item":"https://${DOMAIN}${url_path}"}]}
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Número de Vida","item":"https://${DOMAIN}/numero-de-vida"},{"@type":"ListItem","position":3,"name":"Número ${n}","item":"https://${DOMAIN}${url_path}"}]}
   </script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué significa el número de vida ${n}?","acceptedAnswer":{"@type":"Answer","text":"El número ${n} (${NUM_TITLES[$n]}) representa: ${NUM_KEYS[$n]}."}},{"@type":"Question","name":"¿Con qué números es compatible el ${n}?","acceptedAnswer":{"@type":"Answer","text":"El número de vida ${n} tiene mayor compatibilidad con los números ${NUM_COMPAT[$n]}."}}]}
@@ -172,7 +172,7 @@ ${COMMON_CSS}
 </head>
 <body>
 <div class="container">
-  <nav class="breadcrumb"><a href="/">Calcular Numerología</a> › <a href="/numero-de-vida/">Números de Vida</a> › Número ${n}</nav>
+  <nav class="breadcrumb"><a href="/">Calcular Numerología</a> › <a href="/numero-de-vida">Números de Vida</a> › Número ${n}</nav>
 
   <div class="num-hero">
     <div class="big-num">${n}</div>
@@ -210,7 +210,7 @@ $(ad_block "✨" "Patrocina un calculo con alta intencion educativa" "Inventario
 
   <div class="nav-nums">
     <a href="/numero-de-vida/${prev}">← Número ${prev}: ${NUM_TITLES[$prev]}</a>
-    <a href="/numero-de-vida/">Todos</a>
+    <a href="/numero-de-vida">Todos</a>
     <a href="/numero-de-vida/${next}">Número ${next}: ${NUM_TITLES[$next]} →</a>
   </div>
 
@@ -244,9 +244,9 @@ cat > "$PUBLIC/numero-de-vida/index.html" <<ENDNUMIDX
 <!DOCTYPE html>
 <html lang="es">
 <head>
-$(gen_head "Los 9 Números de Vida — Significado en Numerología" "Descubre el significado de los 9 números de vida en numerología. Del 1 al 9: personalidad, amor, trabajo y compatibilidad." "/numero-de-vida/" "content_hub" "hub" "numero-de-vida")
+$(gen_head "Los 9 Números de Vida — Significado en Numerología" "Descubre el significado de los 9 números de vida en numerología. Del 1 al 9: personalidad, amor, trabajo y compatibilidad." "/numero-de-vida" "content_hub" "hub" "numero-de-vida")
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Números de Vida","item":"https://${DOMAIN}/numero-de-vida/"}]}
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://${DOMAIN}/"},{"@type":"ListItem","position":2,"name":"Números de Vida","item":"https://${DOMAIN}/numero-de-vida"}]}
   </script>
   <style>
 ${COMMON_CSS}
@@ -282,7 +282,7 @@ $(gen_footer)
 </html>
 ENDNUMIDX
 
-SITEMAP_URLS+="  <url><loc>https://${DOMAIN}/numero-de-vida/</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n"
+SITEMAP_URLS+="  <url><loc>https://${DOMAIN}/numero-de-vida</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n"
 echo "  ✓ numero-de-vida/index.html"
 
 # ══════════════════════════════════════════════════════════════

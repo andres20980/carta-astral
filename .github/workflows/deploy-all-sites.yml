@@ -151,10 +151,18 @@ jobs:
         shell: bash
         run: |
           site_dir="sites/${{ matrix.site }}"
-          script_path="$site_dir/scripts/gen-pages.sh"
+          generated=0
 
-          if [ -f "$script_path" ]; then
-            bash "$script_path"
+          for script_path in "$site_dir/scripts/gen-pages.sh" "$site_dir/scripts/gen-sign-pages.sh"; do
+            if [ -f "$script_path" ]; then
+              echo "Generating ${{ matrix.site }} with $script_path"
+              bash "$script_path"
+              generated=1
+            fi
+          done
+
+          if [ "$generated" -eq 0 ]; then
+            echo "No generator script for ${{ matrix.site }}"
           fi
 
           if [ ! -d "$site_dir/public" ]; then
@@ -198,8 +206,8 @@ jobs:
           set -euo pipefail
 
           if [ -z "${GOOGLE_OAUTH_CLIENT_ID:-}" ] || [ -z "${GOOGLE_OAUTH_CLIENT_SECRET:-}" ] || [ -z "${GOOGLE_OAUTH_REFRESH_TOKEN:-}" ]; then
-            echo "Skipping GSC sitemap submit: missing GOOGLE_OAUTH_* secrets"
-            exit 0
+            echo "Missing GOOGLE_OAUTH_* secrets; cannot submit sitemap to GSC" >&2
+            exit 1
           fi
 
           token_json=$(curl -sS https://oauth2.googleapis.com/token \
@@ -211,8 +219,8 @@ jobs:
           access_token=$(echo "$token_json" | jq -r '.access_token // empty')
           if [ -z "$access_token" ]; then
             echo "$token_json"
-            echo "Skipping GSC sitemap submit: could not mint OAuth access token"
-            exit 0
+            echo "Could not mint OAuth access token for GSC sitemap submit" >&2
+            exit 1
           fi
 
           site_url_enc=$(python3 -c "import urllib.parse;print(urllib.parse.quote('${GSC_SITE_URL}',''))")
@@ -222,13 +230,14 @@ jobs:
           code=$(curl -sS -o /tmp/gsc-submit-response.json -w "%{http_code}" \
             -X PUT \
             -H "Authorization: Bearer $access_token" \
-            "https://searchconsole.googleapis.com/webmasters/v3/sites/${site_url_enc}/sitemaps/${sitemap_enc}" || true)
+            "https://searchconsole.googleapis.com/webmasters/v3/sites/${site_url_enc}/sitemaps/${sitemap_enc}")
 
           if [ "$code" = "200" ] || [ "$code" = "204" ]; then
             echo "Sitemap submitted to GSC for ${DOMAIN}"
           else
-            echo "GSC sitemap submit returned HTTP ${code} for ${DOMAIN}"
+            echo "GSC sitemap submit returned HTTP ${code} for ${DOMAIN}" >&2
             cat /tmp/gsc-submit-response.json || true
+            exit 1
           fi
 
   lighthouse:

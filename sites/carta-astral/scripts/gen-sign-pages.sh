@@ -64,7 +64,7 @@ $(ga4_head_snippet "$GA4" "carta-astral" "sign_profile" "evergreen" "$slug")
   {"@context":"https://schema.org","@type":"Article","headline":"Carta Astral ${name} ${glyph}","description":"${name} en la carta astral: significado, fechas, elemento y cómo influye en tu mapa natal.","author":{"@type":"Organization","name":"Carta Astral Gratis"},"publisher":{"@type":"Organization","name":"Carta Astral Gratis","url":"https://carta-astral-gratis.es/"},"mainEntityOfPage":"https://carta-astral-gratis.es/signos/${slug}","inLanguage":"es"}
   </script>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://carta-astral-gratis.es/"},{"@type":"ListItem","position":2,"name":"Signos","item":"https://carta-astral-gratis.es/signos/"},{"@type":"ListItem","position":3,"name":"${name}","item":"https://carta-astral-gratis.es/signos/${slug}"}]}
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://carta-astral-gratis.es/"},{"@type":"ListItem","position":2,"name":"Signos","item":"https://carta-astral-gratis.es/signos"},{"@type":"ListItem","position":3,"name":"${name}","item":"https://carta-astral-gratis.es/signos/${slug}"}]}
   </script>
   <style>
     :root{--bg:#faf8f5;--surface:#fff;--border:#e8e0d8;--text:#2d2a26;--muted:#7a7268;--accent:#7c3aed;--accent2:#c084fc;--gold:#d4a017;--gradient:linear-gradient(135deg,#7c3aed 0%,#c084fc 50%,#d4a017 100%);--shadow:0 2px 12px rgba(124,58,237,.08)}
@@ -97,7 +97,7 @@ $(ga4_head_snippet "$GA4" "carta-astral" "sign_profile" "evergreen" "$slug")
 </head>
 <body>
 <div class="container">
-  <nav class="breadcrumb"><a href="/">Carta Astral Gratis</a> › <a href="/signos/">Signos</a> › ${name}</nav>
+  <nav class="breadcrumb"><a href="/">Carta Astral Gratis</a> › <a href="/signos">Signos</a> › ${name}</nav>
 
   <div class="hero-sign">
     <span class="glyph">${glyph}</span>
@@ -154,7 +154,7 @@ HEREDOC
   echo "✅ Generated $DIR/$slug.html"
 done
 
-# Generate index page for /signos/
+# Generate index page for /signos
 cat > "$DIR/index.html" <<HEREDOC
 <!DOCTYPE html>
 <html lang="es">
@@ -164,7 +164,7 @@ cat > "$DIR/index.html" <<HEREDOC
   <title>Los 12 Signos del Zodíaco — Carta Astral Gratis</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="description" content="Los 12 signos del zodíaco: características, fechas, elementos y significado en la carta astral. Aries, Tauro, Géminis, Cáncer, Leo, Virgo, Libra, Escorpio, Sagitario, Capricornio, Acuario y Piscis.">
-  <link rel="canonical" href="https://carta-astral-gratis.es/signos/">
+  <link rel="canonical" href="https://carta-astral-gratis.es/signos">
   <meta name="robots" content="index, follow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -172,7 +172,7 @@ $(canonical_host_redirect_script "carta-astral-gratis.es")
 $(ga4_head_snippet "$GA4" "carta-astral" "content_hub" "hub" "signos")
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://carta-astral-gratis.es/"},{"@type":"ListItem","position":2,"name":"Signos del Zodíaco","item":"https://carta-astral-gratis.es/signos/"}]}
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://carta-astral-gratis.es/"},{"@type":"ListItem","position":2,"name":"Signos del Zodíaco","item":"https://carta-astral-gratis.es/signos"}]}
   </script>
   <style>
     :root{--bg:#faf8f5;--surface:#fff;--border:#e8e0d8;--text:#2d2a26;--muted:#7a7268;--accent:#7c3aed;--accent2:#c084fc;--gold:#d4a017;--gradient:linear-gradient(135deg,#7c3aed 0%,#c084fc 50%,#d4a017 100%);--shadow:0 2px 12px rgba(124,58,237,.08)}

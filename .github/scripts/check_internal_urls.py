@@ -3,20 +3,27 @@ import json
 import os
 import re
 import sys
-from urllib.parse import urlparse
 from html.parser import HTMLParser
+from urllib.parse import urlparse
+from xml.etree import ElementTree
 
 
 class LinkParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.urls = []
+        self.canonical_urls = []
         self.ld_json_blocks = []
         self._in_ld_json = False
         self._current_ld_json = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if tag == "link":
+            rel = attrs.get("rel", "")
+            href = attrs.get("href")
+            if href and "canonical" in rel.lower().split():
+                self.canonical_urls.append(href)
         if tag in {"a", "link", "script"}:
           for key in ("href", "src"):
             value = attrs.get(key)
@@ -58,6 +65,14 @@ def collect_valid_routes(public_dir):
     return valid
 
 
+def is_redirect_prone_directory_url(path, valid_routes):
+    return (
+        path != "/"
+        and path.endswith("/")
+        and path.rstrip("/") in valid_routes
+    )
+
+
 def flatten_jsonld(value):
     if isinstance(value, dict):
         for key, subvalue in value.items():
@@ -89,6 +104,7 @@ def main():
     allowed_host = sys.argv[2]
     valid_routes = collect_valid_routes(public_dir)
     missing = {}
+    redirect_prone = {}
     suspicious_schema = []
 
     for root, _, files in os.walk(public_dir):
@@ -108,8 +124,16 @@ def main():
                 if "{" in url or "}" in url:
                     suspicious_schema.append((rel, raw))
                     continue
+                if is_redirect_prone_directory_url(url, valid_routes):
+                    redirect_prone.setdefault(url, []).append(rel)
+                    continue
                 if url not in valid_routes:
                     missing.setdefault(url, []).append(rel)
+
+            for raw in parser.canonical_urls:
+                url = normalize_internal(raw, allowed_host)
+                if url and is_redirect_prone_directory_url(url, valid_routes):
+                    redirect_prone.setdefault(url, []).append(f"{rel} canonical")
 
             for block in parser.ld_json_blocks:
                 try:
@@ -122,14 +146,37 @@ def main():
                         continue
                     if "{" in url or "}" in url:
                         suspicious_schema.append((rel, raw))
+                    elif is_redirect_prone_directory_url(url, valid_routes):
+                        redirect_prone.setdefault(url, []).append(f"{rel} json-ld")
                     elif url not in valid_routes:
                         missing.setdefault(url, []).append(rel)
 
-    if not missing and not suspicious_schema:
+    sitemap_path = os.path.join(public_dir, "sitemap.xml")
+    if os.path.exists(sitemap_path):
+        try:
+            tree = ElementTree.parse(sitemap_path)
+            root = tree.getroot()
+            namespace = ""
+            if root.tag.startswith("{"):
+                namespace = root.tag.split("}", 1)[0] + "}"
+            for loc in root.findall(f".//{namespace}loc"):
+                raw = (loc.text or "").strip()
+                url = normalize_internal(raw, allowed_host)
+                if url and is_redirect_prone_directory_url(url, valid_routes):
+                    redirect_prone.setdefault(url, []).append("sitemap.xml")
+        except Exception as exc:
+            suspicious_schema.append(("sitemap.xml", f"unparseable sitemap: {exc}"))
+
+    if not missing and not suspicious_schema and not redirect_prone:
         print("OK")
         return
 
     print("BROKEN")
+    if redirect_prone:
+        print("## URLs internas/canónicas que redirigen por barra final")
+        for url, refs in sorted(redirect_prone.items()):
+            sample = ", ".join(sorted(set(refs))[:5])
+            print(f"- {url} <- {sample}")
     if missing:
         print("## URLs internas sin destino publicado")
         for url, refs in sorted(missing.items()):
