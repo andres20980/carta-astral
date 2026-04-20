@@ -1012,8 +1012,7 @@ function loadAdsense(){
 function scheduleAdsense(){
   const loadOnce=()=>loadAdsense();
   ['pointerdown','keydown','scroll'].forEach(evt=>window.addEventListener(evt,loadOnce,{once:true,passive:true}));
-  if('requestIdleCallback'in window)requestIdleCallback(loadOnce,{timeout:3500});
-  else setTimeout(loadOnce,3500);
+  setTimeout(loadOnce,12000);
 }
 scheduleAdsense();
 
