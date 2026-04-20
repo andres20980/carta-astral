@@ -31,7 +31,7 @@
         "avg_duration_min_s": 25
       },
       "auto": {
-        "completed_actions": 2,
+        "completed_actions": 3,
         "total_actions": 4,
         "actions": [
           {
@@ -41,7 +41,7 @@
           },
           {
             "label": "Ads.txt y AdSense consistentes en las 5 herramientas",
-            "done": false,
+            "done": true,
             "evidence": "Publisher compartido y ads.txt generado para 5/5 sites"
           },
           {
@@ -75,7 +75,7 @@
         "avg_duration_min_s": 40
       },
       "auto": {
-        "completed_actions": 3,
+        "completed_actions": 4,
         "total_actions": 4,
         "actions": [
           {
@@ -90,8 +90,8 @@
           },
           {
             "label": "Ampliar landings long-tail por cada herramienta",
-            "done": false,
-            "evidence": "35 paginas HTML publicas en el cluster"
+            "done": true,
+            "evidence": "227 paginas HTML publicas en el cluster"
           },
           {
             "label": "Refinar interlinking interno por intencion",
@@ -168,7 +168,7 @@
         "est_monthly_revenue_eur": 500
       },
       "auto": {
-        "completed_actions": 2,
+        "completed_actions": 3,
         "total_actions": 4,
         "actions": [
           {
@@ -178,8 +178,8 @@
           },
           {
             "label": "Ampliar comparativas y contenidos evergreen con E-E-A-T",
-            "done": false,
-            "evidence": "35 paginas + FAQ/Breadcrumb presentes en todos los sites"
+            "done": true,
+            "evidence": "227 paginas + FAQ/Breadcrumb presentes en todos los sites"
           },
           {
             "label": "Abrir afiliacion y patrocinios recurrentes",
@@ -266,15 +266,15 @@
       "cluster_media_kits": true,
       "cluster_recirculation": true,
       "premium_slots_by_site": true,
-      "total_html_pages": 35,
-      "long_tail_coverage": false,
+      "total_html_pages": 227,
+      "long_tail_coverage": true,
       "eeat_schema_coverage": true
     },
     "site_page_counts": {
       "carta-astral": 18,
-      "compatibilidad-signos": 0,
-      "tarot-del-dia": 0,
-      "calcular-numerologia": 0,
+      "compatibilidad-signos": 149,
+      "tarot-del-dia": 28,
+      "calcular-numerologia": 15,
       "horoscopo-de-hoy": 17
     }
   }
