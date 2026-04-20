@@ -1,27 +1,38 @@
 {
-  "generatedAt": "2026-04-20T10:48:56Z",
+  "generatedAt": "2026-04-20T10:51:10Z",
   "site": "calcular-numerologia",
   "domain": "calcular-numerologia.es",
   "families": [
     {
       "family": "home",
-      "score": 351.0,
+      "score": 353.0,
       "ga4Views": 13.0,
       "ga4LowEngagementViews": 13.0,
-      "gscImpressions": 0.0,
-      "gscOpportunity": 0.0,
+      "gscImpressions": 3.0,
+      "gscOpportunity": 2.0,
       "paths": [
         "/"
+      ]
+    },
+    {
+      "family": "content",
+      "score": 2.0,
+      "ga4Views": 0.0,
+      "ga4LowEngagementViews": 0.0,
+      "gscImpressions": 2.0,
+      "gscOpportunity": 2.0,
+      "paths": [
+        "http://calcular-numerologia.es/"
       ]
     }
   ],
   "topFamily": {
     "family": "home",
-    "score": 351.0,
+    "score": 353.0,
     "ga4Views": 13.0,
     "ga4LowEngagementViews": 13.0,
-    "gscImpressions": 0.0,
-    "gscOpportunity": 0.0,
+    "gscImpressions": 3.0,
+    "gscOpportunity": 2.0,
     "paths": [
       "/"
     ]
