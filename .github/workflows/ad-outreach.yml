@@ -1,0 +1,151 @@
+name: "📨 Outreach de anunciantes"
+
+on:
+  schedule:
+    # 10:20 Europe/Madrid in summer, 09:20 in winter. Monday-Thursday only.
+    - cron: "20 8 * * 1-4"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Modo de ejecucion"
+        required: false
+        default: "dry-run"
+        type: choice
+        options:
+          - "dry-run"
+          - "send"
+      send_new_without_review:
+        description: "Enviar tambien a prospectos new que no puedan autoaprobarse, no recomendado"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: ad-outreach-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  outreach:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: "🐍 Preparar dependencias"
+        run: python3 -m pip install --user cryptography
+
+      - name: "📨 Enviar aprobados y sincronizar respuestas"
+        env:
+          WORKSPACE_SERVICE_ACCOUNT_JSON: ${{ secrets.WORKSPACE_SERVICE_ACCOUNT_JSON }}
+          WORKSPACE_GMAIL_IMPERSONATE: ${{ secrets.WORKSPACE_GMAIL_IMPERSONATE || 'info@licitago.es' }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
+          ASTRO_MAIL_FROM: "publicidad@carta-astral-gratis.es"
+          ASTRO_MAIL_FROM_NAME: "Astro Cluster"
+          AD_OUTREACH_MAIL_TRANSPORT: "gmail_api"
+          AD_OUTREACH_DISPATCH_MODE: ${{ inputs.mode || 'dry-run' }}
+          AD_OUTREACH_SCHEDULE_SEND: ${{ vars.AD_OUTREACH_SCHEDULE_SEND || '0' }}
+          AD_OUTREACH_MAX_SEND: "2"
+          AD_OUTREACH_AUTO_APPROVE_VALIDATED: "1"
+          AD_OUTREACH_REQUIRE_MANUAL_APPROVAL: "0"
+          AD_OUTREACH_ALLOW_PUBLIC_PERSONAL_EMAIL: "1"
+          AD_OUTREACH_VALIDATION_MAX_AGE_DAYS: "14"
+          AD_OUTREACH_REQUIRE_SOURCE_EMAIL: "1"
+          AD_OUTREACH_SEND_NEW: ${{ inputs.send_new_without_review == 'true' && '1' || '0' }}
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then
+            if [ "${AD_OUTREACH_SCHEDULE_SEND}" = "1" ]; then
+              AD_OUTREACH_MODE="send"
+            else
+              AD_OUTREACH_MODE="dry-run"
+            fi
+          else
+            AD_OUTREACH_MODE="${AD_OUTREACH_DISPATCH_MODE:-dry-run}"
+          fi
+          export AD_OUTREACH_MODE
+          echo "Modo outreach: ${AD_OUTREACH_MODE}"
+
+          if [ "${AD_OUTREACH_MAIL_TRANSPORT}" = "gmail_api" ] && [ -z "${WORKSPACE_SERVICE_ACCOUNT_JSON:-}" ]; then
+            {
+              echo "## Outreach de anunciantes"
+              echo
+              echo "Falta el secreto WORKSPACE_SERVICE_ACCOUNT_JSON. No se puede enviar ni sincronizar Gmail por API/DWD."
+            } > /tmp/ad-outreach-report.md
+            cat /tmp/ad-outreach-report.md
+            exit 0
+          fi
+          if [ "${AD_OUTREACH_MAIL_TRANSPORT}" = "smtp" ] && { [ -z "${GMAIL_USER:-}" ] || [ -z "${GMAIL_PASS:-}" ]; }; then
+            {
+              echo "## Outreach de anunciantes"
+              echo
+              echo "Faltan los secretos GMAIL_USER/GMAIL_PASS. No se puede enviar ni sincronizar Gmail por SMTP/IMAP."
+            } > /tmp/ad-outreach-report.md
+            cat /tmp/ad-outreach-report.md
+            exit 0
+          fi
+          if [ "${AD_OUTREACH_MODE}" = "dry-run" ]; then
+            python3 .github/scripts/ad_outreach.py --check-mailbox --validate --sync --report /tmp/ad-outreach-report.md
+          else
+            python3 .github/scripts/ad_outreach.py --check-mailbox --send --sync --write --report /tmp/ad-outreach-report.md
+          fi
+          cat /tmp/ad-outreach-report.md
+
+      - name: "💾 Persistir estado de outreach"
+        run: |
+          if git diff --quiet -- docs/AD_PROSPECTS.json docs/AD_OUTREACH_LEARNING.json; then
+            echo "No hay cambios de estado."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/AD_PROSPECTS.json docs/AD_OUTREACH_LEARNING.json
+          git commit -m "chore: update advertising outreach status"
+          git push
+
+      - name: "📝 Sincronizar issue de outreach"
+        uses: actions/github-script@v8
+        env:
+          REPORT_PATH: /tmp/ad-outreach-report.md
+        with:
+          script: |
+            const fs = require('fs');
+            const titlePrefix = '📨 Outreach diario de anunciantes';
+            const today = new Date().toISOString().slice(0, 10);
+            const body = fs.readFileSync(process.env.REPORT_PATH, 'utf8');
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'report',
+              per_page: 100
+            });
+
+            const matching = issues.filter(issue => issue.title.startsWith(titlePrefix));
+            const title = `${titlePrefix} — ${today}`;
+
+            if (matching.length > 0) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: matching[0].number,
+                title,
+                body
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['report']
+              });
+            }

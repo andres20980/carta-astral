@@ -1,0 +1,19 @@
+{
+  "name": "astro-cluster-functions-gmail",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "^22"
+  },
+  "scripts": {
+    "probe:list": "node scripts/gmail-probe.js list",
+    "probe:send": "node scripts/gmail-probe.js send",
+    "smoke:imap": "node scripts/smoke-imap.js",
+    "smoke:smtp": "node scripts/smoke-smtp.js"
+  },
+  "dependencies": {
+    "firebase-functions": "^7.2.3",
+    "nodemailer": "7.0.11"
+  }
+}

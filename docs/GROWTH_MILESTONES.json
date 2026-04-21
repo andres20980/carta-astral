@@ -1,6 +1,6 @@
 {
   "version": "1.2",
-  "updated": "2026-04-20",
+  "updated": "2026-04-21",
   "goal": "Operar el cluster como una suite unica de herramientas esotericas con medicion y monetizacion unificadas",
   "expansion_policy": {
     "principle": "Ampliar el cluster solo cuando la suite actual ya demuestre traccion y monetizacion suficiente",
@@ -195,6 +195,34 @@
       }
     }
   ],
+  "direct_ads_outreach": {
+    "stage": "growup",
+    "goal": "Conseguir banners pagados por empresas o profesionales reales mientras el cluster crece y AdSense queda pendiente o como remanente",
+    "daily_send_limit": {
+      "min": 1,
+      "max": 2
+    },
+    "cadence": "Enviar de lunes a jueves por la manana, esperar respuestas y evitar follow-ups automaticos durante la fase inicial",
+    "learning_window_months": 3,
+    "learning_artifact": "docs/AD_OUTREACH_LEARNING.json",
+    "mailbox": "publicidad@carta-astral-gratis.es",
+    "approval_policy": {
+      "owner": "automation",
+      "criteria": [
+        "MX valido",
+        "URL publica valida",
+        "email visible en la fuente publica",
+        "afinidad tematica con tarot, astrologia, numerologia, horoscopo o esoterismo",
+        "validacion fresca de 14 dias o menos"
+      ],
+      "manual_review": "Solo para excepciones, no como requisito normal de envio"
+    },
+    "pause_thresholds": {
+      "bounce_rate_gt": 0.05,
+      "not_interested_rate_gt": 0.1
+    },
+    "relationship_to_adsense": "La venta directa valida demanda real y puede convivir con AdSense como inventario remanente cuando se apruebe"
+  },
   "revenue_benchmarks_spain_esoteric": {
     "adsense_cpm_eur": {
       "low": 0.5,

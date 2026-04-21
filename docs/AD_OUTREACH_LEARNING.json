@@ -1,0 +1,112 @@
+{
+  "version": "1.0",
+  "snapshots": [
+    {
+      "date": "2026-04-21",
+      "daily_send_limit": 2,
+      "recommended_action": "continue",
+      "totals": {
+        "prospects": 10,
+        "approved": 8,
+        "sent": 0,
+        "replied": 0,
+        "not_interested": 0,
+        "bounced": 0,
+        "reply_rate": 0,
+        "not_interested_rate": 0,
+        "bounce_rate": 0
+      },
+      "segments": {
+        "astrologia": {
+          "prospects": 1,
+          "approved": 1,
+          "sent": 0,
+          "replied": 0,
+          "not_interested": 0,
+          "bounced": 0,
+          "reply_rate": 0,
+          "not_interested_rate": 0,
+          "bounce_rate": 0
+        },
+        "astrologia profesional": {
+          "prospects": 1,
+          "approved": 1,
+          "sent": 0,
+          "replied": 0,
+          "not_interested": 0,
+          "bounced": 0,
+          "reply_rate": 0,
+          "not_interested_rate": 0,
+          "bounce_rate": 0
+        },
+        "astrologia y tarot": {
+          "prospects": 1,
+          "approved": 1,
+          "sent": 0,
+          "replied": 0,
+          "not_interested": 0,
+          "bounced": 0,
+          "reply_rate": 0,
+          "not_interested_rate": 0,
+          "bounce_rate": 0
+        },
+        "esoterismo": {
+          "prospects": 1,
+          "approved": 1,
+          "sent": 0,
+          "replied": 0,
+          "not_interested": 0,
+          "bounced": 0,
+          "reply_rate": 0,
+          "not_interested_rate": 0,
+          "bounce_rate": 0
+        },
+        "tarot online": {
+          "prospects": 1,
+          "approved": 1,
+          "sent": 0,
+          "replied": 0,
+          "not_interested": 0,
+          "bounced": 0,
+          "reply_rate": 0,
+          "not_interested_rate": 0,
+          "bounce_rate": 0
+        },
+        "tarotista": {
+          "prospects": 2,
+          "approved": 2,
+          "sent": 0,
+          "replied": 0,
+          "not_interested": 0,
+          "bounced": 0,
+          "reply_rate": 0,
+          "not_interested_rate": 0,
+          "bounce_rate": 0
+        },
+        "tienda esoterica": {
+          "prospects": 2,
+          "approved": 1,
+          "sent": 0,
+          "replied": 0,
+          "not_interested": 0,
+          "bounced": 0,
+          "reply_rate": 0,
+          "not_interested_rate": 0,
+          "bounce_rate": 0
+        },
+        "tienda esoterica y formacion": {
+          "prospects": 1,
+          "approved": 0,
+          "sent": 0,
+          "replied": 0,
+          "not_interested": 0,
+          "bounced": 0,
+          "reply_rate": 0,
+          "not_interested_rate": 0,
+          "bounce_rate": 0
+        }
+      }
+    }
+  ],
+  "updated_at": "2026-04-21T14:11:44+00:00"
+}
