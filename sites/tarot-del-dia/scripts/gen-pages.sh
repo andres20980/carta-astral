@@ -418,6 +418,7 @@ $(ad_block "🔮" "¿Quieres llegar a usuarios que consultan tarot hoy?" "Espaci
     <p>Cada Arcano Mayor está conectado con un signo zodiacal o planeta. Por eso, combinar tu <a href="https://carta-astral-gratis.es/">carta astral</a> con el tarot te da una perspectiva mucho más rica. La <a href="https://compatibilidad-signos.es/">compatibilidad de signos</a> también puede enriquecer las lecturas sobre relaciones.</p>
     <p>Si conoces tu carta natal, compara la carta que sale con los temas activos de tu Sol, Luna y Ascendente. Esa lectura cruzada permite distinguir si el mensaje habla de identidad, emoción, vínculo, acción o comunicación.</p>
     <p>Después de la tirada, guarda una nota breve con la pregunta, las cartas y lo que ocurrió durante el día. Con el tiempo podrás distinguir mejor cuándo una carta habla de un hecho externo y cuándo refleja un estado interno que conviene ordenar.</p>
+    <p>La tirada gana precisión cuando no repites la misma pregunta varias veces. Si necesitas más claridad, cambia el enfoque: pregunta qué puedes observar, qué recurso tienes disponible o qué conversación conviene preparar.</p>
   </div>
 
 $(ad_block "✨" "Patrocina espacios de alta afinidad" "Venta directa: más control, más recuerdo de marca y mayor contexto editorial." "Ver espacios →")

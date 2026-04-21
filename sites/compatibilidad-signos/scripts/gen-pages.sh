@@ -279,6 +279,7 @@ $(ad_block "❤" "¿Tienes una aplicación de citas, consulta o regalo romántic
     <h2>Cómo llevar esta compatibilidad al día a día</h2>
     <p>El porcentaje no debe leerse como sentencia, sino como una brújula para entender dónde la relación fluye y dónde pide trabajo consciente. En una pareja ${n1}–${n2}, conviene observar quién toma la iniciativa, cómo se gestionan los silencios y qué necesita cada persona para sentirse segura antes de discutir un problema importante.</p>
     <p>Si la afinidad es alta, el reto suele ser no dar por hecho que todo se resolverá solo. Si la afinidad es media o baja, la relación puede funcionar cuando ambos pactan ritmos, límites y expectativas concretas. En ambos casos, el signo solar es solo una capa: Luna, Venus, Marte y Ascendente pueden cambiar mucho la lectura final.</p>
+    <p>Una práctica útil es revisar la relación en tres escenas concretas: cómo decidís planes, cómo pedís espacio y cómo reparáis una discusión. Si esas tres situaciones tienen acuerdos claros, la compatibilidad se vuelve más estable que cualquier porcentaje aislado.</p>
   </div>
 
   <div class="panel">

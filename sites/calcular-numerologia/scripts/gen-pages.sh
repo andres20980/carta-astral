@@ -210,6 +210,7 @@ $(ad_block "🔢" "¿Vendes cursos, libros o sesiones de numerología?" "Llega a
     <p>Una forma sencilla de aplicarlo es revisar una decisión reciente desde tres ángulos: qué querías conseguir, qué miedo estaba presente y qué parte de ${NUM_KEYS[$n]} apareció con más fuerza. Si repites este ejercicio varias veces, verás qué patrones son realmente tuyos y cuáles responden a una etapa concreta.</p>
     <p>También conviene comparar el ${n} con otros datos personales. El nombre, la fecha completa, el día de nacimiento y la carta astral pueden reforzar o matizar esta lectura. Si una interpretación parece demasiado extrema, úsala como hipótesis de trabajo y contrástala con hechos concretos de tu vida.</p>
     <p>La lectura gana precisión cuando la conviertes en seguimiento. Elige una cualidad del ${n}, aplícala durante una semana y observa qué cambia en tus decisiones, relaciones y forma de gestionar el esfuerzo. Así el número deja de ser una descripción y se convierte en práctica.</p>
+    <p>Si compartes la lectura con otra persona, evita usar el número como argumento cerrado. Es más útil preguntar qué parte reconoce, qué parte rechaza y qué situación real confirma o contradice el perfil.</p>
   </div>
 
   <div class="panel">
@@ -290,6 +291,7 @@ ${COMMON_CSS}
     <p>Usa estas guías como punto de partida y no como sentencia. La numerología aporta lenguaje para observar tendencias, pero la parte valiosa está en traducir esa observación en decisiones concretas: comunicar mejor, elegir con más calma, ordenar prioridades o reconocer límites personales.</p>
     <p>Cuando vuelvas a consultar tu número, revisa qué ha cambiado desde la última lectura. Un mismo significado puede resonar de forma distinta si estás empezando un proyecto, cerrando una etapa, tomando una decisión de pareja o buscando más estabilidad profesional.</p>
     <p>Ese seguimiento convierte la guía en una herramienta viva, no en una lectura puntual.</p>
+    <p>Si estás usando la numerología para una decisión concreta, escribe primero la pregunta y después consulta el número. Así evitas buscar solo frases que confirmen lo que ya pensabas y puedes distinguir mejor entre talento, hábito y bloqueo repetido.</p>
   </div>
   <div class="num-grid">${NUM_GRID}</div>
 
@@ -412,6 +414,7 @@ $(ad_block "✨" "Publicidad directa con mejor contexto" "Más control, mejor en
 
     <h2>Numerología y astrología</h2>
     <p>La numerología y la <a href="https://carta-astral-gratis.es/">carta astral</a> son sistemas complementarios. Mientras la astrología analiza la posición de los planetas en el momento de tu nacimiento, la numerología estudia la vibración de los números asociados. Juntas, ofrecen un retrato más completo de tu personalidad y potencial.</p>
+    <p>Por eso conviene usar la calculadora como puerta de entrada: primero identifica tu número, después lee su ficha completa y finalmente contrástalo con signos, ascendente y hábitos reales. La combinación de capas reduce lecturas genéricas y mejora la utilidad práctica.</p>
   </div>
 
 $(cluster_recirculation_block "$SITE_KEY")

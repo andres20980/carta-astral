@@ -526,6 +526,7 @@ $(canonical_host_redirect_script "$domain")
     <p style="margin-top:.75rem">Datos de tráfico, capturas de GA4, creatividades admitidas, paquetes trimestrales y opciones de patrocinio ampliado disponibles bajo solicitud.</p>
     <p style="margin-top:.75rem">Los formatos se venden como espacios estáticos: texto, imagen ligera o enlace patrocinado integrado con el contexto de la página. Antes de publicar revisamos que la página de destino, el mensaje y la categoría encajen con la audiencia para proteger tanto al anunciante como la experiencia del usuario.</p>
     <p style="margin-top:.75rem">La venta directa nos permite evitar anuncios automáticos poco relevantes y priorizar marcas que aporten valor real: consultas profesionales, formación seria, productos de bienestar, herramientas de autoconocimiento y servicios afines. Si una campaña no encaja con la temática o puede generar desconfianza, no la publicamos.</p>
+    <p style="margin-top:.75rem">Tratamos la red como un único cluster comercial: se puede reservar un dominio concreto, combinar varias webs o plantear presencia en las cinco propiedades con un mismo mensaje adaptado a cada intención de búsqueda.</p>
   </section>
 
   <section>

@@ -283,6 +283,8 @@ $(ad_block "⭐" "¿Quieres visibilidad diaria en una audiencia recurrente?" "Ap
     <p>Antes de tomar una decisión importante, separa intuición de impulso. Anota una prioridad realista, una conversación pendiente y un gesto de autocuidado. Este pequeño filtro convierte el horóscopo en una herramienta práctica: no se trata de esperar que el día ocurra, sino de usar el clima simbólico para responder con más conciencia.</p>
     <p>Al final del día, revisa qué parte de la lectura tuvo sentido y cuál no. Esa comprobación evita usar el horóscopo como una predicción rígida y lo convierte en un registro personal: puedes detectar qué temas se repiten, qué tránsitos te afectan más y qué decisiones mejoran cuando las tomas con más perspectiva.</p>
     <p>Si lees también tu Luna y tu Ascendente, compara los tres mensajes. El Sol suele marcar motivación, la Luna muestra el tono emocional y el Ascendente describe cómo actúas hacia fuera. Cuando los tres coinciden, el mensaje gana fuerza; cuando se contradicen, conviene elegir una acción pequeña y flexible.</p>
+    <p>Para cerrar la lectura, elige una sola acción medible: enviar un mensaje, aplazar una compra, descansar antes de responder o preparar una conversación. Esa acción pequeña es la parte realmente aprovechable del horóscopo diario.</p>
+    <p>Evita tomar el texto como una orden literal. Úsalo como una lista de comprobación: qué conviene cuidar, qué puede esperar y dónde necesitas más claridad. Ese enfoque reduce decisiones impulsivas y hace que la lectura diaria tenga valor incluso cuando el día cambia de rumbo.</p>
   </div>
 
 $(ad_block "🌙" "Patrocina un signo o el tráfico diario del sitio" "Ideal para tarot, astrología, bienestar y tiendas espirituales con repetición de impacto." "Reservar un banner destacado →")
@@ -392,6 +394,7 @@ $(ad_block "⭐" "Publicidad destacada en una audiencia que vuelve cada día" "T
     <p>También puedes revisar la Luna cuando busques una lectura emocional. En días de tensión, cambios de humor o decisiones familiares, el signo lunar puede dar pistas más concretas que el Sol. Combinar estas tres capas permite evitar interpretaciones demasiado generales.</p>
     <p>Este enfoque no sustituye una carta natal completa, pero mejora la utilidad diaria: el Sol muestra qué te mueve, el Ascendente dónde se manifiesta y la Luna cómo lo vives por dentro. Leerlos juntos ayuda a convertir una predicción breve en una herramienta práctica.</p>
     <p>Si repites esta comparación durante varios días, podrás detectar qué signo te resulta más útil para trabajo, relaciones o estado emocional. Esa observación personal vale más que leer un único texto aislado.</p>
+    <p>También ayuda revisar el horóscopo al final del día. La lectura gana valor cuando comparas el texto con hechos concretos: qué conversación se dio, qué decisión evitaste, qué energía predominó y qué patrón merece seguimiento mañana.</p>
   </div>
 
 $(ad_block "✨" "Patrocina una ubicación de alto recuerdo" "El patrocinio directo gana valor cuando el mensaje y el contexto están alineados." "Ver espacios →")

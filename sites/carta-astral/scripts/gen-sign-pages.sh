@@ -274,6 +274,7 @@ $(ga4_head_snippet "$GA4" "carta-astral" "content_hub" "hub" "signos")
     <p>Si estás empezando, no intentes leer los doce signos a la vez. Revisa primero los tres grandes puntos, Sol, Luna y Ascendente, y luego añade Venus, Marte y Mercurio. Ese orden permite construir una lectura progresiva, con menos contradicciones y con más capacidad para aplicarla a situaciones reales.</p>
     <p>Cuando avances, vuelve a los signos que menos reconoces. A menudo explican áreas menos conscientes de la carta: patrones heredados, vínculos que activan aprendizajes o temas que solo aparecen en determinadas etapas. Esa revisión gradual hace que la guía sea útil más allá de una consulta rápida.</p>
     <p>Si usas estas fichas para estudiar relaciones, compara primero qué elementos predominan en cada carta. Mucho Fuego puede acelerar decisiones, mucha Tierra buscar seguridad, mucho Aire necesitar conversación y mucha Agua priorizar vínculo emocional.</p>
+    <p>Para una lectura más completa, toma notas de los signos que aparecen en casas angulares: casa 1, casa 4, casa 7 y casa 10. Suelen marcar temas visibles de identidad, familia, pareja y dirección profesional. Después compara esas señales con los planetas que haya cerca, porque un mismo signo se expresa de manera distinta si acompaña a Venus, Marte, Saturno o la Luna.</p>
   </section>
   <div class="signs-grid">
     <a class="sign-card" href="/signos/aries"><span class="glyph">♈</span><span class="name">Aries</span><span class="dates">21 mar – 19 abr</span><span class="element el-fuego">Fuego</span></a>
