@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Generate privacy.html + terms.html for one or more cluster sites (AdSense requirement)
+# Generate privacy.html + terms.html for one or more cluster sites.
 
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 source "$REPO_ROOT/shared/config.sh"
@@ -80,7 +80,7 @@ for site_key in "${SITE_KEYS[@]}"; do
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Política de Privacidad — ${site_name}</title>
-  <meta name="description" content="Política de privacidad de ${domain}. Información sobre cookies, Google Analytics y AdSense.">
+  <meta name="description" content="Política de privacidad de ${domain}. Información sobre cookies, analítica y publicidad directa.">
   <link rel="canonical" href="https://${domain}/privacy">
   <meta name="robots" content="noindex, follow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -106,14 +106,14 @@ $(canonical_host_redirect_script "$domain")
     <h2>3. Cookies y tecnologías de seguimiento</h2>
     <p>Utilizamos las siguientes tecnologías:</p>
     <ul>
-      <li><strong>Google Analytics 4 (GA4)</strong> — para analizar el tráfico web de forma anónima. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de privacidad de Google</a>.</li>
-      <li><strong>Google AdSense</strong> — para mostrar anuncios. Publisher: ${ADSENSE_PUB}. Puedes gestionar tus preferencias en <a href="https://adssettings.google.com/" target="_blank" rel="noopener">adssettings.google.com</a>.</li>
+      <li><strong>Google Analytics 4 (GA4)</strong> — para analizar el tráfico web de forma agregada y mejorar el servicio. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de privacidad de Google</a>.</li>
+      <li><strong>Publicidad directa</strong> — podemos mostrar patrocinios estáticos o enlaces comerciales propios. Estos espacios no requieren crear una cuenta ni introducir datos personales en el sitio.</li>
     </ul>
     <p>Puedes desactivar las cookies en cualquier momento desde la configuración de tu navegador.</p>
 
     <h2>4. Base legal del tratamiento</h2>
     <ul>
-      <li><strong>Consentimiento</strong> (Art. 6.1.a RGPD) — para cookies analíticas y publicitarias.</li>
+      <li><strong>Consentimiento</strong> (Art. 6.1.a RGPD) — para cookies analíticas cuando corresponda.</li>
       <li><strong>Interés legítimo</strong> (Art. 6.1.f RGPD) — para el funcionamiento del servicio.</li>
     </ul>
 
@@ -121,7 +121,7 @@ $(canonical_host_redirect_script "$domain")
     <p>Los datos analíticos se procesan por Google LLC (EE.UU.) bajo las cláusulas contractuales tipo aprobadas por la Comisión Europea.</p>
 
     <h2>6. Periodo de conservación</h2>
-    <p>Las cookies de GA4 expiran a los 14 meses. Las cookies de AdSense según la configuración de Google.</p>
+    <p>Las cookies de GA4 expiran a los 14 meses según la configuración analítica aplicada. La publicidad directa del sitio no exige registro ni envío de datos personales.</p>
 
     <h2>7. Tus derechos</h2>
     <p>Conforme al RGPD y la LOPDGDD, tienes derecho a acceso, rectificación, supresión, portabilidad, oposición y limitación del tratamiento.</p>
@@ -192,7 +192,7 @@ $(canonical_host_redirect_script "$domain")
     <p>El servicio se ofrece "tal cual" sin garantías de disponibilidad continua. Nos reservamos el derecho de interrumpir o modificar el servicio en cualquier momento.</p>
 
     <h2>6. Publicidad</h2>
-    <p>El sitio se financia mediante publicidad proporcionada por Google AdSense. Los anuncios se muestran de acuerdo con las preferencias del usuario y las políticas de Google.</p>
+    <p>El sitio puede financiarse mediante publicidad directa, patrocinios estáticos o enlaces comerciales identificados por contexto. Estos formatos no modifican el carácter gratuito del servicio.</p>
 
     <h2>7. Limitación de responsabilidad</h2>
     <p>No nos hacemos responsables de pérdidas o daños derivados del uso del servicio o de la interpretación de sus resultados.</p>

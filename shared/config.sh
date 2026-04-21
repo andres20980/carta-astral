@@ -75,7 +75,7 @@ EOF
 
 # — Shared brand
 BRAND_FONTS="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap"
-CONTACT_EMAIL="contacto@carta-astral-gratis.es"
+CONTACT_EMAIL="publicidad@carta-astral-gratis.es"
 
 # — CSS Variables (same palette across all sites)
 CSS_VARS=':root{--bg:#faf8f5;--surface:#fff;--border:#e8e0d8;--text:#2d2a26;--muted:#7a7268;--accent:#7c3aed;--accent2:#c084fc;--gold:#d4a017;--gradient:linear-gradient(135deg,#7c3aed 0%,#c084fc 50%,#d4a017 100%);--shadow:0 2px 12px rgba(124,58,237,.08)}'
@@ -91,26 +91,26 @@ declare -A CROSSLINKS=(
 
 # — Commercial / direct advertising copy
 declare -A SITE_COMMERCIAL_HOOK=(
-  [carta-astral]="Una audiencia de alta intencion interesada en astrologia, autoconocimiento y bienestar."
-  [compatibilidad-signos]="Una audiencia que llega con intencion clara de resolver dudas sobre amor, pareja y afinidad."
-  [tarot-del-dia]="Una audiencia que busca guia inmediata, lectura espiritual y productos del nicho esoterico."
-  [calcular-numerologia]="Una audiencia que quiere respuestas personales, formacion y herramientas de crecimiento interior."
+  [carta-astral]="Una audiencia de alta intención interesada en astrología, autoconocimiento y bienestar."
+  [compatibilidad-signos]="Una audiencia que llega con intención clara de resolver dudas sobre amor, pareja y afinidad."
+  [tarot-del-dia]="Una audiencia que busca guía inmediata, lectura espiritual y productos del nicho esotérico."
+  [calcular-numerologia]="Una audiencia que quiere respuestas personales, formación y herramientas de crecimiento interior."
   [horoscopo-de-hoy]="Una audiencia recurrente que vuelve a diario para consultar amor, trabajo y salud."
 )
 
 declare -A SITE_COMMERCIAL_BRANDS=(
-  [carta-astral]="consultas astrologicas, tarot profesional, ecommerce esoterico, cursos y bienestar"
-  [compatibilidad-signos]="apps de citas, coaching de pareja, joyeria, regalos personalizados y bienestar emocional"
-  [tarot-del-dia]="consultas de tarot, cursos, mazos, velas, incienso, rituales y membresias espirituales"
-  [calcular-numerologia]="escuelas holisticas, libros, consultoria espiritual, membresias premium y software formativo"
-  [horoscopo-de-hoy]="tarot, astrologia, bienestar, ecommerce espiritual, suscripciones y recomendaciones afiliadas"
+  [carta-astral]="consultas astrológicas, tarot profesional, tiendas esotéricas, cursos y bienestar"
+  [compatibilidad-signos]="aplicaciones de citas, acompañamiento de pareja, joyería, regalos personalizados y bienestar emocional"
+  [tarot-del-dia]="consultas de tarot, cursos, mazos, velas, incienso, rituales y membresías espirituales"
+  [calcular-numerologia]="escuelas holísticas, libros, consultoría espiritual, membresías de pago y herramientas formativas"
+  [horoscopo-de-hoy]="tarot, astrología, bienestar, tiendas espirituales, suscripciones y recomendaciones afiliadas"
 )
 
 declare -A SITE_COMMERCIAL_CONTEXT=(
-  [carta-astral]="aparece a lo largo del flujo de calculo y en puntos de maxima atencion de la carta natal"
-  [compatibilidad-signos]="aparece junto a comparativas de signos y combinaciones muy buscadas por trafico SEO"
-  [tarot-del-dia]="aparece junto a la tirada interactiva y al contenido evergreen de arcanos"
-  [calcular-numerologia]="aparece junto al calculo del numero de vida y a fichas de fuerte intencion educativa"
+  [carta-astral]="aparece a lo largo del flujo de cálculo y en puntos de máxima atención de la carta natal"
+  [compatibilidad-signos]="aparece junto a comparativas de signos y combinaciones muy buscadas por tráfico orgánico"
+  [tarot-del-dia]="aparece junto a la tirada interactiva y al contenido estable de arcanos"
+  [calcular-numerologia]="aparece junto al cálculo del número de vida y a fichas de fuerte intención educativa"
   [horoscopo-de-hoy]="aparece junto a predicciones diarias y fichas de signos con consumo recurrente"
 )
 
@@ -264,11 +264,11 @@ ad_block() {
   local icon="$1"
   local label="$2"
   local copy="$3"
-  local cta="${4:-Ver espacios y tarifas ->}"
+  local cta="${4:-Ver espacios y tarifas →}"
   cat <<EOF
 <div class="ad-h">
-  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anunciate aqui" data-ad-slot="premium_direct_cta" data-link-context="ad_block">
-    <span class="ad-kicker">Espacio publicitario premium</span>
+  <a class="ad-ph ad-ph-h" href="/publicidad" title="Anúnciate aquí" data-ad-slot="premium_direct_cta" data-link-context="ad_block">
+    <span class="ad-kicker">Espacio publicitario destacado</span>
     <span class="ad-icon">${icon}</span>
     <span class="ad-label">${label}</span>
     <span class="ad-copy">${copy}</span>
@@ -324,40 +324,40 @@ EOF
 
 cluster_recirculation_block() {
   local current="$1"
-  local heading="Tambien te puede interesar"
-  local intro="Si quieres seguir profundizando, aqui tienes otras herramientas relacionadas para conocer mejor tu situacion."
+  local heading="También te puede interesar"
+  local intro="Si quieres seguir profundizando, aquí tienes otras herramientas relacionadas para conocer mejor tu situación."
   local cards=""
 
   case "$current" in
     carta-astral)
-      cards+=$(cluster_card "compatibilidad-signos" "Relaciones" "Compatibilidad de Signos" "Descubre como encajan dos signos y consulta combinaciones concretas en amor, amistad y convivencia." "Ver combinaciones ->")
-      cards+=$(cluster_card "tarot-del-dia" "Guia rapida" "Tarot del Dia" "Haz una tirada breve si buscas una orientacion inmediata para el momento que estas viviendo." "Hacer una tirada ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Prediccion diaria" "Horoscopo de Hoy" "Consulta tu energia del dia en amor, trabajo y bienestar segun tu signo." "Leer el horoscopo ->")
+      cards+=$(cluster_card "compatibilidad-signos" "Relaciones" "Compatibilidad de Signos" "Descubre cómo encajan dos signos y consulta combinaciones concretas en amor, amistad y convivencia." "Ver combinaciones →")
+      cards+=$(cluster_card "tarot-del-dia" "Guía rápida" "Tarot del Día" "Haz una tirada breve si buscas una orientación inmediata para el momento que estás viviendo." "Hacer una tirada →")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Predicción diaria" "Horóscopo de Hoy" "Consulta tu energía del día en amor, trabajo y bienestar según tu signo." "Leer el horóscopo →")
       ;;
     compatibilidad-signos)
-      cards+=$(cluster_card "carta-astral" "Profundizar" "Carta Astral Gratis" "Completa la compatibilidad con Venus, Luna, Marte y ascendente usando tus datos de nacimiento." "Calcular carta astral ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Seguimiento" "Horoscopo de Hoy" "Mira el clima del dia para tu signo y suma una lectura rapida sobre amor, trabajo y salud." "Ver predicciones ->")
-      cards+=$(cluster_card "tarot-del-dia" "Respuesta rapida" "Tarot del Dia" "Si necesitas una señal inmediata, haz una tirada corta con una lectura simbolica facil de entender." "Tirar las cartas ->")
+      cards+=$(cluster_card "carta-astral" "Profundizar" "Carta Astral Gratis" "Completa la compatibilidad con Venus, Luna, Marte y ascendente usando tus datos de nacimiento." "Calcular carta astral →")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Seguimiento" "Horóscopo de Hoy" "Mira el clima del día para tu signo y suma una lectura rápida sobre amor, trabajo y salud." "Ver predicciones →")
+      cards+=$(cluster_card "tarot-del-dia" "Respuesta rápida" "Tarot del Día" "Si necesitas una señal inmediata, haz una tirada corta con una lectura simbólica fácil de entender." "Tirar las cartas →")
       ;;
     tarot-del-dia)
-      cards+=$(cluster_card "carta-astral" "Capa profunda" "Carta Astral Gratis" "Amplia la lectura del tarot con una vision mas completa de tu personalidad, ciclos y relaciones." "Ir a mi carta ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Rutina" "Horoscopo de Hoy" "Consulta tu signo para completar la lectura con una prediccion breve del dia." "Leer mi signo ->")
-      cards+=$(cluster_card "compatibilidad-signos" "Amor y pareja" "Compatibilidad de Signos" "Compara dos signos si tu tirada toca temas de relacion, afinidad o decisiones en pareja." "Comparar signos ->")
+      cards+=$(cluster_card "carta-astral" "Capa profunda" "Carta Astral Gratis" "Amplía la lectura del tarot con una visión más completa de tu personalidad, ciclos y relaciones." "Ir a mi carta →")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Rutina" "Horóscopo de Hoy" "Consulta tu signo para completar la lectura con una predicción breve del día." "Leer mi signo →")
+      cards+=$(cluster_card "compatibilidad-signos" "Amor y pareja" "Compatibilidad de Signos" "Compara dos signos si tu tirada toca temas de relación, afinidad o decisiones en pareja." "Comparar signos →")
       ;;
     calcular-numerologia)
-      cards+=$(cluster_card "carta-astral" "Perfil completo" "Carta Astral Gratis" "Combina tu numero de vida con planetas, casas y ascendente para obtener una lectura mas completa." "Completar analisis ->")
-      cards+=$(cluster_card "compatibilidad-signos" "Vinculos" "Compatibilidad de Signos" "Explora afinidades entre signos si quieres llevar la interpretacion a relaciones y conexiones personales." "Explorar afinidad ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Prediccion diaria" "Horoscopo de Hoy" "Añade una lectura ligera del dia para complementar tu perfil personal." "Ver hoy ->")
+      cards+=$(cluster_card "carta-astral" "Perfil completo" "Carta Astral Gratis" "Combina tu número de vida con planetas, casas y ascendente para obtener una lectura más completa." "Completar análisis →")
+      cards+=$(cluster_card "compatibilidad-signos" "Vínculos" "Compatibilidad de Signos" "Explora afinidades entre signos si quieres llevar la interpretación a relaciones y conexiones personales." "Explorar afinidad →")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Predicción diaria" "Horóscopo de Hoy" "Añade una lectura ligera del día para complementar tu perfil personal." "Ver hoy →")
       ;;
     horoscopo-de-hoy)
-      cards+=$(cluster_card "carta-astral" "Personalizado" "Carta Astral Gratis" "Pasa de una prediccion general a una lectura personalizada con fecha, hora y lugar de nacimiento." "Calcular ahora ->")
-      cards+=$(cluster_card "compatibilidad-signos" "Relaciones" "Compatibilidad de Signos" "Consulta la afinidad entre dos signos si quieres entender mejor una relacion o una persona concreta." "Ver compatibilidad ->")
-      cards+=$(cluster_card "tarot-del-dia" "Consulta breve" "Tarot del Dia" "Haz una tirada rapida si buscas una señal adicional para tomar una decision hoy." "Abrir tirada ->")
+      cards+=$(cluster_card "carta-astral" "Personalizado" "Carta Astral Gratis" "Pasa de una predicción general a una lectura personalizada con fecha, hora y lugar de nacimiento." "Calcular ahora →")
+      cards+=$(cluster_card "compatibilidad-signos" "Relaciones" "Compatibilidad de Signos" "Consulta la afinidad entre dos signos si quieres entender mejor una relación o una persona concreta." "Ver compatibilidad →")
+      cards+=$(cluster_card "tarot-del-dia" "Consulta breve" "Tarot del Día" "Haz una tirada rápida si buscas una señal adicional para tomar una decisión hoy." "Abrir tirada →")
       ;;
     *)
-      cards+=$(cluster_card "carta-astral" "Astrologia" "Carta Astral Gratis" "Descubre tu carta natal completa con una interpretacion personalizada." "Abrir ->")
-      cards+=$(cluster_card "compatibilidad-signos" "Afinidad" "Compatibilidad de Signos" "Compara dos signos y explora como encajan en distintos planos." "Abrir ->")
-      cards+=$(cluster_card "horoscopo-de-hoy" "Prediccion diaria" "Horoscopo de Hoy" "Lee tu horoscopo del dia y consulta la energia de tu signo." "Abrir ->")
+      cards+=$(cluster_card "carta-astral" "Astrología" "Carta Astral Gratis" "Descubre tu carta natal completa con una interpretación personalizada." "Abrir →")
+      cards+=$(cluster_card "compatibilidad-signos" "Afinidad" "Compatibilidad de Signos" "Compara dos signos y explora cómo encajan en distintos planos." "Abrir →")
+      cards+=$(cluster_card "horoscopo-de-hoy" "Predicción diaria" "Horóscopo de Hoy" "Lee tu horóscopo del día y consulta la energía de tu signo." "Abrir →")
       ;;
   esac
 
@@ -369,7 +369,7 @@ cluster_recirculation_block() {
   <div class="cluster-grid">
     ${cards}
   </div>
-  <p class="cluster-note">Explora otras herramientas del grupo si quieres ampliar la lectura desde otro angulo.</p>
+  <p class="cluster-note">Explora otras herramientas del grupo si quieres ampliar la lectura desde otro ángulo.</p>
 </section>
 EOF
 }
@@ -389,8 +389,8 @@ gen_publicidad_page() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Publicidad en ${name} - Media Kit para Anunciantes</title>
-  <meta name="description" content="Anuncia tu marca en ${domain} o en todo el cluster esoterico. ${hook} Espacios premium, patrocinios directos y formatos flexibles.">
+  <title>Publicidad en ${name} - Dosier para anunciantes</title>
+  <meta name="description" content="Anuncia tu marca en ${domain} o en toda la red esotérica. ${hook} Espacios destacados, patrocinios directos y formatos flexibles.">
   <link rel="canonical" href="https://${domain}/publicidad">
   <meta property="og:title" content="Publicidad en ${name}">
   <meta property="og:description" content="${hook}">
@@ -403,7 +403,7 @@ gen_publicidad_page() {
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
 $(canonical_host_redirect_script "$domain")
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebPage","name":"Publicidad en ${name}","url":"https://${domain}/publicidad","description":"Media kit y espacios premium para anunciantes en ${domain}","inLanguage":"es"}
+  {"@context":"https://schema.org","@type":"WebPage","name":"Publicidad en ${name}","url":"https://${domain}/publicidad","description":"Dosier comercial y espacios destacados para anunciantes en ${domain}","inLanguage":"es"}
   </script>
   <style>
     ${CSS_VARS}
@@ -445,32 +445,38 @@ $(canonical_host_redirect_script "$domain")
 <nav><a href="/">← Volver a ${name}</a></nav>
 <div class="wrap">
   <div class="hero">
-    <h1>Media Kit - Publicidad</h1>
-    <p>${hook} Si vendes ${brands}, este inventario te pone delante de una audiencia contextual. Puedes reservar un espacio de este site o comprar presencia estatica en todo el cluster.</p>
+    <h1>Dosier comercial - Publicidad</h1>
+    <p>${hook} Si vendes ${brands}, estos espacios te ponen delante de una audiencia contextual. Puedes reservar una posición en este sitio o comprar presencia estática en toda la red.</p>
   </div>
 
   <section>
-    <h2>Por que anunciarte aqui</h2>
+    <h2>Qué tipo de campañas encajan</h2>
+    <p>Estos espacios están pensados para marcas que quieren aparecer en páginas con intención clara: usuarios que calculan una carta, consultan una compatibilidad, revisan su horóscopo, hacen una tirada o buscan su número de vida. La visibilidad no depende de una subasta automática: se pacta ubicación, duración y mensaje antes de publicar.</p>
+    <p>Priorizamos anunciantes que aporten algo razonable al contexto del sitio: consultas, formación, libros, herramientas, bienestar, productos digitales o servicios relacionados. No aceptamos creatividades engañosas, promesas garantizadas ni mensajes que puedan confundirse con el contenido editorial.</p>
+  </section>
+
+  <section>
+    <h2>Por qué anunciarte aquí</h2>
     <div class="grid">
       <div class="card">
         <div class="icon">🎯</div>
-        <h3>Intencion alta</h3>
-        <p>El usuario no llega por curiosidad generica: entra buscando una respuesta concreta y consume contenido con foco.</p>
+        <h3>Intención alta</h3>
+        <p>El usuario no llega por curiosidad genérica: entra buscando una respuesta concreta y consume contenido con foco.</p>
       </div>
       <div class="card">
         <div class="icon">🧩</div>
         <h3>Contexto relevante</h3>
-        <p>Tu marca ${context}, lo que mejora recuerdo, afinidad y CTR frente a inventario abierto.</p>
+        <p>Tu marca ${context}, lo que mejora recuerdo, afinidad y clics frente a espacios publicitarios genéricos.</p>
       </div>
       <div class="card">
         <div class="icon">💸</div>
-        <h3>Directo antes que remanente</h3>
-        <p>El patrocinio directo tiene prioridad comercial. AdSense queda como remanente cuando un espacio no esta vendido.</p>
+        <h3>Venta directa</h3>
+        <p>El patrocinio directo tiene prioridad comercial: texto aprobado, ubicación fija y presencia contextual sin depender de subastas automáticas.</p>
       </div>
       <div class="card">
         <div class="icon">📦</div>
-        <h3>Compra por cluster</h3>
-        <p>Una misma creatividad puede aparecer en las 5 herramientas para cubrir astrologia, tarot, numerologia, horoscopo y compatibilidad.</p>
+        <h3>Compra por red</h3>
+        <p>Una misma creatividad puede aparecer en las 5 herramientas para cubrir astrología, tarot, numerología, horóscopo y compatibilidad.</p>
       </div>
     </div>
   </section>
@@ -480,22 +486,22 @@ $(canonical_host_redirect_script "$domain")
     <div class="slots">
       <div class="slot">
         <h3>Banner superior</h3>
-        <p>Primera impresion bajo el hero. Ideal para awareness y campañas tacticas.</p>
+        <p>Primera impresión bajo la cabecera. Ideal para notoriedad de marca y campañas tácticas.</p>
         <div class="price">25 EUR / mes</div>
       </div>
       <div class="slot">
         <h3>Banner en contenido</h3>
-        <p>Ubicacion premium en el punto de mayor atencion. Mejor equilibrio entre visibilidad y engagement.</p>
+        <p>Ubicación destacada en el punto de mayor atención. Buen equilibrio entre visibilidad e interacción.</p>
         <div class="price">30 EUR / mes</div>
       </div>
       <div class="slot">
-        <h3>Banner pre-footer</h3>
-        <p>Impacto adicional para usuarios que terminan la lectura y ya han mostrado interes real.</p>
+        <h3>Banner previo al pie de página</h3>
+        <p>Impacto adicional para usuarios que terminan la lectura y ya han mostrado interés real.</p>
         <div class="price">15 EUR / mes</div>
       </div>
       <div class="slot">
         <h3>Patrocinio destacado</h3>
-        <p>Copy comercial adaptado al nicho, recomendacion editorial o integracion de afiliacion bajo solicitud.</p>
+        <p>Texto comercial adaptado al nicho, recomendación editorial o integración de afiliación bajo solicitud.</p>
         <div class="price">Desde 35 EUR / mes</div>
       </div>
     </div>
@@ -508,27 +514,40 @@ $(canonical_host_redirect_script "$domain")
         <tr><th>Formato</th><th>Objetivo</th><th>Precio</th></tr>
       </thead>
       <tbody>
-        <tr><td>Banner superior</td><td>Maxima visibilidad</td><td>25 EUR / mes</td></tr>
-        <tr><td>Banner en contenido</td><td>CTR y afinidad</td><td>30 EUR / mes</td></tr>
-        <tr><td>Banner pre-footer</td><td>Frecuencia extra</td><td>15 EUR / mes</td></tr>
-        <tr><td>Pack site</td><td>Superior + contenido</td><td>45 EUR / mes</td></tr>
-        <tr><td>Takeover site</td><td>3 espacios + exclusividad del site</td><td>75 EUR / mes</td></tr>
-        <tr><td>Pack cluster</td><td>Presencia estatica en 5 dominios</td><td>120 EUR / mes</td></tr>
-        <tr><td>Takeover cluster</td><td>Espacios premium + exclusividad de categoria</td><td>250 EUR / mes</td></tr>
+        <tr><td>Banner superior</td><td>Máxima visibilidad</td><td>25 EUR / mes</td></tr>
+        <tr><td>Banner en contenido</td><td>Clics y afinidad</td><td>30 EUR / mes</td></tr>
+        <tr><td>Banner previo al pie</td><td>Frecuencia extra</td><td>15 EUR / mes</td></tr>
+        <tr><td>Paquete del sitio</td><td>Superior + contenido</td><td>45 EUR / mes</td></tr>
+        <tr><td>Exclusividad del sitio</td><td>3 espacios + exclusividad del dominio</td><td>75 EUR / mes</td></tr>
+        <tr><td>Paquete de la red</td><td>Presencia estática en 5 dominios</td><td>120 EUR / mes</td></tr>
+        <tr><td>Exclusividad de la red</td><td>Espacios destacados + exclusividad de categoría</td><td>250 EUR / mes</td></tr>
       </tbody>
     </table>
-    <p style="margin-top:.75rem">Datos de trafico, screenshots de GA4, creatividades admitidas, paquetes trimestrales y opciones de patrocinio ampliado disponibles bajo solicitud.</p>
+    <p style="margin-top:.75rem">Datos de tráfico, capturas de GA4, creatividades admitidas, paquetes trimestrales y opciones de patrocinio ampliado disponibles bajo solicitud.</p>
+    <p style="margin-top:.75rem">Los formatos se venden como espacios estáticos: texto, imagen ligera o enlace patrocinado integrado con el contexto de la página. Antes de publicar revisamos que la página de destino, el mensaje y la categoría encajen con la audiencia para proteger tanto al anunciante como la experiencia del usuario.</p>
+    <p style="margin-top:.75rem">La venta directa nos permite evitar anuncios automáticos poco relevantes y priorizar marcas que aporten valor real: consultas profesionales, formación seria, productos de bienestar, herramientas de autoconocimiento y servicios afines. Si una campaña no encaja con la temática o puede generar desconfianza, no la publicamos.</p>
+  </section>
+
+  <section>
+    <h2>Qué necesitamos para publicar</h2>
+    <ul>
+      <li>Marca, web de destino y objetivo de la campaña.</li>
+      <li>Texto breve, imagen ligera o propuesta de patrocinio contextual.</li>
+      <li>Duración prevista, dominio preferido y categoría que quieres ocupar.</li>
+      <li>Confirmación de que la página de destino es clara, segura y coherente con el mensaje anunciado.</li>
+    </ul>
+    <p style="margin-top:.75rem">Una vez acordado el espacio, revisamos la creatividad, la publicamos de forma estática y podemos preparar una propuesta para ampliar presencia en otros dominios de la red si los datos acompañan.</p>
   </section>
 
   <div class="cta">
     <h2>Reservar un espacio</h2>
-    <p>Escribe con tu marca, objetivo, creatividad o landing y te devolvemos propuesta, disponibilidad, packs de site y opciones cluster sin intermediarios.</p>
-    <a class="btn" href="mailto:${CONTACT_EMAIL}?subject=Publicidad%20${domain}%20o%20cluster&body=Hola%2C%0A%0AMe%20interesa%20anunciarme%20en%20${domain}%20o%20en%20el%20cluster.%0A%0APack%20que%20me%20interesa%3A%0APeriodo%3A%0AWeb%2Fmarca%3A%0A%0AGracias">Contactar por email</a>
+    <p>Escribe con tu marca, objetivo, creatividad o página de destino y te devolvemos propuesta, disponibilidad, paquetes del sitio y opciones para la red sin intermediarios.</p>
+    <a class="btn" href="mailto:${CONTACT_EMAIL}?subject=Publicidad%20${domain}%20o%20red&body=Hola%2C%0A%0AMe%20interesa%20anunciarme%20en%20${domain}%20o%20en%20la%20red.%0A%0APaquete%20que%20me%20interesa%3A%0APeriodo%3A%0AWeb%2Fmarca%3A%0A%0AGracias">Contactar por correo</a>
   </div>
 
   <footer>
     <p>© $(date +%Y) ${name}</p>
-    <p style="margin-top:.4rem"><a href="/">Inicio</a> · <a href="/privacy">Privacidad</a> · <a href="/terms">Terminos</a></p>
+    <p style="margin-top:.4rem"><a href="/">Inicio</a> · <a href="/privacy">Privacidad</a> · <a href="/terms">Términos</a></p>
   </footer>
 </div>
 </body>

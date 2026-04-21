@@ -40,9 +40,6 @@ gen_head() {
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
 $(canonical_host_redirect_script "$DOMAIN")
 $(ga4_head_snippet "$GA4" "$SITE_KEY" "$page_type" "$content_group" "$entity_slug")
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
-  <link rel="preconnect" href="https://pagead2.googlesyndication.com">
-  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
 ENDHEAD
 }
 
@@ -177,7 +174,7 @@ ${COMMON_CSS}
 
   <div class="keywords">$(IFS=','; for kw in ${keys}; do echo "<span class=\"kw\">${kw## }</span>"; done)</div>
 
-$(ad_block "🔮" "¿Ofreces consultas, cursos o productos esotericos?" "Tu marca puede aparecer junto a lectores que ya estan inmersos en una interpretacion de tarot." "Ver espacios y tarifas ->")
+$(ad_block "🔮" "¿Ofreces consultas, cursos o productos esotéricos?" "Tu marca puede aparecer junto a lectores que ya están inmersos en una interpretación de tarot." "Ver espacios y tarifas →")
 
   <div class="panel">
     <h2>🔮 Descripción de ${name}</h2>
@@ -205,7 +202,25 @@ $(ad_block "🔮" "¿Ofreces consultas, cursos o productos esotericos?" "Tu marc
     <p>En el ámbito laboral, ${name} al derecho señala ${upright}. Es un momento para aplicar estas energías en tu carrera. Invertida puede indicar ${reversed}, invitándote a reflexionar sobre tu dirección profesional.</p>
   </div>
 
-$(ad_block "🃏" "Patrocina una lectura de alta atencion" "Ubicacion premium entre la interpretacion y la llamada a la accion del usuario." "Reservar un banner premium ->")
+  <div class="panel">
+    <h2>Cómo integrar el mensaje de ${name}</h2>
+    <p>Para interpretar ${name} con precisión, mira primero la pregunta y después la posición de la carta. En una tirada de pasado puede señalar una experiencia que todavía condiciona tu presente; en presente muestra una energía activa; en futuro habla de una tendencia si mantienes el mismo camino.</p>
+    <p>Si aparece al derecho, trabaja las claves de ${upright} de forma consciente. Si aparece invertida, no la leas como castigo: suele indicar una energía bloqueada, exagerada o vivida hacia dentro. La utilidad del tarot está en convertir el símbolo en una acción concreta.</p>
+    <p>Antes de cerrar la lectura, formula una acción pequeña: una conversación que debes tener, un límite que conviene marcar, una decisión que necesita más información o un descanso que estás posponiendo. El símbolo gana valor cuando se traduce en una conducta observable durante el día.</p>
+    <p>También es importante mirar las cartas vecinas. ${name} puede suavizarse, intensificarse o cambiar de matiz según el arcano que aparezca antes y después. Una lectura completa no suma significados sueltos: busca una historia coherente entre pregunta, posición, carta y contexto personal.</p>
+    <p>Si la carta se repite en varias tiradas, trátala como un tema abierto. No hace falta repetir la misma pregunta: conviene revisar qué decisión, emoción o patrón sigue pendiente y qué cambio pequeño puedes hacer para mover la situación.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Preguntas para tu diario de tarot</h2>
+    <ul>
+      <li>¿Dónde estás viviendo ahora las claves de ${keys}?</li>
+      <li>¿Qué decisión cambia si aplicas el mensaje de ${name} con honestidad?</li>
+      <li>¿Qué otra carta de la tirada confirma, matiza o contradice esta lectura?</li>
+    </ul>
+  </div>
+
+$(ad_block "🃏" "Patrocina una lectura de alta atención" "Ubicación destacada entre la interpretación y la llamada a la acción del usuario." "Reservar un banner destacado →")
 
   <div class="nav-cards">
     <a href="/arcanos-mayores/${MAJOR_SLUGS[$prev_idx]}">← ${MAJOR_NAMES[$prev_idx]}</a>
@@ -263,8 +278,17 @@ ${COMMON_CSS}
   <nav class="breadcrumb"><a href="/">Tarot del Día</a> › Arcanos Mayores</nav>
   <h1>Los 22 <span>Arcanos Mayores</span></h1>
   <p class="intro">Los Arcanos Mayores representan los grandes arquetipos y lecciones de vida. Cada carta contiene un mensaje profundo sobre tu camino. Pulsa en cualquiera para leer su significado completo.</p>
+  <div class="panel">
+    <h2>Cómo estudiar los Arcanos Mayores</h2>
+    <p>Los Arcanos Mayores forman una secuencia simbólica: empiezan con El Loco, que inicia el viaje sin certezas, y terminan con El Mundo, que integra la experiencia. Leerlos como un recorrido ayuda a entender por qué una carta no es buena o mala por sí misma, sino una etapa concreta de aprendizaje.</p>
+    <p>En cada ficha encontrarás significado general, lectura al derecho, lectura invertida, amor, trabajo y preguntas para aplicar el mensaje. Si estás haciendo una tirada, lee primero la carta individual y después vuelve al conjunto para comprobar cómo dialoga con las demás.</p>
+    <p>Un buen método de estudio es elegir una carta por semana y observar dónde aparece su energía en decisiones reales. Por ejemplo, El Emperador puede verse en límites y estructura, La Luna en dudas o proyecciones, y La Templanza en procesos que requieren paciencia. Este enfoque evita memorizar listas sin conexión con la experiencia.</p>
+    <p>También puedes comparar cartas que parecen opuestas. La Fuerza y El Carro hablan de voluntad, pero una lo hace desde la calma interior y otra desde la dirección externa. La Muerte y La Torre implican cambios, aunque una describe transformación profunda y la otra ruptura repentina. Estas diferencias son las que hacen que una tirada sea rica.</p>
+    <p>Si acabas de empezar, trabaja primero con tres posiciones: situación, consejo y tendencia. Cuando ya reconozcas bien los arquetipos, añade cartas de bloqueo, recurso y resultado probable. Así mantienes la lectura clara sin perder profundidad.</p>
+    <p>La clave está en observar diferencias concretas. Dos cartas pueden hablar de cambio, pero no del mismo tipo de cambio; dos pueden hablar de amor, pero una señalar deseo y otra compromiso. Cuanto más precisa sea esa distinción, más útil será la lectura.</p>
+  </div>
 
-$(ad_block "🃏" "Publicidad premium para un publico espiritual" "Ideal para marcas de tarot, rituales, formacion y productos con afinidad esoterica." "Informarme ->")
+$(ad_block "🃏" "Publicidad destacada para un público espiritual" "Ideal para marcas de tarot, rituales, formación y productos con afinidad esotérica." "Informarme →")
 
   <div class="tarot-grid">${CARDS_GRID}</div>
 
@@ -298,8 +322,8 @@ for i in "${!MAJOR_SLUGS[@]}"; do
 done
 JS_CARDS+="]"
 
-INDEX_TITLE="Tarot del Día Gratis — Tirada de 3 Cartas Online"
-INDEX_DESC="Haz tu tarot del día gratis con una tirada online de 3 cartas. Descubre el mensaje del pasado, presente y futuro con interpretación inmediata."
+INDEX_TITLE="Tarot del Día Gratis — Tirada de 3 Cartas"
+INDEX_DESC="Haz tu tarot del día gratis con una tirada de 3 cartas. Descubre el mensaje del pasado, presente y futuro con interpretación inmediata."
 
 cat > "$PUBLIC/index.html" <<'ENDINDEX_START'
 <!DOCTYPE html>
@@ -314,7 +338,7 @@ cat >> "$PUBLIC/index.html" <<ENDINDEX
   {"@context":"https://schema.org","@type":"WebSite","name":"Tarot del Día","url":"https://${DOMAIN}/","description":"Tirada de tarot gratis del día con los 22 Arcanos Mayores.","inLanguage":"es"}
   </script>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo funciona la tirada de tarot gratis?","acceptedAnswer":{"@type":"Answer","text":"Concéntrate en tu pregunta, pulsa en 3 cartas del mazo y recibe la interpretación de cada arcano para tu situación."}},{"@type":"Question","name":"¿Cuántas veces puedo tirar las cartas?","acceptedAnswer":{"@type":"Answer","text":"Puedes hacer una tirada al día para obtener la mejor guía. Repetir la misma pregunta diluye la energía de la lectura."}},{"@type":"Question","name":"¿Es fiable el tarot online?","acceptedAnswer":{"@type":"Answer","text":"El tarot es una herramienta de reflexión e introspección. La selección aleatoria de cartas funciona como espejo de tu subconsciente, igual que en una tirada presencial."}}]}
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo funciona la tirada de tarot gratis?","acceptedAnswer":{"@type":"Answer","text":"Concéntrate en tu pregunta, pulsa en 3 cartas del mazo y recibe la interpretación de cada arcano para tu situación."}},{"@type":"Question","name":"¿Cuántas veces puedo tirar las cartas?","acceptedAnswer":{"@type":"Answer","text":"Puedes hacer una tirada al día para obtener la mejor guía. Repetir la misma pregunta diluye la energía de la lectura."}},{"@type":"Question","name":"¿Es fiable el tarot por internet?","acceptedAnswer":{"@type":"Answer","text":"El tarot es una herramienta de reflexión e introspección. La selección aleatoria de cartas funciona como espejo de tu subconsciente, igual que en una tirada presencial."}}]}
   </script>
   <style>
 ${COMMON_CSS}
@@ -362,7 +386,7 @@ ${COMMON_CSS}
     <div class="deck" id="deck"></div>
   </div>
 
-$(ad_block "🔮" "¿Quieres llegar a usuarios que consultan tarot hoy?" "Espacio visible entre la tirada interactiva y la lectura, con contexto perfecto para conversion." "Ver espacios y tarifas ->")
+$(ad_block "🔮" "¿Quieres llegar a usuarios que consultan tarot hoy?" "Espacio visible entre la tirada interactiva y la lectura, con contexto perfecto para conversión." "Ver espacios y tarifas →")
 
   <div class="result" id="result"></div>
 
@@ -380,18 +404,23 @@ $(ad_block "🔮" "¿Quieres llegar a usuarios que consultan tarot hoy?" "Espaci
   <div class="seo-text panel">
     <h2>¿Qué es el Tarot del Día?</h2>
     <p>El tarot del día es una tirada rápida de 3 cartas que te ofrece una guía para las próximas horas. Las tres posiciones (Pasado, Presente y Futuro) te ayudan a comprender de dónde vienes, dónde estás y hacia dónde te diriges.</p>
+    <p>No está pensado para tomar decisiones por ti, sino para ordenar la intuición. Si una carta señala tensión, úsala para detectar dónde necesitas más claridad; si señala apertura, pregúntate qué oportunidad concreta puedes aprovechar hoy.</p>
+    <p>La lectura funciona mejor si partes de una pregunta sencilla y verificable. En vez de preguntar qué ocurrirá en general, prueba con qué necesito ver hoy, qué actitud me ayuda o qué bloqueo conviene reconocer.</p>
 
     <h2>¿Cómo hacer una tirada de tarot gratis?</h2>
     <p>Relájate, formula mentalmente tu pregunta o intención. Pulsa en 3 cartas del mazo para revelarlas. Cada carta puede salir al derecho (energía fluida) o invertida (energía bloqueada o interiorizada). Lee el mensaje completo y reflexiona sobre cómo se aplica a tu situación actual.</p>
 
     <h2>Los 22 Arcanos Mayores</h2>
     <p>Los Arcanos Mayores son las 22 cartas más poderosas del tarot. Representan arquetipos universales que reflejan las grandes lecciones y transiciones de la vida. Desde El Loco (el inicio del viaje) hasta El Mundo (la completud), cada arcano contiene una sabiduría ancestral que trasciende culturas y épocas.</p>
+    <p>En una lectura diaria, los Arcanos Mayores suelen señalar temas de fondo más que detalles menores. Hablan de decisiones, cierres, aprendizajes, deseos, bloqueos y cambios de perspectiva. Por eso conviene leerlos despacio y relacionarlos con una situación concreta, no como frases aisladas.</p>
 
     <h2>Tarot y astrología</h2>
     <p>Cada Arcano Mayor está conectado con un signo zodiacal o planeta. Por eso, combinar tu <a href="https://carta-astral-gratis.es/">carta astral</a> con el tarot te da una perspectiva mucho más rica. La <a href="https://compatibilidad-signos.es/">compatibilidad de signos</a> también puede enriquecer las lecturas sobre relaciones.</p>
+    <p>Si conoces tu carta natal, compara la carta que sale con los temas activos de tu Sol, Luna y Ascendente. Esa lectura cruzada permite distinguir si el mensaje habla de identidad, emoción, vínculo, acción o comunicación.</p>
+    <p>Después de la tirada, guarda una nota breve con la pregunta, las cartas y lo que ocurrió durante el día. Con el tiempo podrás distinguir mejor cuándo una carta habla de un hecho externo y cuándo refleja un estado interno que conviene ordenar.</p>
   </div>
 
-$(ad_block "✨" "Patrocina un inventario de alta afinidad" "Directo mejor que remanente: mas control, mas recuerdo de marca y mayor contexto editorial." "Ver media kit ->")
+$(ad_block "✨" "Patrocina espacios de alta afinidad" "Venta directa: más control, más recuerdo de marca y mayor contexto editorial." "Ver espacios →")
 
 $(cluster_recirculation_block "$SITE_KEY")
 

@@ -29,6 +29,31 @@ declare -A SIGNS=(
 
 for slug in aries tauro geminis cancer leo virgo libra escorpio sagitario capricornio acuario piscis; do
   IFS='|' read -r name glyph dates element ruler modality desc strengths weaknesses chart_meaning <<< "${SIGNS[$slug]}"
+  case "$element" in
+    Fuego) element_reading="Cuando ${name} domina una carta, la lectura se orienta hacia iniciativa, deseo, valentía y necesidad de movimiento. El fuego no espera a tener todas las garantías: prueba, arranca procesos y aprende por experiencia directa. Conviene observar si esa energía está bien canalizada por casas y aspectos o si aparece como prisa, tensión y desgaste." ;;
+    Tierra) element_reading="Cuando ${name} domina una carta, la interpretación se vuelve práctica: recursos, cuerpo, hábitos, trabajo y resultados medibles. La tierra necesita comprobar que una decisión mejora la vida real y no solo la idea de la vida. En una lectura natal conviene mirar dónde aporta estabilidad y dónde puede convertirse en exceso de control." ;;
+    Aire) element_reading="Cuando ${name} pesa en una carta, la clave está en comunicación, aprendizaje, vínculos y decisiones mentales. El aire necesita comparar, nombrar y conectar información antes de actuar. La lectura mejora cuando se distingue entre claridad intelectual y distancia emocional, porque ambas pueden parecerse desde fuera." ;;
+    Agua) element_reading="Cuando ${name} tiene protagonismo natal, la lectura se centra en memoria emocional, intuición, apego, protección y capacidad de transformación interna. El agua no responde solo a hechos visibles: también reacciona al clima afectivo. Por eso es importante observar qué casas toca y qué planetas la contienen o la desbordan." ;;
+  esac
+  case "$modality" in
+    Cardinal) modality_reading="${name} como signo cardinal abre etapas. En la carta natal suele indicar dónde la persona inicia, decide y empuja situaciones antes de que el entorno esté preparado. Si hay muchos planetas cardinales, la vida pide acción propia; si hay tensión, puede aparecer urgencia por resolverlo todo demasiado pronto." ;;
+    Fijo) modality_reading="${name} como signo fijo consolida procesos. En una carta natal muestra dónde hay lealtad, resistencia y capacidad de sostener una dirección incluso cuando el entorno cambia. Su reto no es empezar, sino actualizarse sin sentir que pierde identidad o seguridad." ;;
+    Mutable) modality_reading="${name} como signo mutable adapta, traduce y cierra ciclos. En la carta natal marca zonas donde la persona aprende por contraste, ajusta el rumbo y necesita flexibilidad. Bien integrado aporta inteligencia contextual; mal integrado puede dispersarse o dejar demasiadas decisiones abiertas." ;;
+  esac
+  case "$slug" in
+    aries) planet_reading="Sol en Aries describe identidad directa y necesidad de autonomía. Luna en Aries reacciona con rapidez y necesita descargar emoción mediante acción. Ascendente en Aries muestra una entrada franca en la vida: la persona suele abrir caminos, tomar la iniciativa y preferir problemas claros a esperas indefinidas."; practice_reading="Para interpretar Aries con precisión, mira primero a Marte: signo, casa y aspectos. Un Marte fuerte da dirección al impulso; un Marte tensionado puede convertir la valentía en pelea automática. La pregunta útil es si esta carta está usando su energía para iniciar algo propio o solo para defenderse." ;;
+    tauro) planet_reading="Sol en Tauro busca construir una identidad estable y confiable. Luna en Tauro necesita calma, contacto corporal y seguridad afectiva. Ascendente en Tauro suele avanzar despacio, pero deja una impresión de presencia firme y criterio sensorial."; practice_reading="Para leer Tauro, revisa a Venus y la casa donde cae. Ahí se ve qué tipo de valor, placer y seguridad intenta preservar la carta. La clave práctica es separar paciencia de inmovilismo: Tauro necesita tiempo, pero también señales claras de crecimiento." ;;
+    geminis) planet_reading="Sol en Géminis se reconoce pensando, preguntando y conectando ideas. Luna en Géminis procesa emociones hablando o cambiando de estímulo. Ascendente en Géminis suele presentarse con curiosidad, rapidez verbal y una forma flexible de entrar en cada situación."; practice_reading="Para interpretar Géminis, mira a Mercurio: si está fuerte, la mente organiza y comunica; si está saturado, puede saltar de tema para evitar sentir. La pregunta central es qué información necesita la persona para elegir mejor, no solo para acumular más opciones." ;;
+    cancer) planet_reading="Sol en Cáncer construye identidad desde pertenencia, cuidado y memoria. Luna en Cáncer intensifica la sensibilidad y hace del hogar emocional una prioridad. Ascendente en Cáncer suele observar antes de abrirse y responde mucho al tono afectivo del ambiente."; practice_reading="Para leer Cáncer, empieza por la Luna y por la casa IV. Ahí aparece el patrón de seguridad, familia, refugio y nutrición. La clave es distinguir cuidado de sobreprotección: Cáncer crece cuando protege sin quedarse atrapado en el pasado." ;;
+    leo) planet_reading="Sol en Leo necesita expresar una identidad visible, creativa y reconocible. Luna en Leo busca sentirse especial para abrir el corazón. Ascendente en Leo proyecta presencia, calidez y una manera dramática o luminosa de ocupar el espacio."; practice_reading="Para interpretar Leo, revisa el Sol: casa, signo y aspectos indican dónde la carta necesita brillar con legitimidad. La lectura mejora cuando se separa reconocimiento sano de dependencia del aplauso. Leo no pide atención vacía, pide una escena donde aportar algo propio." ;;
+    virgo) planet_reading="Sol en Virgo se identifica con mejorar, ordenar y servir de forma útil. Luna en Virgo busca calma resolviendo detalles y reduciendo incertidumbre. Ascendente en Virgo suele entrar en la vida observando, ajustando y leyendo lo que falta."; practice_reading="Para leer Virgo, mira a Mercurio y la casa VI. Ahí se ve cómo la mente convierte información en hábitos, trabajo y salud cotidiana. La pregunta útil es si la búsqueda de mejora está al servicio de la vida o si se ha convertido en autocrítica permanente." ;;
+    libra) planet_reading="Sol en Libra construye identidad a través de relación, equilibrio y sentido estético. Luna en Libra necesita armonía emocional y puede tardar en nombrar el conflicto. Ascendente en Libra suele mostrarse diplomático, agradable y atento a la respuesta del otro."; practice_reading="Para interpretar Libra, revisa a Venus y la casa VII. Ahí aparece cómo la carta negocia deseo propio, acuerdos y reciprocidad. La clave es comprobar si la armonía nace de una elección consciente o de evitar tensiones necesarias." ;;
+    escorpio) planet_reading="Sol en Escorpio necesita profundidad, verdad emocional y procesos de transformación. Luna en Escorpio siente con intensidad y no suele confiar en lecturas superficiales. Ascendente en Escorpio proyecta reserva, magnetismo y capacidad de detectar lo que no se dice."; practice_reading="Para leer Escorpio, observa Plutón, Marte y la casa VIII. La carta muestra dónde hay crisis, fusión, pérdida o regeneración. La pregunta importante no es si hay intensidad, sino qué hace la persona con ella: controlarla, negarla o transformarla." ;;
+    sagitario) planet_reading="Sol en Sagitario busca identidad mediante sentido, aprendizaje y expansión. Luna en Sagitario necesita horizonte emocional y se asfixia si todo se vuelve demasiado pequeño. Ascendente en Sagitario suele presentarse con franqueza, humor y una dirección vital amplia."; practice_reading="Para interpretar Sagitario, mira a Júpiter y la casa IX. Ahí se ve la fe, la visión y el tipo de crecimiento que ordena la carta. La clave es distinguir libertad real de huida: Sagitario necesita moverse hacia algo, no solo escapar de límites." ;;
+    capricornio) planet_reading="Sol en Capricornio se identifica con responsabilidad, logro y construcción a largo plazo. Luna en Capricornio necesita estructura emocional y suele medir la seguridad por hechos. Ascendente en Capricornio proyecta seriedad, resistencia y una entrada prudente en cada etapa."; practice_reading="Para leer Capricornio, revisa a Saturno y la casa X. Ahí aparece la relación con autoridad, tiempo, metas y reputación. La pregunta práctica es si la disciplina sostiene la vida o si la carta está confundiendo valor personal con rendimiento constante." ;;
+    acuario) planet_reading="Sol en Acuario busca identidad en diferencia, pensamiento propio y visión colectiva. Luna en Acuario necesita espacio emocional y puede procesar sentimientos desde cierta distancia. Ascendente en Acuario suele presentarse original, independiente y poco dispuesto a encajar por obligación."; practice_reading="Para interpretar Acuario, mira a Urano, Saturno y la casa XI. Ahí se ve cómo la carta combina libertad individual, comunidad y futuro. La clave es comprobar si la rebeldía abre posibilidades reales o si se ha vuelto una reacción automática contra cualquier vínculo." ;;
+    piscis) planet_reading="Sol en Piscis se reconoce en sensibilidad, imaginación y conexión con lo intangible. Luna en Piscis absorbe ambientes y necesita descanso emocional. Ascendente en Piscis suele entrar en la vida con permeabilidad, intuición y una imagen difícil de encasillar."; practice_reading="Para leer Piscis, revisa Neptuno, Júpiter y la casa XII. Ahí aparecen inspiración, compasión, evasión y límites sutiles. La pregunta útil es dónde la carta necesita fe y dónde necesita contención para no diluirse." ;;
+  esac
   page_title="${SIGN_PAGE_TITLE_TEMPLATE//\{\{name\}\}/$name}"
   page_title="${page_title//\{\{glyph\}\}/$glyph}"
   page_desc="${SIGN_PAGE_DESC_TEMPLATE//\{\{name\}\}/$name}"
@@ -58,8 +83,6 @@ for slug in aries tauro geminis cancer leo virgo libra escorpio sagitario capric
   <!-- GA4 -->
 $(canonical_host_redirect_script "carta-astral-gratis.es")
 $(ga4_head_snippet "$GA4" "carta-astral" "sign_profile" "evergreen" "$slug")
-  <!-- AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Article","headline":"Carta Astral ${name} ${glyph}","description":"${name} en la carta astral: significado, fechas, elemento y cómo influye en tu mapa natal.","author":{"@type":"Organization","name":"Carta Astral Gratis"},"publisher":{"@type":"Organization","name":"Carta Astral Gratis","url":"https://carta-astral-gratis.es/"},"mainEntityOfPage":"https://carta-astral-gratis.es/signos/${slug}","inLanguage":"es"}
   </script>
@@ -136,6 +159,41 @@ $(IFS=','; for w in $weaknesses; do echo "      <li>${w## }</li>"; done)
     <p>${chart_meaning}</p>
   </div>
 
+  <div class="panel">
+    <h2>Sol, Luna y Ascendente en ${name}</h2>
+    <p>${planet_reading}</p>
+  </div>
+
+  <div class="panel">
+    <h2>Elemento y modalidad de ${name}</h2>
+    <p>${element_reading}</p>
+    <p>${modality_reading}</p>
+  </div>
+
+  <div class="panel">
+    <h2>Cómo interpretar ${name} sin quedarte en el horóscopo</h2>
+    <p>${practice_reading}</p>
+    <p>Después conviene revisar los aspectos: trígonos y sextiles facilitan la expresión de ${name}; cuadraturas y oposiciones la vuelven más exigente y visible. La lectura completa siempre depende del conjunto de la carta, no de un signo aislado.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Preguntas para revisar ${name} en tu carta</h2>
+    <ul>
+      <li>¿Qué planeta o cúspide cae en ${name}, y en qué casa de la carta aparece?</li>
+      <li>¿La energía de ${name} se expresa con facilidad o aparece como tensión, bloqueo o exceso?</li>
+      <li>¿Qué aspectos recibe el planeta que está en ${name}: apoyo, conflicto, exigencia o maduración?</li>
+    </ul>
+    <p>Estas preguntas ayudan a pasar de la descripción general a una lectura aplicada. No es lo mismo tener el Sol en ${name} que tener Marte, Venus o la Luna: cada planeta usa el signo para expresar una función distinta de la personalidad.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Errores comunes al leer ${name}</h2>
+    <p>El error más habitual es convertir el signo en una etiqueta fija. ${name} puede mostrarse de formas muy distintas según la casa, los aspectos y el resto del mapa natal. Una carta con mucho apoyo al elemento ${element} vivirá esta energía con naturalidad; una carta con tensiones fuertes puede sentirla como aprendizaje pendiente.</p>
+    <p>Por eso conviene leer ${name} como una herramienta de interpretación, no como una sentencia. El signo muestra un estilo; la carta completa explica dónde se activa, qué necesita desarrollar y qué recursos tiene para hacerlo de forma consciente.</p>
+    <p>Otro error frecuente es comparar signos como si funcionaran aislados. Dos personas con ${name} destacado pueden reaccionar de forma opuesta si una tiene la Luna en un signo de Agua y otra una carta dominada por Fuego. Para afinar la lectura, cruza siempre signo, planeta, casa y aspecto antes de sacar conclusiones.</p>
+    <p>Cuando una interpretación te resulte contradictoria, no la descartes de inmediato: revisa qué parte pertenece al signo y qué parte pertenece al planeta. Esa separación ayuda a entender por qué una misma energía puede sentirse cómoda en un área de vida y exigente en otra.</p>
+  </div>
+
   <div class="cta-box">
     <h3>✨ Calcula tu Carta Astral Gratis</h3>
     <p>Descubre dónde tienes a ${name} en tu mapa natal — qué casas y planetas activa en tu vida.</p>
@@ -170,7 +228,6 @@ cat > "$DIR/index.html" <<HEREDOC
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 $(canonical_host_redirect_script "carta-astral-gratis.es")
 $(ga4_head_snippet "$GA4" "carta-astral" "content_hub" "hub" "signos")
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://carta-astral-gratis.es/"},{"@type":"ListItem","position":2,"name":"Signos del Zodíaco","item":"https://carta-astral-gratis.es/signos"}]}
   </script>
@@ -184,6 +241,9 @@ $(ga4_head_snippet "$GA4" "carta-astral" "content_hub" "hub" "signos")
     h1{font-family:'Playfair Display',serif;font-size:2rem;text-align:center;margin:1.5rem 0}
     h1 span{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
     .intro{text-align:center;color:var(--muted);font-size:.95rem;line-height:1.6;max-width:600px;margin:0 auto 2rem}
+    .guide{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.4rem;margin:0 0 1.5rem;box-shadow:var(--shadow)}
+    .guide h2{font-family:'Playfair Display',serif;font-size:1.15rem;margin-bottom:.7rem}
+    .guide p{color:var(--muted);line-height:1.7;font-size:.92rem;margin:.55rem 0}
     .signs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem}
     .sign-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;text-align:center;text-decoration:none;color:var(--text);transition:all .2s;box-shadow:var(--shadow)}
     .sign-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(124,58,237,.15)}
@@ -202,6 +262,19 @@ $(ga4_head_snippet "$GA4" "carta-astral" "content_hub" "hub" "signos")
   <nav class="breadcrumb"><a href="/">Carta Astral Gratis</a> › Signos del Zodíaco</nav>
   <h1>Los 12 <span>Signos del Zodíaco</span></h1>
   <p class="intro">Cada signo representa una energía arquetipal. Descubre las características de cada uno y cómo influyen en tu carta astral natal.</p>
+  <section class="guide">
+    <h2>Cómo usar estas guías en tu carta natal</h2>
+    <p>El signo solar describe una parte importante de la identidad, pero no resume toda la carta astral. Para una lectura útil conviene comparar el Sol, la Luna, el Ascendente, los planetas personales y las casas donde aparece cada signo.</p>
+    <p>Estas páginas están pensadas como apoyo interpretativo: primero calcula tu carta, localiza qué planetas o cúspides caen en cada signo y después lee la guía correspondiente. Así evitas una lectura genérica y puedes entender qué área concreta de tu vida activa cada energía zodiacal.</p>
+    <p>También conviene observar elementos y modalidades. Fuego, Tierra, Aire y Agua describen el tipo de energía; Cardinal, Fijo y Mutable explican el ritmo con el que esa energía actúa. Cuando cruzas ambos factores, cada signo deja de ser una lista de rasgos y se convierte en una pieza concreta dentro del mapa natal.</p>
+    <p>Si un signo se repite mucho en tu carta, esa energía tendrá peso en varias áreas de vida. Si un signo no contiene planetas, no significa que esté ausente: puede aparecer en una cúspide de casa, en un tránsito importante o en la carta de otra persona con la que tengas una relación significativa.</p>
+    <p>La mejor forma de usar esta sección es leer primero el signo que ya conoces y después revisar Luna, Ascendente, Venus, Marte y Mercurio. Así puedes comparar identidad, emoción, deseo, acción y forma de comunicar sin mezclar todas las capas en una sola explicación.</p>
+    <p>Cuando leas un signo, empieza por una pregunta concreta: qué quieres entender de ti, de una relación o de una decisión. Después localiza si ese signo aparece en un planeta personal, en una casa angular o en un punto sensible. Esa diferencia cambia mucho la interpretación: no pesa igual un signo en Mercurio que en el Medio Cielo.</p>
+    <p>También es útil distinguir entre rasgo y función. Un signo no dice simplemente cómo eres; indica cómo actúa una parte de la carta. Aries puede hablar de iniciativa, Libra de vínculo, Capricornio de estructura o Piscis de sensibilidad, pero cada una de esas energías se expresa de forma distinta según el lugar exacto que ocupe en tu mapa natal.</p>
+    <p>Si estás empezando, no intentes leer los doce signos a la vez. Revisa primero los tres grandes puntos, Sol, Luna y Ascendente, y luego añade Venus, Marte y Mercurio. Ese orden permite construir una lectura progresiva, con menos contradicciones y con más capacidad para aplicarla a situaciones reales.</p>
+    <p>Cuando avances, vuelve a los signos que menos reconoces. A menudo explican áreas menos conscientes de la carta: patrones heredados, vínculos que activan aprendizajes o temas que solo aparecen en determinadas etapas. Esa revisión gradual hace que la guía sea útil más allá de una consulta rápida.</p>
+    <p>Si usas estas fichas para estudiar relaciones, compara primero qué elementos predominan en cada carta. Mucho Fuego puede acelerar decisiones, mucha Tierra buscar seguridad, mucho Aire necesitar conversación y mucha Agua priorizar vínculo emocional.</p>
+  </section>
   <div class="signs-grid">
     <a class="sign-card" href="/signos/aries"><span class="glyph">♈</span><span class="name">Aries</span><span class="dates">21 mar – 19 abr</span><span class="element el-fuego">Fuego</span></a>
     <a class="sign-card" href="/signos/tauro"><span class="glyph">♉</span><span class="name">Tauro</span><span class="dates">20 abr – 20 may</span><span class="element el-tierra">Tierra</span></a>

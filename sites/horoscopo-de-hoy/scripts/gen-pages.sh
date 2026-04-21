@@ -116,9 +116,6 @@ gen_head() {
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
 $(canonical_host_redirect_script "$DOMAIN")
 $(ga4_head_snippet "$GA4" "$SITE_KEY" "$page_type" "$content_group" "$entity_slug")
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
-  <link rel="preconnect" href="https://pagead2.googlesyndication.com">
-  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
 ENDHEAD
 }
 
@@ -275,7 +272,20 @@ $(ad_block "⭐" "¿Quieres visibilidad diaria en una audiencia recurrente?" "Ap
     <p>Hoy tu elemento ${e} $([ "$e" = "Fuego" ] && echo "te pide acción: no postergues lo importante. La energía está de tu lado, úsala con intención." || [ "$e" = "Tierra" ] && echo "te invita a confiar en el proceso. Los resultados llegan con paciencia y constancia. Mantén los pies en la tierra." || [ "$e" = "Aire" ] && echo "activa tu mente: nuevas ideas y conexiones pueden marcar la diferencia hoy. Comunica lo que sientes." || echo "amplifica tu intuición: escucha a tu cuerpo y a tus emociones. Hoy las respuestas están dentro de ti.")</p>
   </div>
 
-$(ad_block "🌙" "Patrocina un signo o el trafico diario del sitio" "Ideal para tarot, astrologia, bienestar y ecommerce espiritual con repeticion de impacto." "Reservar un banner premium ->")
+  <div class="panel">
+    <h2>Cómo interpretar este horóscopo de ${n}</h2>
+    <p>Esta lectura diaria parte del signo solar, por eso funciona como orientación general y no como diagnóstico personal. Para aprovecharla mejor, léela junto a tu ascendente: el Sol describe identidad y energía vital, mientras el Ascendente suele mostrar cómo se manifiesta el día en decisiones, encuentros y estados de ánimo visibles.</p>
+    <p>Si alguna predicción no encaja contigo, revisa qué está ocurriendo en tu carta natal completa. La Luna puede explicar cambios emocionales, Venus matiza vínculos y placer, Marte muestra cómo actúas bajo presión y Mercurio indica qué conversaciones conviene cuidar hoy.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Enfoque práctico para hoy</h2>
+    <p>Antes de tomar una decisión importante, separa intuición de impulso. Anota una prioridad realista, una conversación pendiente y un gesto de autocuidado. Este pequeño filtro convierte el horóscopo en una herramienta práctica: no se trata de esperar que el día ocurra, sino de usar el clima simbólico para responder con más conciencia.</p>
+    <p>Al final del día, revisa qué parte de la lectura tuvo sentido y cuál no. Esa comprobación evita usar el horóscopo como una predicción rígida y lo convierte en un registro personal: puedes detectar qué temas se repiten, qué tránsitos te afectan más y qué decisiones mejoran cuando las tomas con más perspectiva.</p>
+    <p>Si lees también tu Luna y tu Ascendente, compara los tres mensajes. El Sol suele marcar motivación, la Luna muestra el tono emocional y el Ascendente describe cómo actúas hacia fuera. Cuando los tres coinciden, el mensaje gana fuerza; cuando se contradicen, conviene elegir una acción pequeña y flexible.</p>
+  </div>
+
+$(ad_block "🌙" "Patrocina un signo o el tráfico diario del sitio" "Ideal para tarot, astrología, bienestar y tiendas espirituales con repetición de impacto." "Reservar un banner destacado →")
 
   <div class="nav-signs">
     <a href="/${prev_s}">${GLYPH[$prev_s]} ${NAME[$prev_s]}</a>
@@ -359,7 +369,7 @@ ${COMMON_CSS}
 ${INDEX_CARDS}
   </div>
 
-$(ad_block "⭐" "Publicidad premium en una audiencia que vuelve cada dia" "Tu marca puede mantenerse visible en un producto de consumo recurrente y muy contextual." "Informarme ->")
+$(ad_block "⭐" "Publicidad destacada en una audiencia que vuelve cada día" "Tu marca puede mantenerse visible en un producto de consumo recurrente y muy contextual." "Informarme →")
 
   <div class="cta-box">
     <h3>🔮 ¿Quieres un análisis más profundo?</h3>
@@ -376,9 +386,15 @@ $(ad_block "⭐" "Publicidad premium en una audiencia que vuelve cada dia" "Tu m
 
     <h2>Horóscopo y compatibilidad</h2>
     <p>Las predicciones diarias de amor pueden complementarse con un análisis de <a href="https://compatibilidad-signos.es/">compatibilidad entre signos</a> para entender mejor la dinámica de tus relaciones. También puedes explorar el <a href="https://tarot-del-dia.es/">tarot del día</a> o tu <a href="https://calcular-numerologia.es/">número de vida</a> para una visión más completa.</p>
+
+    <h2>Por qué leer también tu ascendente</h2>
+    <p>El horóscopo por signo solar resume una energía colectiva. El ascendente añade una capa más práctica porque conecta con la casa 1 de la carta natal: imagen, decisiones inmediatas y forma de responder al entorno. Si solo lees tu signo solar, tendrás una visión útil pero incompleta; si sumas ascendente y Luna, la lectura del día gana precisión.</p>
+    <p>También puedes revisar la Luna cuando busques una lectura emocional. En días de tensión, cambios de humor o decisiones familiares, el signo lunar puede dar pistas más concretas que el Sol. Combinar estas tres capas permite evitar interpretaciones demasiado generales.</p>
+    <p>Este enfoque no sustituye una carta natal completa, pero mejora la utilidad diaria: el Sol muestra qué te mueve, el Ascendente dónde se manifiesta y la Luna cómo lo vives por dentro. Leerlos juntos ayuda a convertir una predicción breve en una herramienta práctica.</p>
+    <p>Si repites esta comparación durante varios días, podrás detectar qué signo te resulta más útil para trabajo, relaciones o estado emocional. Esa observación personal vale más que leer un único texto aislado.</p>
   </div>
 
-$(ad_block "✨" "Patrocina una ubicacion de alto recuerdo" "El patrocinio directo gana valor frente a AdSense cuando el mensaje y el contexto estan alineados." "Ver media kit ->")
+$(ad_block "✨" "Patrocina una ubicación de alto recuerdo" "El patrocinio directo gana valor cuando el mensaje y el contexto están alineados." "Ver espacios →")
 
 $(cluster_recirculation_block "$SITE_KEY")
 

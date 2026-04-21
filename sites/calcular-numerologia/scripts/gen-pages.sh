@@ -40,9 +40,6 @@ gen_head() {
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
 $(canonical_host_redirect_script "$DOMAIN")
 $(ga4_head_snippet "$GA4" "$SITE_KEY" "$page_type" "$content_group" "$entity_slug")
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
-  <link rel="preconnect" href="https://pagead2.googlesyndication.com">
-  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
 ENDHEAD
 }
 
@@ -182,7 +179,7 @@ ${COMMON_CSS}
 
   <div class="keywords">$(IFS=','; for kw in ${NUM_KEYS[$n]}; do echo "<span class=\"kw\">${kw## }</span>"; done)</div>
 
-$(ad_block "🔢" "¿Vendes cursos, libros o sesiones de numerologia?" "Llega a usuarios que ya buscan respuestas personales y estan listos para profundizar." "Ver espacios y tarifas ->")
+$(ad_block "🔢" "¿Vendes cursos, libros o sesiones de numerología?" "Llega a usuarios que ya buscan respuestas personales y están listos para profundizar." "Ver espacios y tarifas →")
 
   <div class="panel">
     <h2>🔢 Significado del Número ${n}</h2>
@@ -206,7 +203,25 @@ $(ad_block "🔢" "¿Vendes cursos, libros o sesiones de numerologia?" "Llega a 
     <p style="margin-top:.6rem">Consulta la <a href="https://compatibilidad-signos.es/">compatibilidad de signos</a> para añadir la dimensión astrológica.</p>
   </div>
 
-$(ad_block "✨" "Patrocina un calculo con alta intencion educativa" "Inventario ideal para escuelas holisticas, membresias premium y herramientas de autoconocimiento." "Reservar un banner premium ->")
+  <div class="panel">
+    <h2>Cómo trabajar la energía del ${n}</h2>
+    <p>El número de vida no describe un destino cerrado, sino una tendencia de base. Para usarlo de forma práctica, observa en qué situaciones repites los mismos patrones: cómo eliges pareja, cómo trabajas bajo presión, qué tipo de reconocimiento buscas y qué te cuesta pedir. Ahí aparece la vibración del ${n} en la vida cotidiana.</p>
+    <p>Cuando el ${n} está equilibrado, sus talentos se expresan con naturalidad. Cuando está en sombra, suelen aparecer excesos, bloqueos o compensaciones. La clave es convertir el número en una herramienta de autoobservación, no en una etiqueta rígida.</p>
+    <p>Una forma sencilla de aplicarlo es revisar una decisión reciente desde tres ángulos: qué querías conseguir, qué miedo estaba presente y qué parte de ${NUM_KEYS[$n]} apareció con más fuerza. Si repites este ejercicio varias veces, verás qué patrones son realmente tuyos y cuáles responden a una etapa concreta.</p>
+    <p>También conviene comparar el ${n} con otros datos personales. El nombre, la fecha completa, el día de nacimiento y la carta astral pueden reforzar o matizar esta lectura. Si una interpretación parece demasiado extrema, úsala como hipótesis de trabajo y contrástala con hechos concretos de tu vida.</p>
+    <p>La lectura gana precisión cuando la conviertes en seguimiento. Elige una cualidad del ${n}, aplícala durante una semana y observa qué cambia en tus decisiones, relaciones y forma de gestionar el esfuerzo. Así el número deja de ser una descripción y se convierte en práctica.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Preguntas de integración para el ${n}</h2>
+    <ul>
+      <li>¿Qué talento asociado al ${n} usas con facilidad y cuál sueles esconder?</li>
+      <li>¿Qué decisión reciente refleja tus fortalezas de ${NUM_KEYS[$n]}?</li>
+      <li>¿Qué hábito concreto podrías ajustar esta semana para expresar mejor tu número de vida?</li>
+    </ul>
+  </div>
+
+$(ad_block "✨" "Patrocina un cálculo con alta intención educativa" "Espacio ideal para escuelas holísticas, membresías de pago y herramientas de autoconocimiento." "Reservar un banner destacado →")
 
   <div class="nav-nums">
     <a href="/numero-de-vida/${prev}">← Número ${prev}: ${NUM_TITLES[$prev]}</a>
@@ -264,9 +279,21 @@ ${COMMON_CSS}
   <nav class="breadcrumb"><a href="/">Calcular Numerología</a> › Números de Vida</nav>
   <h1>Los 9 <span>Números de Vida</span></h1>
   <p class="intro">Cada número del 1 al 9 tiene una vibración única que define tu personalidad, talentos y misión de vida.</p>
+  <div class="panel">
+    <h2>Qué encontrarás en cada número</h2>
+    <p>Las guías de número de vida explican rasgos principales, forma de amar, estilo profesional, compatibilidades y preguntas de integración. La idea no es reducir una persona a una cifra, sino ofrecer un mapa sencillo para reconocer patrones y tomar mejores decisiones.</p>
+    <p>Para obtener una lectura más completa, calcula primero tu número con la fecha de nacimiento y después compáralo con tu carta astral, tu signo solar y tu ascendente. La numerología funciona mejor cuando se usa junto a otras capas de autoconocimiento.</p>
+    <p>Cada ficha está organizada para que puedas pasar de la teoría a la práctica: primero verás la energía central del número, después cómo se expresa en amor y trabajo, y por último preguntas para revisar hábitos, decisiones y bloqueos. Así puedes usar la numerología como una herramienta de reflexión, no como una predicción cerrada.</p>
+    <p>Si estás comparando dos números, evita quedarte solo con la compatibilidad. Mira qué necesita aprender cada persona, qué estilo de comunicación tiene y qué tipo de seguridad busca. En numerología, una combinación difícil no significa fracaso; suele señalar un punto de aprendizaje que conviene hacer explícito.</p>
+    <p>También puedes volver a esta página después de calcular tu número principal. Leer los demás números ayuda a reconocer personas cercanas, dinámicas de pareja o estilos de trabajo distintos al tuyo, algo especialmente útil cuando quieres entender conflictos repetidos sin reducirlos a una sola causa.</p>
+    <p>Para profundizar, anota el número de vida de varias personas de tu entorno y compara cómo se expresan sus rasgos. Verás que dos personas con el mismo número no son idénticas: cambian el contexto, la madurez, las decisiones y el resto del mapa personal. Esa comparación evita lecturas simplistas.</p>
+    <p>Usa estas guías como punto de partida y no como sentencia. La numerología aporta lenguaje para observar tendencias, pero la parte valiosa está en traducir esa observación en decisiones concretas: comunicar mejor, elegir con más calma, ordenar prioridades o reconocer límites personales.</p>
+    <p>Cuando vuelvas a consultar tu número, revisa qué ha cambiado desde la última lectura. Un mismo significado puede resonar de forma distinta si estás empezando un proyecto, cerrando una etapa, tomando una decisión de pareja o buscando más estabilidad profesional.</p>
+    <p>Ese seguimiento convierte la guía en una herramienta viva, no en una lectura puntual.</p>
+  </div>
   <div class="num-grid">${NUM_GRID}</div>
 
-$(ad_block "🔢" "Publicidad premium para un publico de autoconocimiento" "Reserva una ubicacion contextual entre las fichas de numeros mas consultadas." "Informarme ->")
+$(ad_block "🔢" "Publicidad destacada para un público de autoconocimiento" "Reserva una ubicación contextual entre las fichas de números más consultadas." "Informarme →")
 
   <div class="cta-box">
     <h3>🔢 Calcula tu número de vida</h3>
@@ -299,7 +326,7 @@ cat > "$PUBLIC/index.html" <<ENDIDX
 <head>
 $(gen_head "$INDEX_TITLE" "$INDEX_DESC" "/" "tool_home" "tool")
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebSite","name":"Calcular Numerología","url":"https://${DOMAIN}/","description":"Calculadora de numerología gratis online.","inLanguage":"es"}
+  {"@context":"https://schema.org","@type":"WebSite","name":"Calcular Numerología","url":"https://${DOMAIN}/","description":"Calculadora de numerología gratis por internet.","inLanguage":"es"}
   </script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula el número de vida?","acceptedAnswer":{"@type":"Answer","text":"Suma todos los dígitos de tu fecha de nacimiento (día + mes + año) y reduce a un solo dígito. Ejemplo: 15/03/1990 → 1+5+0+3+1+9+9+0 = 28 → 2+8 = 10 → 1+0 = 1."}},{"@type":"Question","name":"¿Qué es la numerología?","acceptedAnswer":{"@type":"Answer","text":"La numerología es un sistema milenario que estudia el significado simbólico de los números y su influencia en la vida humana. El número de vida, derivado de la fecha de nacimiento, revela rasgos de personalidad, talentos y misión."}}]}
@@ -346,7 +373,7 @@ ${COMMON_CSS}
     <button class="btn" onclick="calculate()">Calcular mi número de vida →</button>
   </div>
 
-$(ad_block "🔢" "Patrocina el momento de mayor atencion del usuario" "Tu mensaje aparece justo despues de la accion principal del calculo numerologico." "Ver espacios y tarifas ->")
+$(ad_block "🔢" "Patrocina el momento de mayor atención del usuario" "Tu mensaje aparece justo después de la acción principal del cálculo numerológico." "Ver espacios y tarifas →")
 
   <div class="result-box" id="result"></div>
 
@@ -355,7 +382,7 @@ $(ad_block "🔢" "Patrocina el momento de mayor atencion del usuario" "Tu mensa
 $(for n in $(seq 1 9); do echo "    <a href=\"/numero-de-vida/${n}\"><span class=\"n\">${n}</span><span class=\"t\">${NUM_TITLES[$n]}</span></a>"; done)
   </div>
 
-$(ad_block "✨" "Publicidad directa mejor que remanente" "Mas control, mejor contexto y mas valor comercial para marcas de formacion y bienestar." "Ver media kit ->")
+$(ad_block "✨" "Publicidad directa con mejor contexto" "Más control, mejor encaje editorial y más valor comercial para marcas de formación y bienestar." "Ver espacios →")
 
   <div class="cta-box">
     <h3>🌟 Complementa con tu carta astral</h3>
@@ -366,6 +393,7 @@ $(ad_block "✨" "Publicidad directa mejor que remanente" "Mas control, mejor co
   <div class="seo-text panel">
     <h2>¿Qué es la numerología?</h2>
     <p>La numerología es un sistema ancestral que estudia la vibración y el significado simbólico de los números. Cada número del 1 al 9 posee una energía única que influye en la personalidad, las relaciones y el destino de una persona.</p>
+    <p>En esta calculadora usamos el número de vida como punto de partida porque se obtiene de la fecha de nacimiento y resulta fácil de comprobar. No pretende sustituir una lectura completa, pero sí ofrece una primera capa estable para entender talentos, retos y formas habituales de reaccionar.</p>
 
     <h2>¿Cómo se calcula el número de vida?</h2>
     <p>El número de vida (o número de camino de vida) se obtiene sumando todos los dígitos de tu fecha de nacimiento completa y reduciendo el resultado a un solo dígito:</p>
@@ -379,6 +407,8 @@ $(ad_block "✨" "Publicidad directa mejor que remanente" "Mas control, mejor co
 
     <h2>¿Qué revela tu número de vida?</h2>
     <p>Tu número de vida describe tus talentos innatos, tu forma de relacionarte, tu estilo profesional y los retos que enfrentarás en tu camino. Es la base de tu perfil numerológico, complementado por otros números como el de expresión (calculado con tu nombre) y el número del alma.</p>
+    <p>Para que la lectura sea útil, compara el resultado con situaciones reales: cómo eliges proyectos, qué conflictos se repiten en pareja, qué te motiva en el trabajo y qué tipo de reconocimiento buscas. Si el texto no encaja al cien por cien, quédate con las partes que describen patrones verificables y descarta lo que no aporte claridad.</p>
+    <p>El número de vida también puede funcionar como diario de seguimiento. Revisa una vez al mes si estás usando sus talentos de forma constructiva o si aparecen sus sombras: exceso de control, dispersión, dependencia, aislamiento o necesidad de aprobación, según el número obtenido.</p>
 
     <h2>Numerología y astrología</h2>
     <p>La numerología y la <a href="https://carta-astral-gratis.es/">carta astral</a> son sistemas complementarios. Mientras la astrología analiza la posición de los planetas en el momento de tu nacimiento, la numerología estudia la vibración de los números asociados. Juntas, ofrecen un retrato más completo de tu personalidad y potencial.</p>

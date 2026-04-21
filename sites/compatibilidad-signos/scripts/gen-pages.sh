@@ -126,9 +126,6 @@ gen_head() {
   <noscript><link href="${BRAND_FONTS}" rel="stylesheet"></noscript>
 $(canonical_host_redirect_script "$DOMAIN")
 $(ga4_head_snippet "$GA4" "$SITE_KEY" "$page_type" "$content_group" "$entity_slug")
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}" crossorigin="anonymous"></script>
-  <link rel="preconnect" href="https://pagead2.googlesyndication.com">
-  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
 ENDHEAD
 }
 
@@ -252,7 +249,7 @@ $(gen_head "$title" "$desc" "$url_path" "compatibility_landing" "long_tail" "$sl
     <span class="tag">${g2} ${n2} · ${e2} · ${r2}</span>
   </div>
 
-$(ad_block "❤" "¿Tienes una app de citas, consulta o regalo romantico?" "Aparece ante usuarios que ya estan leyendo una combinacion concreta y tienen intencion alta de relacion." "Ver espacios y tarifas ->")
+$(ad_block "❤" "¿Tienes una aplicación de citas, consulta o regalo romántico?" "Aparece ante usuarios que ya están leyendo una combinación concreta y tienen intención alta de relación." "Ver espacios y tarifas →")
 
   <div class="panel">
     <h2>${g1}${g2} Análisis de Compatibilidad</h2>
@@ -279,11 +276,26 @@ $(ad_block "❤" "¿Tienes una app de citas, consulta o regalo romantico?" "Apar
   </div>
 
   <div class="panel">
+    <h2>Cómo llevar esta compatibilidad al día a día</h2>
+    <p>El porcentaje no debe leerse como sentencia, sino como una brújula para entender dónde la relación fluye y dónde pide trabajo consciente. En una pareja ${n1}–${n2}, conviene observar quién toma la iniciativa, cómo se gestionan los silencios y qué necesita cada persona para sentirse segura antes de discutir un problema importante.</p>
+    <p>Si la afinidad es alta, el reto suele ser no dar por hecho que todo se resolverá solo. Si la afinidad es media o baja, la relación puede funcionar cuando ambos pactan ritmos, límites y expectativas concretas. En ambos casos, el signo solar es solo una capa: Luna, Venus, Marte y Ascendente pueden cambiar mucho la lectura final.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Preguntas útiles para ${n1} y ${n2}</h2>
+    <ul>
+      <li>¿${n1} se siente escuchado cuando expresa su energía ${e1}, o percibe que debe adaptarse demasiado?</li>
+      <li>¿${n2} puede vivir su naturaleza ${e2} sin que la relación pierda equilibrio?</li>
+      <li>¿La modalidad ${MODALITY[$s1]} de ${n1} y la modalidad ${MODALITY[$s2]} de ${n2} ayudan a tomar decisiones o generan bloqueo?</li>
+    </ul>
+  </div>
+
+  <div class="panel">
     <h2>🌙 En la Carta Natal</h2>
     <p>La compatibilidad real va más allá del signo solar. Si tienes Luna, Venus o Marte en ${n2}, tu conexión con personas ${n2} será más intensa. Calcula tu carta astral completa para descubrir todas tus compatibilidades planetarias.</p>
   </div>
 
-$(ad_block "✦" "Patrocina una de las combinaciones mas buscadas" "Ideal para marcas de pareja, coaching, joyeria y bienestar emocional con mensaje contextual." "Reservar un banner premium ->")
+$(ad_block "✦" "Patrocina una de las combinaciones más buscadas" "Ideal para marcas de pareja, acompañamiento, joyería y bienestar emocional con mensaje contextual." "Reservar un banner destacado →")
 
   <div class="cta-box">
     <h3>🔮 Descubre tu carta astral completa</h3>
@@ -388,7 +400,7 @@ ${COMMON_CSS}
     <button class="btn" onclick="openCompatibilityFromHome()">Ver compatibilidad →</button>
   </div>
 
-$(ad_block "❤" "Publicidad premium en un nicho de amor y afinidad" "La ubicacion mas visible para captar usuarios antes de que profundicen en la tabla completa." "Informarme ->")
+$(ad_block "❤" "Publicidad destacada en un nicho de amor y afinidad" "La ubicación más visible para captar usuarios antes de que profundicen en la tabla completa." "Informarme →")
 
   <h2 style="text-align:center">Tabla completa de compatibilidad de signos zodiacales</h2>
   <div class="grid-wrap">
@@ -400,7 +412,7 @@ ${GRID_ROWS}
   </table>
   </div>
 
-$(ad_block "🔮" "Patrocina trafico SEO de alta intencion" "Tu marca puede aparecer entre la herramienta de calculo y las 144 combinaciones de signos." "Ver media kit ->")
+$(ad_block "🔮" "Patrocina tráfico orgánico de alta intención" "Tu marca puede aparecer entre la herramienta de cálculo y las 144 combinaciones de signos." "Ver espacios →")
 
   <div class="cta-box">
     <h3>🔮 ¿Quieres ir más allá del signo solar?</h3>

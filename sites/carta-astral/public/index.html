@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mapa Astral Gratis Online — Calcula tu carta natal con hora exacta</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <meta name="description" content="Genera tu mapa astral gratis online. Cálculo con Swiss Ephemeris: posición de planetas en signos y casas, ascendente, medio cielo y aspectos natales.">
+  <meta name="description" content="Genera tu mapa astral gratis online con hora exacta. Cálculo con Swiss Ephemeris: ascendente, casas, planetas, medio cielo y aspectos natales.">
   <meta name="keywords" content="carta astral, carta astral gratis, carta natal, carta natal gratis, mapa astral, mapa astral gratis, hacer carta astral, calcular carta astral, carta astral online, ascendente gratis, calcular ascendente, mi carta astral, carta astral por fecha de nacimiento, carta astral hora de nacimiento, casas astrales, carta astral gratis online, carta astral pdf, interpretar carta astral, signo ascendente calcular">
   <link rel="canonical" href="https://carta-astral-gratis.es/">
   <meta property="og:title" content="Carta Astral Gratis con Certificado de Nacimiento">
@@ -122,8 +122,6 @@
       }
     },{capture:true});
   </script>
-  <link rel="preconnect" href="https://pagead2.googlesyndication.com">
-  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -336,7 +334,7 @@
   ]}
   </script>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"HowTo","name":"Cómo hacer tu carta astral gratis online","description":"Calcula tu carta astral natal gratis en 3 pasos con hora exacta de nacimiento.","totalTime":"PT2M","step":[
+  {"@context":"https://schema.org","@type":"HowTo","name":"Cómo hacer tu carta astral gratis por internet","description":"Calcula tu carta astral natal gratis en 3 pasos con hora exacta de nacimiento.","totalTime":"PT2M","step":[
     {"@type":"HowToStep","name":"Introduce tus datos de nacimiento","text":"Sube tu certificado de nacimiento en PDF o introduce manualmente tu fecha, hora y lugar de nacimiento.","position":1},
     {"@type":"HowToStep","name":"Confirma tu lugar de nacimiento en el mapa","text":"Busca tu ciudad en el mapa interactivo o haz clic para marcar el lugar exacto. Las coordenadas se calculan automáticamente.","position":2},
     {"@type":"HowToStep","name":"Obtén tu carta astral completa","text":"Recibe al instante tu carta astral con planetas en signos y casas, ascendente, medio cielo, aspectos natales y distribución elemental.","position":3}
@@ -1015,30 +1013,6 @@ async function requestInterpretation(){
 
 updSteps();
 
-function loadAdsense(){
-  if(document.querySelector('script[data-adsense-auto]'))return;
-  const s=document.createElement('script');
-  s.async=true;
-  s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9368517395014039';
-  s.crossOrigin='anonymous';
-  s.dataset.adsenseAuto='true';
-  document.head.appendChild(s);
-}
-function scheduleAdsense(){
-  const loadOnce=()=>loadAdsense();
-  ['pointerdown','keydown','scroll'].forEach(evt=>window.addEventListener(evt,loadOnce,{once:true,passive:true}));
-  setTimeout(loadOnce,12000);
-}
-scheduleAdsense();
-
-// Hide ad placeholders when Auto Ads fills nearby slots
-setTimeout(()=>{
-  document.querySelectorAll('.ad-ph').forEach(ph=>{
-    const parent=ph.parentElement;
-    const autoAd=parent.querySelector('ins[data-ad-status="filled"]');
-    if(autoAd&&autoAd.offsetHeight>0)ph.style.display='none';
-  });
-},4000);
 </script>
 </body>
 </html>
