@@ -1,4 +1,4 @@
-name: "💰 Vigilancia de Sitios AdSense"
+name: "💰 Vigilancia de sitios de AdSense"
 
 on:
   schedule:
@@ -69,7 +69,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const titlePrefix = '💰 Vigilancia de sitios AdSense';
+            const titlePrefix = '💰 Vigilancia de sitios de AdSense';
             const today = new Date().toISOString().slice(0, 10);
             const body = process.env.MISSING_OAUTH === 'true'
               ? 'No se pudo ejecutar la vigilancia de AdSense porque faltan los secretos GOOGLE_OAUTH_* necesarios. Para consultar la API de AdSense, el refresh token debe incluir `https://www.googleapis.com/auth/adsense.readonly` o `https://www.googleapis.com/auth/adsense`.'

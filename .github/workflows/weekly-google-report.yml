@@ -1,4 +1,4 @@
-name: "📊 Informe Semanal de Google"
+name: "📊 Informe semanal de Google"
 
 on:
   schedule:
@@ -16,13 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: "🔑 Auth Google"
+      - name: "🔑 Autenticación de Google"
         id: auth
         uses: google-github-actions/auth@v3
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
 
-      - name: "📊 Generate report"
+      - name: "📊 Generar informe"
         env:
           GA4_PROPERTY: "properties/531527723"
           ADSENSE_ACCOUNT: "accounts/pub-9368517395014039"
@@ -380,7 +380,7 @@ jobs:
 
           cat /tmp/report.md
 
-      - name: "📝 Sync weekly report issue"
+      - name: "📝 Sincronizar issue del informe semanal"
         uses: actions/github-script@v8
         with:
           script: |
@@ -433,7 +433,7 @@ jobs:
               });
             }
 
-      - name: "💾 Commit milestone updates"
+      - name: "💾 Confirmar actualización de hitos"
         env:
           GA4_PROPERTY: "properties/531527723"
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}

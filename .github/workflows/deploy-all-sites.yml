@@ -1,4 +1,4 @@
-name: "🚀 Deploy All Sites"
+name: "🚀 Despliegue de todos los sitios"
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       site:
-        description: 'Site to deploy (blank = all changed)'
+        description: 'Sitio a desplegar (vacío = todos los modificados)'
         required: false
         type: choice
         options:
@@ -80,12 +80,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: "⚙️ Setup Node"
+      - name: "⚙️ Preparar Node"
         uses: actions/setup-node@v6
         with:
           node-version: '22'
 
-      - name: "🧭 Resolve project and credentials"
+      - name: "🧭 Resolver proyecto y credenciales"
         id: config
         shell: bash
         env:
@@ -147,7 +147,7 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: "🏗️ Generate static site if needed"
+      - name: "🏗️ Generar sitio estático si hace falta"
         shell: bash
         run: |
           site_dir="sites/${{ matrix.site }}"
@@ -170,7 +170,7 @@ jobs:
             exit 1
           fi
 
-      - name: "🧱 Check generated internal URLs"
+      - name: "🧱 Comprobar URLs internas generadas"
         shell: bash
         env:
           DOMAIN: ${{ steps.config.outputs.domain }}
@@ -178,7 +178,7 @@ jobs:
           set -euo pipefail
           python3 .github/scripts/check_internal_urls.py "sites/${{ matrix.site }}/public" "$DOMAIN"
 
-      - name: "🔥 Deploy ${{ matrix.site }}"
+      - name: "🔥 Desplegar ${{ matrix.site }}"
         shell: bash
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ steps.config.outputs.firebaseServiceAccount }}
@@ -194,7 +194,7 @@ jobs:
           cd "sites/${{ matrix.site }}"
           npx firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT_ID" --non-interactive
 
-      - name: "📮 Submit sitemap to GSC"
+      - name: "📮 Enviar sitemap a GSC"
         shell: bash
         env:
           DOMAIN: ${{ steps.config.outputs.domain }}
@@ -260,7 +260,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: "🧭 Resolve site URL"
+      - name: "🧭 Resolver URL del sitio"
         id: config
         shell: bash
         run: |
@@ -277,7 +277,7 @@ jobs:
           esac
           echo "url=https://${domain}/" >> "$GITHUB_OUTPUT"
 
-      - name: "📊 Lighthouse (all sites)"
+      - name: "📊 Lighthouse (todos los sitios)"
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |

@@ -1,8 +1,8 @@
-name: "📣 Prospeccion de anunciantes"
+name: "📣 Prospección de anunciantes"
 
 on:
   schedule:
-    # Afternoon UTC keeps discovery separate from the next morning send.
+    # Tarde UTC para separar la búsqueda del envío de la mañana siguiente.
     - cron: "30 16 * * 1-4"
   workflow_dispatch:
 
@@ -41,17 +41,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/AD_PROSPECTS.json
-          git commit -m "chore: update advertising prospects"
+          git commit -m "chore: actualizar candidatos publicitarios"
           git push
 
-      - name: "📝 Sincronizar issue de prospeccion"
+      - name: "📝 Sincronizar issue de prospección"
         uses: actions/github-script@v8
         env:
           REPORT_PATH: /tmp/ad-prospecting-report.md
         with:
           script: |
             const fs = require('fs');
-            const titlePrefix = '📣 Prospeccion diaria de anunciantes';
+            const titlePrefix = '📣 Prospección diaria de anunciantes';
             const today = new Date().toISOString().slice(0, 10);
             const body = fs.readFileSync(process.env.REPORT_PATH, 'utf8');
 

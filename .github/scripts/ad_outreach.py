@@ -671,20 +671,20 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None):
     bounce_rate = (total_bounced / total_sent * 100) if total_sent else 0
     learning_snapshot = build_learning_snapshot(prospects)
     lines = [
-        "## Outreach de anunciantes",
+        "## Captación de anunciantes",
         "",
-        f"- Enviados en esta ejecucion: **{len(sent)}**",
-        f"- Validados en esta ejecucion: **{len(validated)}**",
+        f"- Enviados en esta ejecución: **{len(sent)}**",
+        f"- Validados en esta ejecución: **{len(validated)}**",
         f"- Cambios de estado por respuestas/bounces: **{len(changed)}**",
-        f"- Limite diario: **{MAX_SEND}**",
-        f"- Autoaprobar si validan: **{'si' if AUTO_APPROVE_VALIDATED else 'no'}**",
-        f"- Exigir aprobacion manual: **{'si' if REQUIRE_MANUAL_APPROVAL else 'no'}**",
-        f"- Enviar prospectos `new` sin autoaprobar: **{'si' if SEND_NEW else 'no'}**",
-        f"- Exigir email visible en fuente publica: **{'si' if REQUIRE_SOURCE_EMAIL else 'no'}**",
+        f"- Límite diario: **{MAX_SEND}**",
+        f"- Autoaprobar si validan: **{'sí' if AUTO_APPROVE_VALIDATED else 'no'}**",
+        f"- Exigir aprobación manual: **{'sí' if REQUIRE_MANUAL_APPROVAL else 'no'}**",
+        f"- Enviar prospectos `new` sin autoaprobar: **{'sí' if SEND_NEW else 'no'}**",
+        f"- Exigir email visible en fuente pública: **{'sí' if REQUIRE_SOURCE_EMAIL else 'no'}**",
         f"- Transporte email: **{active_transport()}**",
         f"- Usuario Gmail delegado: **{IMPERSONATE}**",
         f"- From comercial: **{FROM_EMAIL}**",
-        f"- Pendientes de revision manual: **{total_review_required}**",
+        f"- Pendientes de revisión manual: **{total_review_required}**",
         f"- Aprobados por automatizacion bloqueados: **{total_auto_approved_blocked}**",
         f"- Tasa historica de respuesta positiva: **{reply_rate:.1f}%**",
         f"- Tasa historica de no interes: **{negative_rate:.1f}%**",
@@ -697,10 +697,10 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None):
     for key in sorted(counts):
         lines.append(f"- `{key}`: {counts[key]}")
     if mailbox_report:
-        lines += ["", "### Buzon", ""]
+        lines += ["", "### Buzón", ""]
         lines.append(f"- Transporte: `{mailbox_report.get('transport', active_transport())}`")
         lines.append(f"- Usuario delegado: `{mailbox_report['impersonate']}`")
-        lines.append(f"- From configurado como sendAs: **{'si' if mailbox_report['from_configured'] else 'no'}**")
+        lines.append(f"- From configurado como sendAs: **{'sí' if mailbox_report['from_configured'] else 'no'}**")
         if mailbox_report.get("from_verification_status"):
             lines.append(f"- Estado sendAs: `{mailbox_report['from_verification_status']}`")
         lines.append(f"- Identidades disponibles: **{len(mailbox_report.get('send_as', []))}**")
@@ -709,7 +709,7 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None):
         for item in sent:
             lines.append(f"- `{item['email']}` · {item.get('name', '')}")
     if validated:
-        lines += ["", "### Validacion previa", ""]
+        lines += ["", "### Validación previa", ""]
         for item in validated:
             lines.append(f"- `{item['email']}` · `{item.get('validation_status')}` · {item.get('validation_reason', '')}")
     if changed:
@@ -736,9 +736,9 @@ def main():
     if args.send:
         assert_mailbox_ready(mailbox_report)
     standalone_validated = validate_batch(prospects) if args.validate else []
-    sent, validated = send_batch(token, prospects) if args.send else ([], [])
     changed = sync_status(token, prospects) if args.sync else []
-    validated = standalone_validated + validated
+    sent, send_validated = send_batch(token, prospects) if args.send else ([], [])
+    validated = standalone_validated + send_validated
     if args.write and (sent or changed or validated):
         save_json(PROSPECTS_PATH, prospects)
     if args.write:

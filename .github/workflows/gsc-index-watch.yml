@@ -1,4 +1,4 @@
-name: "🔎 Vigilancia de Indexación GSC"
+name: "🔎 Vigilancia de indexación de GSC"
 
 on:
   schedule:
@@ -49,7 +49,7 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: "🔎 Inspeccionar homepages del cluster"
+      - name: "🔎 Inspeccionar portadas del cluster"
         if: steps.oauth.outputs.missing == 'false'
         env:
           OAUTH_TOKEN: ${{ steps.oauth.outputs.token }}
@@ -68,7 +68,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const titlePrefix = '🔎 Vigilancia de indexación GSC';
+            const titlePrefix = '🔎 Vigilancia de indexación de GSC';
             const today = new Date().toISOString().slice(0, 10);
             const body = process.env.MISSING_OAUTH === 'true'
               ? 'No se pudo ejecutar la vigilancia de indexación porque faltan los secretos GOOGLE_OAUTH_* necesarios para Search Console.'

@@ -208,18 +208,18 @@ def prospect(api_key, cx, existing):
 
 def report(existing, added, errors, missing_config):
     lines = [
-        "## Prospeccion diaria de anunciantes",
+        "## Prospección diaria de anunciantes",
         "",
         f"- Candidatos nuevos: **{len(added)}**",
-        f"- Total historico: **{len(existing) + len(added)}**",
-        "- Envio automatico: **solo si el candidato valida MX y fuente publica en el workflow de outreach**.",
+        f"- Total histórico: **{len(existing) + len(added)}**",
+        "- Envío automático: **solo si el candidato valida MX y fuente pública en el workflow de captación**.",
         "",
     ]
     if missing_config:
         lines += [
-            "### Configuracion pendiente",
+            "### Configuración pendiente",
             "",
-            "Faltan `GOOGLE_SEARCH_API_KEY` y/o `GOOGLE_SEARCH_CX`. La action esta preparada para Google Programmable Search en free-tier.",
+            "Faltan `GOOGLE_SEARCH_API_KEY` y/o `GOOGLE_SEARCH_CX`. La acción está preparada para Google Programmable Search en free-tier.",
             "",
         ]
     if added:
@@ -233,12 +233,12 @@ def report(existing, added, errors, missing_config):
             lines.append(f"- {error}")
         lines.append("")
     lines += [
-        "### Buenas practicas",
+        "### Buenas prácticas",
         "",
-        "- Usar solo contactos profesionales publicados en paginas de contacto.",
-        "- Personalizar el primer email y no repetir envio si no hay respuesta.",
+        "- Usar solo contactos profesionales publicados en páginas de contacto.",
+        "- Personalizar el primer email y no repetir envío si no hay respuesta.",
         "- Incluir una frase de baja manual: \"Si no te interesa, dime y no vuelvo a escribirte\".",
-        "- No comprar bases de datos ni automatizar envios masivos.",
+        "- No comprar bases de datos ni automatizar envíos masivos.",
     ]
     return "\n".join(lines) + "\n"
 

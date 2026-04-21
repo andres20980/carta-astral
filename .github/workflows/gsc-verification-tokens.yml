@@ -1,4 +1,4 @@
-name: "🔐 GSC Verification Tokens"
+name: "🔐 Tokens de verificación de GSC"
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: "🔑 Exchange OAuth refresh token"
+      - name: "🔑 Intercambiar refresh token OAuth"
         id: auth
         env:
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
@@ -39,7 +39,7 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: "🔎 List GSC properties"
+      - name: "🔎 Listar propiedades de GSC"
         env:
           ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
           QUOTA_PROJECT: ${{ secrets.GOOGLE_CLOUD_QUOTA_PROJECT }}
@@ -50,7 +50,7 @@ jobs:
             -H "x-goog-user-project: $QUOTA_PROJECT" \
             "https://searchconsole.googleapis.com/webmasters/v3/sites" | jq
 
-      - name: "🧾 Generate DNS TXT tokens"
+      - name: "🧾 Generar tokens DNS TXT"
         env:
           ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
           QUOTA_PROJECT: ${{ secrets.GOOGLE_CLOUD_QUOTA_PROJECT }}

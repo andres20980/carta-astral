@@ -1,18 +1,18 @@
-# Gmail DWD for advertising outreach
+# DWD de Gmail para captación publicitaria
 
-Objetivo: operar el outreach diario desde GitHub Actions con Gmail API y Domain-Wide Delegation, sin app passwords y con scopes minimos para enviar, leer respuestas y comprobar la identidad `sendAs`.
+Objetivo: operar la captación diaria desde GitHub Actions con Gmail API y Domain-Wide Delegation, sin contraseñas de aplicación y con permisos mínimos para enviar, leer respuestas y comprobar la identidad `sendAs`.
 
-## Service account
+## Cuenta de servicio
 
 - Project: `licitago-spain`
-- Service account: `licitago-workspace-adminsdk@licitago-spain.iam.gserviceaccount.com`
+- Cuenta de servicio: `licitago-workspace-adminsdk@licitago-spain.iam.gserviceaccount.com`
 - OAuth client ID: `103499506294515431597`
 - Usuario impersonado: `info@licitago.es`
 - From/Reply-To comercial: `publicidad@carta-astral-gratis.es`
 
-## Scopes diarios
+## Permisos diarios
 
-Autorizar estos scopes en Google Admin Console:
+Autorizar estos permisos en Google Admin Console:
 
 ```text
 https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/gmail.settings.basic
@@ -30,19 +30,19 @@ En `Client ID`, usar:
 103499506294515431597
 ```
 
-En `OAuth scopes`, pegar la lista de scopes diarios.
+En `OAuth scopes`, pegar la lista de permisos diarios.
 
-## Scopes temporales de setup
+## Permisos temporales de configuración
 
-Solo hacen falta si se quiere que `functions-gmail/scripts/workspace-alias.js ensure` cree o revise alias, grupos o identidades automaticamente:
+Solo hacen falta si se quiere que `functions-gmail/scripts/workspace-alias.js ensure` cree o revise alias, grupos o identidades automáticamente:
 
 ```text
 https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.alias,https://www.googleapis.com/auth/admin.directory.group,https://www.googleapis.com/auth/admin.directory.group.readonly,https://www.googleapis.com/auth/admin.directory.group.member,https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/apps.groups.settings
 ```
 
-Para operacion diaria no mantener los scopes de Admin si no son necesarios.
+Para operación diaria no mantener los permisos de Admin si no son necesarios.
 
-## GitHub Actions secrets
+## Secretos de GitHub Actions
 
 El workflow `.github/workflows/ad-outreach.yml` usa Gmail API por defecto. Requiere:
 
@@ -55,9 +55,9 @@ No guardar el JSON de credenciales en el repositorio.
 
 `GMAIL_USER` y `GMAIL_PASS` quedan como contingencia para `AD_OUTREACH_MAIL_TRANSPORT=smtp`, no como ruta principal.
 
-## Verificacion
+## Verificación
 
-Antes de activar envios reales:
+Antes de activar envíos reales:
 
 ```bash
 GOOGLE_APPLICATION_CREDENTIALS="/ruta/serviceAccountKey.json" \

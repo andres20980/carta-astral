@@ -1,4 +1,4 @@
-name: "🕵️ Competitor Intel"
+name: "🕵️ Inteligencia competitiva"
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       site:
-        description: 'Site to analyze (auto = rotating cluster schedule)'
+        description: 'Sitio a analizar (auto = calendario rotatorio del cluster)'
         required: false
         default: auto
         type: choice
@@ -18,7 +18,7 @@ on:
           - calcular-numerologia
           - horoscopo-de-hoy
       force:
-        description: 'Force run even if intel is recent'
+        description: 'Forzar ejecución aunque la inteligencia competitiva sea reciente'
         required: false
         default: false
         type: boolean
@@ -33,12 +33,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: "⚙️ Setup Node"
+      - name: "⚙️ Preparar Node"
         uses: actions/setup-node@v6
         with:
           node-version: '22'
 
-      - name: "🧭 Select site"
+      - name: "🧭 Seleccionar sitio"
         id: select
         shell: bash
         run: |
@@ -54,13 +54,13 @@ jobs:
           echo "site=$site" >> "$GITHUB_OUTPUT"
           echo "Selected site: $site"
 
-      - name: "🕵️ Crawl competitors"
+      - name: "🕵️ Analizar competidores"
         env:
           SITE_KEY: ${{ steps.select.outputs.site }}
           FORCE: ${{ inputs.force }}
         run: node .github/scripts/seo-competitor-intel.js
 
-      - name: "📤 Commit results"
+      - name: "📤 Confirmar resultados"
         env:
           SITE_KEY: ${{ steps.select.outputs.site }}
         run: |

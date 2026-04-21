@@ -193,7 +193,7 @@ function repoSignals() {
       selectorCoversAllSites &&
       autoPatchSiteCount >= SITE_KEYS.length,
     gscClusterReporting: weeklyWorkflow.includes('GSC_SITES_JSON') && exists('.github/scripts/weekly_gsc_report.py'),
-    gscSitemapSubmit: deployWorkflow.includes('Submit sitemap to GSC') && deployWorkflow.includes('searchconsole.googleapis.com/webmasters/v3/sites'),
+    gscSitemapSubmit: deployWorkflow.includes('Enviar sitemap a GSC') && deployWorkflow.includes('searchconsole.googleapis.com/webmasters/v3/sites'),
     clusterMediaKits: publicidadCoverage === SITE_KEYS.length,
     clusterRecirculation: clusterRecirculationCoverage === SITE_KEYS.length,
     premiumSlotsBySite: premiumSlotCoverage === SITE_KEYS.length,
@@ -232,7 +232,7 @@ function actionStatus(label, signals, gscVerifiedSiteCount) {
     {
       re: /Autoparcheo SEO rotatorio/i,
       done: signals.seoAutopatchRotatory,
-      evidence: 'Workflow diario con rotacion de site y autopatch limitado',
+      evidence: 'Workflow diario con rotación de sitio y autoparche limitado',
     },
     {
       re: /Verificar las 5 propiedades de GSC por DNS/i,
@@ -247,7 +247,7 @@ function actionStatus(label, signals, gscVerifiedSiteCount) {
     {
       re: /Ampliar landings long-tail/i,
       done: signals.longTailCoverage,
-      evidence: `${signals.totalHtmlPages} paginas HTML publicas en el cluster`,
+      evidence: `${signals.totalHtmlPages} páginas HTML públicas en el cluster`,
     },
     {
       re: /Refinar interlinking interno por intencion/i,
@@ -282,7 +282,7 @@ function actionStatus(label, signals, gscVerifiedSiteCount) {
     {
       re: /Ampliar comparativas y contenidos evergreen con E-E-A-T/i,
       done: signals.longTailCoverage && signals.eeatSchemasPresent,
-      evidence: `${signals.totalHtmlPages} paginas + FAQ/Breadcrumb presentes en todos los sites`,
+      evidence: `${signals.totalHtmlPages} páginas + FAQ/Breadcrumb presentes en todos los sitios`,
     },
     {
       re: /Abrir afiliacion y patrocinios recurrentes/i,

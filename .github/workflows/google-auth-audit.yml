@@ -1,4 +1,4 @@
-name: "🔐 Auditoría de Auth Google"
+name: "🔐 Auditoría de autenticación de Google"
 
 on:
   schedule:
@@ -49,7 +49,7 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: "🔑 Auth service account para Analytics"
+      - name: "🔑 Autenticar cuenta de servicio para Analytics"
         id: saauth
         continue-on-error: true
         uses: google-github-actions/auth@v3
@@ -105,12 +105,12 @@ jobs:
           python3 .github/scripts/google_auth_audit.py > /tmp/google-auth-audit.md
           cat /tmp/google-auth-audit.md
 
-      - name: "📝 Sincronizar issue de auth"
+      - name: "📝 Sincronizar issue de autenticación"
         uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
-            const titlePrefix = '🔐 Auditoría de autenticación Google';
+            const titlePrefix = '🔐 Auditoría de autenticación de Google';
             const today = new Date().toISOString().slice(0, 10);
             const body = fs.readFileSync('/tmp/google-auth-audit.md', 'utf8');
 

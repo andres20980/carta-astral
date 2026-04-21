@@ -1,27 +1,28 @@
-# Advertising outreach playbook
+# Guía de captación publicitaria
 
 Objetivo: captar anunciantes directos para los banners del cluster mientras AdSense queda como remanente cuando se apruebe.
 
 ## Cadencia
 
-- Prospeccion: lunes a jueves por la tarde, hasta 10 candidatos nuevos por ejecucion.
-- Envio: lunes a jueves por la manana, maximo 2 correos por ejecucion.
-- El cron de envio arranca en `dry-run`; para activar envio programado real hay que definir la variable de repositorio `AD_OUTREACH_SCHEDULE_SEND=1`.
-- El envio real tambien puede lanzarse manualmente con `workflow_dispatch` y `mode=send`.
-- Primer mes: mantener el limite en 2/dia y dejar que el sistema apruebe solo candidatos con validacion tecnica fuerte.
-- Sin follow-ups automaticos hasta tener respuestas reales y tasa de rebote estable.
+- Prospección: lunes a jueves por la tarde, hasta 10 candidatos nuevos por ejecución.
+- Envío: lunes a jueves por la mañana, máximo 2 correos por ejecución. Hora elegida: 08:20 UTC, que cae en horario laboral de España peninsular todo el año.
+- Antes de escoger destinatarios nuevos, el workflow consulta el buzón y sincroniza respuestas, rebotes y bajas.
+- El cron de envío arranca en `dry-run`; para activar envío programado real hay que definir la variable de repositorio `AD_OUTREACH_SCHEDULE_SEND=1`.
+- El envío real también puede lanzarse manualmente con `workflow_dispatch` y `mode=send`.
+- Primer mes: mantener el límite en 2/día y dejar que el sistema apruebe solo candidatos con validación técnica fuerte.
+- Sin seguimientos automáticos hasta tener respuestas reales y tasa de rebote estable.
 
-## Reglas de aprobacion
+## Reglas de aprobación
 
 - Enviar solo a contactos profesionales publicados en la web de origen.
-- Exigir MX valido y email visible en la fuente publica.
-- Autoaprobar candidatos nuevos solo si pasan MX, URL publica valida, email visible en fuente publica y validacion fresca.
-- `approved_by: automation` es aceptable cuando la validacion tecnica es fuerte; la revision humana queda para casos excepcionales.
-- Los buzones personales como Gmail, Hotmail, Outlook o Yahoo solo son aceptables si estan publicados en la fuente publica del negocio.
+- Exigir MX válido y email visible en la fuente pública.
+- Autoaprobar candidatos nuevos solo si pasan MX, URL pública válida, email visible en fuente pública y validación fresca.
+- `approved_by: automation` es aceptable cuando la validación técnica es fuerte; la revisión humana queda para casos excepcionales.
+- Los buzones personales como Gmail, Hotmail, Outlook o Yahoo solo son aceptables si están publicados en la fuente pública del negocio.
 - No reenviar a un prospecto con `sent_at`, `suppressed_at`, `bounced` o `not_interested`.
-- No enviar nunca dos emails de captacion al mismo email normalizado, aunque aparezca duplicado como otro prospect.
+- No enviar nunca dos emails de captación al mismo email normalizado, aunque aparezca duplicado como otro candidato.
 
-## Buzon
+## Buzón
 
 - `publicidad@carta-astral-gratis.es` es un alias comercial.
 - La cuenta delegada de Gmail debe ser `info@licitago.es`.
@@ -29,12 +30,12 @@ Objetivo: captar anunciantes directos para los banners del cluster mientras AdSe
 - Transporte de contingencia: SMTP/IMAP con `GMAIL_USER` y `GMAIL_PASS`, solo si se fuerza `AD_OUTREACH_MAIL_TRANSPORT=smtp`.
 - Antes de enviar, el workflow comprueba que el alias existe como identidad `sendAs` en `info@licitago.es`.
 - El `From` y el `Reply-To` comerciales se mantienen como `publicidad@carta-astral-gratis.es`.
-- Guia de autorizacion DWD: `docs/AD_OUTREACH_DWD.md`.
+- Guía de autorización DWD: `docs/AD_OUTREACH_DWD.md`.
 
 ## Umbrales operativos
 
-- Rebote mayor de 5%: pausar envios y revisar fuentes.
-- No interes mayor de 10%: reducir volumen y ajustar segmento/copy.
+- Rebote mayor de 5%: pausar envíos y revisar fuentes.
+- No interés mayor de 10%: reducir volumen y ajustar segmento/copy.
 - Respuestas positivas: priorizar ese segmento en las queries y preparar propuesta comercial manual.
 
 ## FinOps

@@ -1,4 +1,4 @@
-name: "🛡️ SEO Tech Smoke (All Sites)"
+name: "🛡️ Comprobación técnica SEO (todos los sitios)"
 
 on:
   schedule:
@@ -41,7 +41,7 @@ jobs:
           site_dir="sites/${{ matrix.site }}"
           python3 .github/scripts/check_internal_urls.py "$site_dir/public" "${{ matrix.domain }}"
 
-      - name: "🔎 Check ${{ matrix.domain }}"
+      - name: "🔎 Comprobar ${{ matrix.domain }}"
         id: smoke
         shell: bash
         run: |
@@ -201,14 +201,14 @@ jobs:
           echo "$report" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
-      - name: "📋 Sync issue state"
+      - name: "📋 Sincronizar estado del issue"
         uses: actions/github-script@v8
         with:
           script: |
             const domain = '${{ matrix.domain }}';
-            const titlePrefix = `🚨 Falla de smoke SEO: ${domain}`;
+            const titlePrefix = `🚨 Fallo de comprobación SEO: ${domain}`;
             const title = titlePrefix;
-            const body = `## Smoke técnico SEO — ${domain}\n\n${{ steps.smoke.outputs.report }}\n\n**Fallos**: ${{ steps.smoke.outputs.failures }}`;
+            const body = `## Comprobación técnica SEO — ${domain}\n\n${{ steps.smoke.outputs.report }}\n\n**Fallos**: ${{ steps.smoke.outputs.failures }}`;
             const issues = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -245,7 +245,7 @@ jobs:
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: duplicate.number,
-                  body: `Sustituido por #${matching[0].number}. Mantenemos un único issue canónico de smoke SEO por dominio.`
+                  body: `Sustituido por #${matching[0].number}. Mantenemos un único issue canónico de comprobación SEO por dominio.`
                 });
                 await github.rest.issues.update({
                   owner: context.repo.owner,
@@ -260,7 +260,7 @@ jobs:
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issue.number,
-                  body: `El smoke SEO pasó el ${new Date().toISOString().slice(0, 10)}. Cerramos este informe automático.`
+                  body: `La comprobación SEO pasó el ${new Date().toISOString().slice(0, 10)}. Cerramos este informe automático.`
                 });
                 await github.rest.issues.update({
                   owner: context.repo.owner,

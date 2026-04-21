@@ -1,4 +1,4 @@
-name: "⚙️ Sincronizar GA4 Admin"
+name: "⚙️ Sincronización de GA4 Admin"
 
 on:
   schedule:
@@ -49,7 +49,7 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: "⚙️ Sincronizar custom dimensions"
+      - name: "⚙️ Sincronizar dimensiones personalizadas"
         if: steps.oauth.outputs.missing != 'true'
         env:
           OAUTH_TOKEN: ${{ steps.oauth.outputs.token }}
@@ -60,7 +60,7 @@ jobs:
             --manifest shared/ga4_custom_dimensions.json \
             --apply
 
-      - name: "🎯 Sincronizar key events"
+      - name: "🎯 Sincronizar eventos clave"
         if: steps.oauth.outputs.missing != 'true'
         env:
           OAUTH_TOKEN: ${{ steps.oauth.outputs.token }}
@@ -92,7 +92,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const titlePrefix = '⚙️ Sincronización GA4 Admin';
+            const titlePrefix = '⚙️ Sincronización de GA4 Admin';
             const today = new Date().toISOString().slice(0, 10);
             const body = fs.readFileSync('/tmp/ga4-admin-sync.md', 'utf8');
             const issues = await github.paginate(github.rest.issues.listForRepo, {

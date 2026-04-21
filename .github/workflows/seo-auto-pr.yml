@@ -1,4 +1,4 @@
-name: "🚀 SEO Auto Deploy"
+name: "🚀 Despliegue SEO automático"
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       site:
-        description: 'Site to optimize (auto = rotating cluster schedule)'
+        description: 'Sitio a optimizar (auto = calendario rotatorio del cluster)'
         required: false
         default: auto
         type: choice
@@ -30,15 +30,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: "📥 Checkout"
+      - name: "📥 Descargar código"
         uses: actions/checkout@v6
 
-      - name: "⚙️ Setup Node"
+      - name: "⚙️ Preparar Node"
         uses: actions/setup-node@v6
         with:
           node-version: '22'
 
-      - name: "🧭 Select site"
+      - name: "🧭 Seleccionar sitio"
         id: select
         shell: bash
         run: |
@@ -52,7 +52,7 @@ jobs:
           echo "site=$site" >> "$GITHUB_OUTPUT"
           echo "Selected site: $site"
 
-      - name: "🧠 Apply SEO optimizations"
+      - name: "🧠 Aplicar optimizaciones SEO"
         id: autopatch
         shell: bash
         env:
@@ -73,7 +73,7 @@ jobs:
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
           cat /tmp/seo-result.json
 
-      - name: "📤 Push to master"
+      - name: "📤 Subir cambios a master"
         if: steps.autopatch.outputs.changed != '0'
         shell: bash
         env:
