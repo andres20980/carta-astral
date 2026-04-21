@@ -7,14 +7,14 @@
       "recommended_action": "continue",
       "totals": {
         "prospects": 10,
-        "approved": 8,
-        "sent": 0,
+        "approved": 6,
+        "sent": 2,
         "replied": 0,
         "not_interested": 0,
         "bounced": 0,
-        "reply_rate": 0,
-        "not_interested_rate": 0,
-        "bounce_rate": 0
+        "reply_rate": 0.0,
+        "not_interested_rate": 0.0,
+        "bounce_rate": 0.0
       },
       "segments": {
         "astrologia": {
@@ -74,25 +74,25 @@
         },
         "tarotista": {
           "prospects": 2,
-          "approved": 2,
-          "sent": 0,
+          "approved": 1,
+          "sent": 1,
           "replied": 0,
           "not_interested": 0,
           "bounced": 0,
-          "reply_rate": 0,
-          "not_interested_rate": 0,
-          "bounce_rate": 0
+          "reply_rate": 0.0,
+          "not_interested_rate": 0.0,
+          "bounce_rate": 0.0
         },
         "tienda esoterica": {
           "prospects": 2,
-          "approved": 1,
-          "sent": 0,
+          "approved": 0,
+          "sent": 1,
           "replied": 0,
           "not_interested": 0,
           "bounced": 0,
-          "reply_rate": 0,
-          "not_interested_rate": 0,
-          "bounce_rate": 0
+          "reply_rate": 0.0,
+          "not_interested_rate": 0.0,
+          "bounce_rate": 0.0
         },
         "tienda esoterica y formacion": {
           "prospects": 1,
@@ -108,5 +108,5 @@
       }
     }
   ],
-  "updated_at": "2026-04-21T14:11:44+00:00"
+  "updated_at": "2026-04-21T14:53:22+00:00"
 }
