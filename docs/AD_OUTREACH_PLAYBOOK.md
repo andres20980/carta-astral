@@ -11,6 +11,9 @@ Objetivo: captar anunciantes directos para los banners del cluster mientras AdSe
 - El envío real también puede lanzarse manualmente con `workflow_dispatch` y `mode=send`.
 - Primer mes: mantener el límite en 2/día y dejar que el sistema apruebe solo candidatos con validación técnica fuerte.
 - Sin seguimientos automáticos hasta tener respuestas reales y tasa de rebote estable.
+- Guardarraíl de volumen: aunque alguien suba `AD_OUTREACH_MAX_SEND`, `AD_OUTREACH_HARD_MAX_SEND=2` mantiene el techo operativo.
+- Guardarraíl comercial: si hay respuestas positivas abiertas sin `commercial_followup_at` ni `closed_at`, se pausa el envío nuevo hasta atenderlas.
+- Para reanudar tras una respuesta positiva, anotar en el prospecto `commercial_followup_at` cuando se haya contestado con propuesta comercial, o `closed_at` si la oportunidad queda descartada.
 
 ## Reglas de aprobación
 
@@ -34,8 +37,8 @@ Objetivo: captar anunciantes directos para los banners del cluster mientras AdSe
 
 ## Umbrales operativos
 
-- Rebote mayor de 5%: pausar envíos y revisar fuentes.
-- No interés mayor de 10%: reducir volumen y ajustar segmento/copy.
+- Rebote mayor de 5% con al menos 10 envíos históricos: pausar envíos y revisar fuentes.
+- No interés mayor de 10% con al menos 10 envíos históricos: reducir volumen y ajustar segmento/copy.
 - Respuestas positivas: priorizar ese segmento en las queries y preparar propuesta comercial manual.
 
 ## FinOps

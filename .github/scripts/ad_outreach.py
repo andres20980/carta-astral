@@ -25,13 +25,19 @@ FROM_EMAIL = os.environ.get("ASTRO_MAIL_FROM", "publicidad@carta-astral-gratis.e
 FROM_NAME = os.environ.get("ASTRO_MAIL_FROM_NAME", "Astro Cluster")
 IMPERSONATE = os.environ.get("WORKSPACE_GMAIL_IMPERSONATE", "info@licitago.es")
 SUBJECT = os.environ.get("AD_OUTREACH_SUBJECT", "Propuesta de publicidad directa en Astro Cluster")
-MAX_SEND = int(os.environ.get("AD_OUTREACH_MAX_SEND", "2"))
+CONFIGURED_MAX_SEND = int(os.environ.get("AD_OUTREACH_MAX_SEND", "2"))
+HARD_MAX_SEND = int(os.environ.get("AD_OUTREACH_HARD_MAX_SEND", "2"))
+MAX_SEND = min(CONFIGURED_MAX_SEND, HARD_MAX_SEND)
 SEND_NEW = os.environ.get("AD_OUTREACH_SEND_NEW", "0") == "1"
 REQUIRE_SOURCE_EMAIL = os.environ.get("AD_OUTREACH_REQUIRE_SOURCE_EMAIL", "1") == "1"
 AUTO_APPROVE_VALIDATED = os.environ.get("AD_OUTREACH_AUTO_APPROVE_VALIDATED", "1") == "1"
 REQUIRE_MANUAL_APPROVAL = os.environ.get("AD_OUTREACH_REQUIRE_MANUAL_APPROVAL", "0") == "1"
 ALLOW_PUBLIC_PERSONAL_EMAIL = os.environ.get("AD_OUTREACH_ALLOW_PUBLIC_PERSONAL_EMAIL", "1") == "1"
 VALIDATION_MAX_AGE_DAYS = int(os.environ.get("AD_OUTREACH_VALIDATION_MAX_AGE_DAYS", "14"))
+PAUSE_ON_OPEN_REPLIES = os.environ.get("AD_OUTREACH_PAUSE_ON_OPEN_REPLIES", "1") == "1"
+MIN_SENT_FOR_RATE_GUARDRAILS = int(os.environ.get("AD_OUTREACH_MIN_SENT_FOR_RATE_GUARDRAILS", "10"))
+MAX_BOUNCE_RATE = float(os.environ.get("AD_OUTREACH_MAX_BOUNCE_RATE", "0.05"))
+MAX_NOT_INTERESTED_RATE = float(os.environ.get("AD_OUTREACH_MAX_NOT_INTERESTED_RATE", "0.10"))
 MAIL_TRANSPORT = os.environ.get("AD_OUTREACH_MAIL_TRANSPORT", "auto").lower()
 SMTP_HOST = os.environ.get("AD_OUTREACH_SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("AD_OUTREACH_SMTP_PORT", "465"))
@@ -505,6 +511,68 @@ def eligible(prospect):
     return status == "approved" or (SEND_NEW and status == "new")
 
 
+def open_commercial_replies(prospects):
+    return [
+        prospect for prospect in prospects
+        if prospect.get("status") == "replied"
+        and not prospect.get("commercial_followup_at")
+        and not prospect.get("closed_at")
+    ]
+
+
+def outreach_metrics(prospects):
+    total_sent = sum(1 for item in prospects if item.get("sent_at"))
+    total_replied = sum(1 for item in prospects if item.get("status") == "replied")
+    total_negative = sum(1 for item in prospects if item.get("status") == "not_interested")
+    total_bounced = sum(1 for item in prospects if item.get("status") == "bounced")
+    return {
+        "sent": total_sent,
+        "replied": total_replied,
+        "not_interested": total_negative,
+        "bounced": total_bounced,
+        "reply_rate": (total_replied / total_sent) if total_sent else 0,
+        "not_interested_rate": (total_negative / total_sent) if total_sent else 0,
+        "bounce_rate": (total_bounced / total_sent) if total_sent else 0,
+    }
+
+
+def guardrail_decision(prospects):
+    metrics = outreach_metrics(prospects)
+    reasons = []
+    warnings = []
+    open_replies = open_commercial_replies(prospects)
+
+    if CONFIGURED_MAX_SEND > HARD_MAX_SEND:
+        warnings.append(
+            f"AD_OUTREACH_MAX_SEND={CONFIGURED_MAX_SEND} supera el maximo operativo "
+            f"{HARD_MAX_SEND}; se aplicara {MAX_SEND}."
+        )
+
+    if PAUSE_ON_OPEN_REPLIES and open_replies:
+        reasons.append(
+            "hay respuestas comerciales abiertas sin commercial_followup_at ni closed_at"
+        )
+
+    if metrics["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS:
+        if metrics["bounce_rate"] > MAX_BOUNCE_RATE:
+            reasons.append(
+                f"tasa de rebote {metrics['bounce_rate']:.1%} superior al umbral {MAX_BOUNCE_RATE:.1%}"
+            )
+        if metrics["not_interested_rate"] > MAX_NOT_INTERESTED_RATE:
+            reasons.append(
+                "tasa de no interes "
+                f"{metrics['not_interested_rate']:.1%} superior al umbral {MAX_NOT_INTERESTED_RATE:.1%}"
+            )
+
+    return {
+        "can_send": not reasons,
+        "reasons": reasons,
+        "warnings": warnings,
+        "open_replies": open_replies,
+        "metrics": metrics,
+    }
+
+
 def contacted_emails(prospects):
     terminal_statuses = {"sent", "replied", "not_interested", "bounced"}
     return {
@@ -521,6 +589,9 @@ def contacted_emails(prospects):
 
 
 def send_batch(token, prospects):
+    guardrail = guardrail_decision(prospects)
+    if not guardrail["can_send"]:
+        return [], [], guardrail
     today = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
     body = TEMPLATE_PATH.read_text(encoding="utf-8")
     sent = []
@@ -548,7 +619,7 @@ def send_batch(token, prospects):
         prospect["thread_id"] = res.get("threadId", "")
         sent.append(prospect)
         already_contacted.add(email)
-    return sent, validated
+    return sent, validated, guardrail
 
 
 def validate_batch(prospects):
@@ -627,9 +698,9 @@ def build_learning_snapshot(prospects):
         bucket["bounce_rate"] = round(bucket["bounced"] / sent_count, 4) if sent_count else 0
 
     action = "continue"
-    if totals["bounce_rate"] > 0.05:
+    if totals["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS and totals["bounce_rate"] > MAX_BOUNCE_RATE:
         action = "pause_high_bounce_rate"
-    elif totals["not_interested_rate"] > 0.1:
+    elif totals["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS and totals["not_interested_rate"] > MAX_NOT_INTERESTED_RATE:
         action = "reduce_volume_or_adjust_copy"
 
     return {
@@ -652,31 +723,35 @@ def save_learning(prospects):
     return snapshot
 
 
-def render_report(prospects, sent, changed, validated, mailbox_report=None):
+def render_report(prospects, sent, changed, validated, mailbox_report=None, guardrail=None):
     counts = {}
     for item in prospects:
         counts[item.get("status", "new")] = counts.get(item.get("status", "new"), 0) + 1
-    total_sent = sum(1 for item in prospects if item.get("sent_at"))
-    total_replied = sum(1 for item in prospects if item.get("status") == "replied")
-    total_negative = sum(1 for item in prospects if item.get("status") == "not_interested")
-    total_bounced = sum(1 for item in prospects if item.get("status") == "bounced")
+    metrics = outreach_metrics(prospects)
+    total_sent = metrics["sent"]
+    total_replied = metrics["replied"]
+    total_negative = metrics["not_interested"]
+    total_bounced = metrics["bounced"]
     total_review_required = sum(1 for item in prospects if item.get("status") == "review_required")
     total_auto_approved_blocked = sum(
         1
         for item in prospects
         if item.get("status") == "approved" and item.get("approved_by") == "automation" and REQUIRE_MANUAL_APPROVAL
     )
-    reply_rate = (total_replied / total_sent * 100) if total_sent else 0
-    negative_rate = (total_negative / total_sent * 100) if total_sent else 0
-    bounce_rate = (total_bounced / total_sent * 100) if total_sent else 0
+    reply_rate = metrics["reply_rate"] * 100
+    negative_rate = metrics["not_interested_rate"] * 100
+    bounce_rate = metrics["bounce_rate"] * 100
     learning_snapshot = build_learning_snapshot(prospects)
+    guardrail = guardrail or guardrail_decision(prospects)
     lines = [
         "## Captación de anunciantes",
         "",
         f"- Enviados en esta ejecución: **{len(sent)}**",
         f"- Validados en esta ejecución: **{len(validated)}**",
         f"- Cambios de estado por respuestas/bounces: **{len(changed)}**",
-        f"- Límite diario: **{MAX_SEND}**",
+        f"- Límite diario efectivo: **{MAX_SEND}**",
+        f"- Límite diario configurado: **{CONFIGURED_MAX_SEND}**",
+        f"- Techo operativo anti-abuso: **{HARD_MAX_SEND}**",
         f"- Autoaprobar si validan: **{'sí' if AUTO_APPROVE_VALIDATED else 'no'}**",
         f"- Exigir aprobación manual: **{'sí' if REQUIRE_MANUAL_APPROVAL else 'no'}**",
         f"- Enviar prospectos `new` sin autoaprobar: **{'sí' if SEND_NEW else 'no'}**",
@@ -690,6 +765,7 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None):
         f"- Tasa historica de no interes: **{negative_rate:.1f}%**",
         f"- Tasa historica de rebote: **{bounce_rate:.1f}%**",
         f"- Accion recomendada por aprendizaje: **{learning_snapshot['recommended_action']}**",
+        f"- Envío permitido por guardarraíles: **{'sí' if guardrail['can_send'] else 'no'}**",
         "",
         "### Estado",
         "",
@@ -704,6 +780,18 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None):
         if mailbox_report.get("from_verification_status"):
             lines.append(f"- Estado sendAs: `{mailbox_report['from_verification_status']}`")
         lines.append(f"- Identidades disponibles: **{len(mailbox_report.get('send_as', []))}**")
+    if guardrail.get("warnings"):
+        lines += ["", "### Avisos operativos", ""]
+        for warning in guardrail["warnings"]:
+            lines.append(f"- {warning}")
+    if guardrail.get("reasons"):
+        lines += ["", "### Envío pausado", ""]
+        for reason in guardrail["reasons"]:
+            lines.append(f"- {reason}")
+    if guardrail.get("open_replies"):
+        lines += ["", "### Respuestas abiertas", ""]
+        for item in guardrail["open_replies"]:
+            lines.append(f"- `{item['email']}` · {item.get('name', '')}")
     if sent:
         lines += ["", "### Enviados", ""]
         for item in sent:
@@ -737,13 +825,16 @@ def main():
         assert_mailbox_ready(mailbox_report)
     standalone_validated = validate_batch(prospects) if args.validate else []
     changed = sync_status(token, prospects) if args.sync else []
-    sent, send_validated = send_batch(token, prospects) if args.send else ([], [])
+    if args.send:
+        sent, send_validated, guardrail = send_batch(token, prospects)
+    else:
+        sent, send_validated, guardrail = [], [], guardrail_decision(prospects)
     validated = standalone_validated + send_validated
     if args.write and (sent or changed or validated):
         save_json(PROSPECTS_PATH, prospects)
     if args.write:
         save_learning(prospects)
-    body = render_report(prospects, sent, changed, validated, mailbox_report)
+    body = render_report(prospects, sent, changed, validated, mailbox_report, guardrail)
     if args.report:
         Path(args.report).write_text(body, encoding="utf-8")
     else:
