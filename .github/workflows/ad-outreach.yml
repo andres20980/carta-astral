@@ -123,6 +123,10 @@ jobs:
           script: |
             const fs = require('fs');
             const titlePrefix = '📨 Captación diaria de anunciantes';
+            const legacyTitlePrefixes = [
+              titlePrefix,
+              '📨 Outreach diario de anunciantes'
+            ];
             const today = new Date().toISOString().slice(0, 10);
             const body = fs.readFileSync(process.env.REPORT_PATH, 'utf8');
 
@@ -134,7 +138,9 @@ jobs:
               per_page: 100
             });
 
-            const matching = issues.filter(issue => issue.title.startsWith(titlePrefix));
+            const matching = issues
+              .filter(issue => legacyTitlePrefixes.some(prefix => issue.title.startsWith(prefix)))
+              .sort((a, b) => b.number - a.number);
             const title = `${titlePrefix} — ${today}`;
 
             if (matching.length > 0) {
@@ -145,6 +151,21 @@ jobs:
                 title,
                 body
               });
+
+              for (const duplicate of matching.slice(1)) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  body: `Sustituido por #${matching[0].number}. Mantenemos un único issue canónico de captación de anunciantes.`
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  state: 'closed'
+                });
+              }
             } else {
               await github.rest.issues.create({
                 owner: context.repo.owner,
