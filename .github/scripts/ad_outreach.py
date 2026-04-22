@@ -61,9 +61,12 @@ GMAIL_PASS = os.environ.get("GMAIL_PASS", "")
 
 GMAIL_SCOPES = [
     "https://www.googleapis.com/auth/gmail.send",
-    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.modify",
     "https://www.googleapis.com/auth/gmail.settings.basic",
 ]
+
+AUTO_ARCHIVE_HANDLED = os.environ.get("AD_OUTREACH_AUTO_ARCHIVE_HANDLED", "1") == "1"
+AUTO_MARK_READ_HANDLED = os.environ.get("AD_OUTREACH_AUTO_MARK_READ_HANDLED", "1") == "1"
 
 NEGATIVE_RE = re.compile(r"\b(baja|no me interesa|no interesa|spam|no escribas|eliminar|unsubscribe)\b", re.I)
 BOUNCE_USER_UNKNOWN_RE = re.compile(
@@ -81,6 +84,13 @@ PERSONAL_EMAIL_DOMAINS = {
     "yahoo.com", "yahoo.es", "icloud.com", "me.com", "msn.com", "aol.com",
     "proton.me", "protonmail.com",
 }
+PUBLIC_CONTACT_LOCALS = {
+    "colaboraciones", "comercial", "consulta", "consultas", "contact",
+    "contacto", "hello", "hola", "info", "marketing", "publicidad",
+    "reservas", "tarot",
+}
+VALIDATION_CONFIDENCE_HIGH = 80
+VALIDATION_CONFIDENCE_MEDIUM = 65
 
 
 def b64url(raw):
@@ -187,6 +197,70 @@ def source_contains_email(prospect):
     return email in text
 
 
+def same_domain_or_subdomain(domain, source_domain):
+    source_domain = source_domain.removeprefix("www.")
+    return source_domain == domain or source_domain.endswith(f".{domain}")
+
+
+def source_email_evidence(prospect):
+    source_url = prospect.get("source_url", "")
+    email = normalize_email(prospect.get("email"))
+    evidence = {
+        "visible": False,
+        "mailto": False,
+        "email_domain_matches_source": False,
+    }
+    if not source_url or not email:
+        return evidence
+    text = fetch_text(source_url).lower()
+    parsed = urllib.parse.urlparse(source_url)
+    source_domain = (parsed.netloc or "").lower().split("@")[-1].split(":")[0]
+    domain = email_domain(email)
+    evidence["visible"] = email in text
+    evidence["mailto"] = f"mailto:{email}" in text
+    evidence["email_domain_matches_source"] = bool(domain and source_domain and same_domain_or_subdomain(domain, source_domain))
+    return evidence
+
+
+def validation_score(email, mx_ok, evidence):
+    local = email.split("@", 1)[0] if "@" in email else ""
+    score = 0
+    signals = []
+    if EMAIL_RE.match(email):
+        score += 25
+        signals.append("email_syntax_ok")
+    if mx_ok:
+        score += 25
+        signals.append("domain_mx_ok")
+    if evidence.get("visible"):
+        score += 30
+        signals.append("public_source_visible")
+    if evidence.get("mailto"):
+        score += 10
+        signals.append("mailto_visible")
+    if evidence.get("email_domain_matches_source"):
+        score += 10
+        signals.append("source_domain_matches_email_domain")
+    if local in PUBLIC_CONTACT_LOCALS:
+        score += 5
+        signals.append("public_contact_local_part")
+
+    if score >= VALIDATION_CONFIDENCE_HIGH:
+        confidence = "high"
+    elif score >= VALIDATION_CONFIDENCE_MEDIUM:
+        confidence = "medium"
+    else:
+        confidence = "low"
+    return min(score, 100), confidence, signals
+
+
+def set_validation_evidence(prospect, email, mx_ok, evidence):
+    score, confidence, signals = validation_score(email, mx_ok, evidence)
+    prospect["validation_score"] = score
+    prospect["validation_confidence"] = confidence
+    prospect["validation_signals"] = signals
+
+
 def validate_prospect(prospect):
     now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
     previous_validation_status = prospect.get("validation_status")
@@ -234,7 +308,9 @@ def validate_prospect(prospect):
 
     if REQUIRE_SOURCE_EMAIL:
         try:
-            if not source_contains_email(prospect):
+            evidence = source_email_evidence(prospect)
+            set_validation_evidence(prospect, email, mx_ok, evidence)
+            if not evidence["visible"]:
                 prospect["validation_status"] = "invalid"
                 prospect["validation_reason"] = "email_not_visible_on_source"
                 return False
@@ -250,6 +326,8 @@ def validate_prospect(prospect):
             prospect["validation_status"] = "temporary_error"
             prospect["validation_reason"] = reason
             return False
+    else:
+        set_validation_evidence(prospect, email, mx_ok, {})
 
     if is_personal_email(email) and not (ALLOW_PUBLIC_PERSONAL_EMAIL or prospect.get("allow_personal_email")):
         prospect["validation_status"] = "manual_review"
@@ -441,12 +519,92 @@ def gmail_get(token, message_id):
     return request("GET", url, token=token)
 
 
+def gmail_get_thread(token, thread_id):
+    url = (
+        f"https://gmail.googleapis.com/gmail/v1/users/{urllib.parse.quote(IMPERSONATE)}/threads/"
+        f"{urllib.parse.quote(thread_id)}?format=metadata&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Subject&metadataHeaders=Date"
+    )
+    return request("GET", url, token=token)
+
+
 def mail_get(token, message_id):
     if active_transport() == "smtp":
         return message_id if isinstance(message_id, dict) else {"id": message_id, "snippet": ""}
     if isinstance(message_id, dict):
         message_id = message_id.get("id", "")
     return gmail_get(token, message_id)
+
+
+def message_headers_map(message):
+    payload = (message or {}).get("payload") or {}
+    headers = payload.get("headers") or []
+    return {str(item.get("name", "")).lower(): item.get("value", "") for item in headers}
+
+
+def normalized_sender_email(message):
+    headers = message_headers_map(message)
+    from_value = headers.get("from", "")
+    _name, sender = email.utils.parseaddr(from_value)
+    return normalize_email(sender)
+
+
+def is_our_mailbox_address(address):
+    address = normalize_email(address)
+    return address in {normalize_email(FROM_EMAIL), normalize_email(IMPERSONATE), normalize_email(GMAIL_USER)}
+
+
+def latest_inbound_from_thread(token, thread_id):
+    if active_transport() == "smtp" or not thread_id:
+        return None
+    thread = gmail_get_thread(token, thread_id)
+    messages = thread.get("messages", [])
+    for message in reversed(messages):
+        sender = normalized_sender_email(message)
+        if not sender or is_our_mailbox_address(sender):
+            continue
+        snippet = (message.get("snippet") or "").strip()
+        return {
+            "thread_id": thread.get("id", thread_id),
+            "sender": sender,
+            "snippet": snippet,
+        }
+    return None
+
+
+def gmail_modify_thread_labels(token, thread_id, add_labels=None, remove_labels=None):
+    if not thread_id:
+        return
+    body = {
+        "addLabelIds": add_labels or [],
+        "removeLabelIds": remove_labels or [],
+    }
+    request(
+        "POST",
+        f"https://gmail.googleapis.com/gmail/v1/users/{urllib.parse.quote(IMPERSONATE)}/threads/{urllib.parse.quote(thread_id)}/modify",
+        token=token,
+        body=body,
+    )
+
+
+def postprocess_handled_conversation(token, prospect, thread_id):
+    if active_transport() != "gmail_api":
+        return
+    if not (AUTO_ARCHIVE_HANDLED or AUTO_MARK_READ_HANDLED):
+        return
+    remove_labels = []
+    if AUTO_ARCHIVE_HANDLED:
+        remove_labels.append("INBOX")
+    if AUTO_MARK_READ_HANDLED:
+        remove_labels.append("UNREAD")
+    if not remove_labels:
+        return
+    effective_thread_id = thread_id or prospect.get("thread_id", "")
+    if not effective_thread_id:
+        return
+    try:
+        gmail_modify_thread_labels(token, effective_thread_id, remove_labels=remove_labels)
+    except Exception as exc:
+        prospect["mail_postprocess_error"] = str(exc)[:240]
 
 
 def gmail_send_as(token):
@@ -553,6 +711,22 @@ def recent_bounces(prospects):
     return recent
 
 
+def recent_bounce_segments(prospects):
+    return {
+        prospect.get("segment")
+        for prospect in recent_bounces(prospects)
+        if prospect.get("segment")
+    }
+
+
+def candidate_sort_key(prospect, cooled_segments):
+    segment = prospect.get("segment") or ""
+    cooled = 1 if segment in cooled_segments else 0
+    score = int(prospect.get("validation_score") or 0)
+    validated_at = prospect.get("validated_at") or ""
+    return (cooled, -score, validated_at, normalize_email(prospect.get("email")))
+
+
 def outreach_metrics(prospects):
     total_sent = sum(1 for item in prospects if item.get("sent_at"))
     total_replied = sum(1 for item in prospects if item.get("status") == "replied")
@@ -592,8 +766,11 @@ def guardrail_decision(prospects):
             f"hay {len(recent_bounced)} rebote(s) reciente(s) en los ultimos {RECENT_BOUNCE_DAYS} dias"
         )
     elif recent_bounced:
+        segments = sorted(recent_bounce_segments(prospects))
+        segment_note = f" Segmentos enfriados: {', '.join(segments)}." if segments else ""
         warnings.append(
-            f"hay {len(recent_bounced)} rebote(s) reciente(s); se suprime el contacto y se mantiene captacion controlada"
+            f"hay {len(recent_bounced)} rebote(s) reciente(s); se suprime el contacto, "
+            f"se priorizan otros candidatos y se mantiene captacion controlada.{segment_note}"
         )
 
     if metrics["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS:
@@ -641,8 +818,6 @@ def send_batch(token, prospects):
     validated = []
     already_contacted = contacted_emails(prospects)
     for prospect in prospects:
-        if len(sent) >= MAX_SEND:
-            break
         email = normalize_email(prospect.get("email"))
         if not email or email in already_contacted:
             continue
@@ -652,6 +827,14 @@ def send_batch(token, prospects):
             validate_prospect(prospect)
             if prospect.get("validation_status") != before_validation or prospect.get("status") != before_status:
                 validated.append(prospect)
+
+    cooled_segments = recent_bounce_segments(prospects)
+    for prospect in sorted(prospects, key=lambda item: candidate_sort_key(item, cooled_segments)):
+        if len(sent) >= MAX_SEND:
+            break
+        email = normalize_email(prospect.get("email"))
+        if not email or email in already_contacted:
+            continue
         if not eligible(prospect):
             continue
         res = mail_send(token, prospect["email"], body)
@@ -699,10 +882,21 @@ def sync_status(token, prospects, restrict_emails=None):
             continue
         if not email or prospect.get("status") not in {"sent", "replied", "not_interested", "bounced"}:
             continue
-        inbound = mail_list(token, f"from:{email} newer_than:45d")
-        if inbound:
-            detail = mail_get(token, inbound[0])
-            snippet = (detail.get("snippet") or "").strip()
+        inbound_thread = latest_inbound_from_thread(token, prospect.get("thread_id", ""))
+        snippet = ""
+        matched_thread_id = prospect.get("thread_id", "")
+        if inbound_thread:
+            snippet = inbound_thread.get("snippet", "")
+            matched_thread_id = inbound_thread.get("thread_id", "") or matched_thread_id
+        else:
+            inbound = mail_list(token, f"from:{email} newer_than:45d")
+            if inbound:
+                if isinstance(inbound[0], dict):
+                    matched_thread_id = inbound[0].get("threadId", "") or matched_thread_id
+                detail = mail_get(token, inbound[0])
+                snippet = (detail.get("snippet") or "").strip()
+
+        if snippet:
             new_status = "not_interested" if NEGATIVE_RE.search(snippet) else "replied"
             if prospect.get("status") != new_status:
                 prospect["status"] = new_status
@@ -711,11 +905,16 @@ def sync_status(token, prospects, restrict_emails=None):
                 if new_status == "not_interested":
                     prospect["suppressed_at"] = prospect["reply_at"]
                 changed.append(prospect)
+            if new_status in {"replied", "not_interested"}:
+                postprocess_handled_conversation(token, prospect, matched_thread_id)
 
         bounces = mail_list(token, f"from:(mailer-daemon@googlemail.com OR mailer-daemon@google.com) {email} newer_than:45d")
         if bounces and prospect.get("status") != "bounced":
             detail = mail_get(token, bounces[0])
             mark_bounced(prospect, (detail.get("snippet") or "").strip())
+            if isinstance(bounces[0], dict):
+                matched_thread_id = bounces[0].get("threadId", "") or matched_thread_id
+            postprocess_handled_conversation(token, prospect, matched_thread_id)
             changed.append(prospect)
     return changed
 
@@ -785,8 +984,12 @@ def save_learning(prospects):
 
 def render_report(prospects, sent, changed, validated, mailbox_report=None, guardrail=None):
     counts = {}
+    confidence_counts = {}
     for item in prospects:
         counts[item.get("status", "new")] = counts.get(item.get("status", "new"), 0) + 1
+        confidence = item.get("validation_confidence")
+        if confidence:
+            confidence_counts[confidence] = confidence_counts.get(confidence, 0) + 1
     metrics = outreach_metrics(prospects)
     total_sent = metrics["sent"]
     total_replied = metrics["replied"]
@@ -823,6 +1026,8 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None, guar
         f"- Transporte email: **{active_transport()}**",
         f"- Usuario Gmail delegado: **{IMPERSONATE}**",
         f"- From comercial: **{FROM_EMAIL}**",
+        f"- Autoarchivar conversaciones tratadas: **{'sí' if AUTO_ARCHIVE_HANDLED else 'no'}**",
+        f"- Marcar como leídas conversaciones tratadas: **{'sí' if AUTO_MARK_READ_HANDLED else 'no'}**",
         f"- Pendientes de revisión manual: **{total_review_required}**",
         f"- Aprobados por automatizacion bloqueados: **{total_auto_approved_blocked}**",
         f"- Tasa historica de respuesta positiva: **{reply_rate:.1f}%**",
@@ -836,6 +1041,11 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None, guar
     ]
     for key in sorted(counts):
         lines.append(f"- `{key}`: {counts[key]}")
+    if confidence_counts:
+        lines += ["", "### Confianza de validación", ""]
+        for key in ["high", "medium", "low"]:
+            if key in confidence_counts:
+                lines.append(f"- `{key}`: {confidence_counts[key]}")
     if mailbox_report:
         lines += ["", "### Buzón", ""]
         lines.append(f"- Transporte: `{mailbox_report.get('transport', active_transport())}`")

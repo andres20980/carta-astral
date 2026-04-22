@@ -68,6 +68,8 @@ jobs:
           AD_OUTREACH_VALIDATION_MAX_AGE_DAYS: "14"
           AD_OUTREACH_REQUIRE_SOURCE_EMAIL: "1"
           AD_OUTREACH_SEND_NEW: ${{ inputs.send_new_without_review == 'true' && '1' || '0' }}
+          AD_OUTREACH_AUTO_ARCHIVE_HANDLED: "1"
+          AD_OUTREACH_AUTO_MARK_READ_HANDLED: "1"
         run: |
           set -euo pipefail
           if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then

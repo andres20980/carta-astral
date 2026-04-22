@@ -23,6 +23,10 @@ on:
         default: false
         type: boolean
 
+concurrency:
+  group: seo-competitor-intel
+  cancel-in-progress: false
+
 permissions:
   contents: write
 

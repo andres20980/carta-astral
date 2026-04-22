@@ -29,9 +29,9 @@
     "status": "new",
     "first_seen": "2026-04-21",
     "last_seen": "2026-04-21",
-    "validated_at": "2026-04-21T14:09:14+00:00",
-    "validation_status": "invalid",
-    "validation_reason": "email_not_visible_on_source"
+    "validated_at": "2026-04-22T10:26:21+00:00",
+    "validation_status": "temporary_error",
+    "validation_reason": "mx_lookup_failed: <urlopen error [Errno -3] Temporary failure in name resolution>"
   },
   {
     "email": "info@tarotzaragoza.com",
@@ -72,9 +72,9 @@
     "last_contacted_at": "2026-04-22T08:56:43+00:00",
     "message_id": "19db467f13d24172",
     "thread_id": "19db467f13d24172",
-    "reply_at": "2026-04-22T10:58:41+00:00",
+    "reply_at": "2026-04-22T11:10:12+00:00",
     "reply_snippet": "baja &gt; El 22/04/2026 10:56 CEST Astro Cluster &lt;publicidad@carta-astral-gratis.es&gt; escribió: &gt; &gt; &gt; Hola, &gt; &gt; Soy Andrés, de Astro Cluster. &gt; &gt; Te escribo porque estamos",
-    "suppressed_at": "2026-04-22T10:58:41+00:00"
+    "suppressed_at": "2026-04-22T11:10:12+00:00"
   },
   {
     "email": "lasbrujasdeananda@gmail.com",
@@ -86,9 +86,9 @@
     "status": "new",
     "first_seen": "2026-04-21",
     "last_seen": "2026-04-21",
-    "validated_at": "2026-04-21T14:09:18+00:00",
-    "validation_status": "invalid",
-    "validation_reason": "email_not_visible_on_source"
+    "validated_at": "2026-04-22T10:26:21+00:00",
+    "validation_status": "temporary_error",
+    "validation_reason": "mx_lookup_failed: <urlopen error [Errno -3] Temporary failure in name resolution>"
   },
   {
     "email": "info@gracepazos.com",
@@ -97,7 +97,7 @@
     "country_hint": "LATAM",
     "source_url": "https://gracepazos.com/contacto-tarot-coaching-astrologia",
     "why_fit": "Consulta de astrologia, tarot y coaching; buen target hispanohablante fuera de Espana.",
-    "status": "bounced",
+    "status": "replied",
     "first_seen": "2026-04-21",
     "last_seen": "2026-04-21",
     "validated_at": "2026-04-21T14:09:19+00:00",
@@ -111,7 +111,9 @@
     "thread_id": "19db467f08df6eb4",
     "bounced_at": "2026-04-22T08:57:00+00:00",
     "suppressed_at": "2026-04-22T08:57:00+00:00",
-    "bounce_snippet": "550 5.1.1 User doesn't exist: info@gracepazos.com"
+    "bounce_snippet": "550 5.1.1 User doesn't exist: info@gracepazos.com",
+    "reply_at": "2026-04-22T11:10:13+00:00",
+    "reply_snippet": "No se ha encontrado la dirección Tu mensaje no se ha entregado a info@gracepazos.com porque no se ha encontrado la dirección o esta no puede recibir correo. Esta es la respuesta del servidor remoto:"
   },
   {
     "email": "info@consejotarot.com",
@@ -160,7 +162,7 @@
     "country_hint": "US/ES",
     "source_url": "https://gemamatias.com/contact/",
     "why_fit": "Consulta astrologica en espanol; encaja con carta astral y numerologia.",
-    "status": "sent",
+    "status": "approved",
     "first_seen": "2026-04-21",
     "last_seen": "2026-04-21",
     "validated_at": "2026-04-21T14:09:21+00:00",
@@ -168,10 +170,8 @@
     "validation_reason": "mx_and_public_source_ok_personal_mailbox",
     "approved_at": "2026-04-21T14:09:21+00:00",
     "approved_by": "automation",
-    "sent_at": "2026-04-22T10:58:41+00:00",
-    "last_contacted_at": "2026-04-22T10:58:41+00:00",
-    "message_id": "19db4d79a97200a0",
-    "thread_id": "19db4d79a97200a0"
+    "last_validation_error_at": "2026-04-22T10:26:21+00:00",
+    "last_validation_error": "mx_lookup_failed: <urlopen error [Errno -3] Temporary failure in name resolution>"
   },
   {
     "email": "info@astroworld.es",
@@ -180,7 +180,7 @@
     "country_hint": "ES",
     "source_url": "https://astroworld.es/contacto/",
     "why_fit": "Astrologia profesional, software y libros; target de alta afinidad con carta astral.",
-    "status": "sent",
+    "status": "approved",
     "first_seen": "2026-04-21",
     "last_seen": "2026-04-21",
     "validated_at": "2026-04-21T14:09:25+00:00",
@@ -188,9 +188,7 @@
     "validation_reason": "mx_and_public_source_ok",
     "approved_at": "2026-04-21T14:09:25+00:00",
     "approved_by": "automation",
-    "sent_at": "2026-04-22T10:58:41+00:00",
-    "last_contacted_at": "2026-04-22T10:58:41+00:00",
-    "message_id": "19db4d79cb2b89ef",
-    "thread_id": "19db4d79cb2b89ef"
+    "last_validation_error_at": "2026-04-22T10:26:21+00:00",
+    "last_validation_error": "mx_lookup_failed: <urlopen error [Errno -3] Temporary failure in name resolution>"
   }
 ]

@@ -2,7 +2,7 @@ name: "🚀 Despliegue SEO automático"
 
 on:
   schedule:
-    - cron: '20 6 * * *'
+    - cron: '20 6 * * 1-5'  # Lunes a viernes; fin de semana sin commit
   workflow_dispatch:
     inputs:
       site:
