@@ -219,7 +219,9 @@
     },
     "pause_thresholds": {
       "bounce_rate_gt": 0.05,
-      "not_interested_rate_gt": 0.1
+      "not_interested_rate_gt": 0.1,
+      "single_bounce_policy": "Suprimir el contacto rebotado y continuar dentro del limite de 1-2 envios/dia",
+      "recent_bounce_pause": "Pausar solo con 2 o mas rebotes en 7 dias, o por tasa historica tras muestra suficiente"
     },
     "relationship_to_adsense": "La venta directa valida demanda real y puede convivir con AdSense como inventario remanente cuando se apruebe"
   },

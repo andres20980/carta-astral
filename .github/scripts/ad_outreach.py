@@ -46,7 +46,8 @@ ALLOW_PUBLIC_PERSONAL_EMAIL = os.environ.get("AD_OUTREACH_ALLOW_PUBLIC_PERSONAL_
 VALIDATION_MAX_AGE_DAYS = env_int("AD_OUTREACH_VALIDATION_MAX_AGE_DAYS", 14, minimum=0)
 PAUSE_ON_OPEN_REPLIES = os.environ.get("AD_OUTREACH_PAUSE_ON_OPEN_REPLIES", "1") == "1"
 PAUSE_ON_RECENT_BOUNCE = os.environ.get("AD_OUTREACH_PAUSE_ON_RECENT_BOUNCE", "1") == "1"
-RECENT_BOUNCE_DAYS = env_int("AD_OUTREACH_RECENT_BOUNCE_DAYS", 30, minimum=1)
+RECENT_BOUNCE_DAYS = env_int("AD_OUTREACH_RECENT_BOUNCE_DAYS", 7, minimum=1)
+RECENT_BOUNCE_PAUSE_MIN = env_int("AD_OUTREACH_RECENT_BOUNCE_PAUSE_MIN", 2, minimum=1)
 POST_SEND_BOUNCE_WAIT_SECONDS = env_int("AD_OUTREACH_POST_SEND_BOUNCE_WAIT_SECONDS", 0, minimum=0, maximum=180)
 MIN_SENT_FOR_RATE_GUARDRAILS = env_int("AD_OUTREACH_MIN_SENT_FOR_RATE_GUARDRAILS", 10, minimum=1)
 MAX_BOUNCE_RATE = float(os.environ.get("AD_OUTREACH_MAX_BOUNCE_RATE", "0.05"))
@@ -586,9 +587,13 @@ def guardrail_decision(prospects):
         )
 
     recent_bounced = recent_bounces(prospects) if PAUSE_ON_RECENT_BOUNCE else []
-    if recent_bounced:
+    if recent_bounced and len(recent_bounced) >= RECENT_BOUNCE_PAUSE_MIN:
         reasons.append(
             f"hay {len(recent_bounced)} rebote(s) reciente(s) en los ultimos {RECENT_BOUNCE_DAYS} dias"
+        )
+    elif recent_bounced:
+        warnings.append(
+            f"hay {len(recent_bounced)} rebote(s) reciente(s); se suprime el contacto y se mantiene captacion controlada"
         )
 
     if metrics["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS:
@@ -751,7 +756,7 @@ def build_learning_snapshot(prospects):
         bucket["bounce_rate"] = round(bucket["bounced"] / sent_count, 4) if sent_count else 0
 
     action = "continue"
-    if PAUSE_ON_RECENT_BOUNCE and recent_bounces(prospects):
+    if PAUSE_ON_RECENT_BOUNCE and len(recent_bounces(prospects)) >= RECENT_BOUNCE_PAUSE_MIN:
         action = "pause_recent_bounce"
     elif totals["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS and totals["bounce_rate"] > MAX_BOUNCE_RATE:
         action = "pause_high_bounce_rate"
@@ -813,6 +818,7 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None, guar
         f"- Exigir email visible en fuente pública: **{'sí' if REQUIRE_SOURCE_EMAIL else 'no'}**",
         f"- Pausar por rebote reciente: **{'sí' if PAUSE_ON_RECENT_BOUNCE else 'no'}**",
         f"- Ventana rebote reciente: **{RECENT_BOUNCE_DAYS} días**",
+        f"- Rebotes recientes para pausar: **{RECENT_BOUNCE_PAUSE_MIN}**",
         f"- Espera post-envío para rebotes: **{POST_SEND_BOUNCE_WAIT_SECONDS}s**",
         f"- Transporte email: **{active_transport()}**",
         f"- Usuario Gmail delegado: **{IMPERSONATE}**",
