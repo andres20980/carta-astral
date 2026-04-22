@@ -18,28 +18,33 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: "🔐 Obtener token OAuth"
-        id: oauth
+      - name: "🔑 Autenticar service account de Google"
+        id: saauth
+        continue-on-error: true
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+
+      - name: "🔐 Obtener token GA4 Admin"
+        id: ga4_admin
+        if: steps.saauth.outcome == 'success'
         env:
-          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
-          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
-          GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.saauth.outputs.credentials_file_path }}
         run: |
           set -euo pipefail
-          if [ -z "${GOOGLE_OAUTH_CLIENT_ID:-}" ] || [ -z "${GOOGLE_OAUTH_CLIENT_SECRET:-}" ] || [ -z "${GOOGLE_OAUTH_REFRESH_TOKEN:-}" ]; then
-            echo "missing=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+          pip -q install google-auth
+          access_token=$(python3 -c "
+          import google.auth
+          import google.auth.transport.requests
+          creds, _ = google.auth.default(scopes=[
+              'https://www.googleapis.com/auth/analytics.edit',
+              'https://www.googleapis.com/auth/cloud-platform',
+          ])
+          creds.refresh(google.auth.transport.requests.Request())
+          print(creds.token or '')
+          ")
 
-          token_json=$(curl -sS https://oauth2.googleapis.com/token \
-            -d "client_id=$GOOGLE_OAUTH_CLIENT_ID" \
-            -d "client_secret=$GOOGLE_OAUTH_CLIENT_SECRET" \
-            -d "refresh_token=$GOOGLE_OAUTH_REFRESH_TOKEN" \
-            -d "grant_type=refresh_token")
-
-          access_token=$(echo "$token_json" | jq -r '.access_token // empty')
           if [ -z "$access_token" ]; then
-            echo "$token_json"
             echo "missing=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -52,9 +57,9 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: "⚙️ Sincronizar dimensiones personalizadas"
-        if: steps.oauth.outputs.missing != 'true'
+        if: steps.saauth.outcome == 'success' && steps.ga4_admin.outputs.missing != 'true'
         env:
-          OAUTH_TOKEN: ${{ steps.oauth.outputs.token }}
+          OAUTH_TOKEN: ${{ steps.ga4_admin.outputs.token }}
         run: |
           python3 .github/scripts/ga4_custom_definitions.py \
             --property properties/531527723 \
@@ -63,9 +68,9 @@ jobs:
             --apply
 
       - name: "🎯 Sincronizar eventos clave"
-        if: steps.oauth.outputs.missing != 'true'
+        if: steps.saauth.outcome == 'success' && steps.ga4_admin.outputs.missing != 'true'
         env:
-          OAUTH_TOKEN: ${{ steps.oauth.outputs.token }}
+          OAUTH_TOKEN: ${{ steps.ga4_admin.outputs.token }}
         run: |
           python3 .github/scripts/ga4_key_events.py \
             --property properties/531527723 \
@@ -76,13 +81,13 @@ jobs:
       - name: "🧾 Resumen"
         if: always()
         run: |
-          if [ "${{ steps.oauth.outputs.missing }}" = "true" ]; then
-            echo "No se pudo sincronizar GA4 Admin porque faltan GOOGLE_OAUTH_*." >> /tmp/ga4-admin-sync.md
+          if [ "${{ steps.saauth.outcome }}" != "success" ] || [ "${{ steps.ga4_admin.outputs.missing }}" = "true" ]; then
+            echo "No se pudo sincronizar GA4 Admin porque falta o falla FIREBASE_SERVICE_ACCOUNT." >> /tmp/ga4-admin-sync.md
           else
             echo "Sincronización GA4 Admin ejecutada." >> /tmp/ga4-admin-sync.md
             python3 .github/scripts/ga4_admin_watch.py \
               --property properties/531527723 \
-              --token "${{ steps.oauth.outputs.token }}" \
+              --token "${{ steps.ga4_admin.outputs.token }}" \
               --dimensions-manifest shared/ga4_custom_dimensions.json \
               --key-events-manifest shared/ga4_key_events.json >> /tmp/ga4-admin-sync.md
           fi

@@ -26,11 +26,6 @@ REQUIRED_SCOPE_GROUPS = {
             "https://www.googleapis.com/auth/adsense",
         ],
     ],
-    "GA4 Admin": [
-        [
-            "https://www.googleapis.com/auth/analytics.edit",
-        ],
-    ],
 }
 
 
@@ -101,7 +96,7 @@ print("")
 print(f"{subheading_level} Modelo recomendado del cluster")
 print("- `Analytics / GA4`: service account en CI para reporting estable y sin interacción.")
 print("- `Search Console`, `Site Verification` y `AdSense`: OAuth de usuario porque son APIs ligadas a la cuenta propietaria.")
-print("- `GA4 Admin`: OAuth de usuario con `analytics.edit` para crear dimensiones personalizadas y eventos clave.")
+print("- `GA4 Admin`: service account en CI con permisos en la propiedad para crear dimensiones personalizadas y eventos clave.")
 
 if token and not tokeninfo_error:
     missing_required = {}
@@ -118,7 +113,7 @@ if token and not tokeninfo_error:
             )
             print(f"- `{system}`: faltan {alternatives}")
     else:
-        print(f"{subheading_level} ✅ OAuth listo para GSC, AdSense y GA4 Admin")
+        print(f"{subheading_level} ✅ OAuth listo para GSC y AdSense")
 
 if include_raw:
     print("")

@@ -56,7 +56,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
 
-      - name: "📈 Probar acceso a Analytics Data API"
+      - name: "📈 Probar acceso de service account a GA4"
         id: analytics
         if: steps.saauth.outcome == 'success'
         env:
@@ -68,22 +68,36 @@ jobs:
           token=$(python3 -c "
           import google.auth
           import google.auth.transport.requests
-          creds, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/analytics.readonly'])
+          creds, _ = google.auth.default(scopes=[
+              'https://www.googleapis.com/auth/analytics.readonly',
+              'https://www.googleapis.com/auth/analytics.edit',
+              'https://www.googleapis.com/auth/cloud-platform',
+          ])
           creds.refresh(google.auth.transport.requests.Request())
           print(creds.token)
           ")
 
-          probe=$(curl -sS -H "Authorization: Bearer $token" \
+          data_probe=$(curl -sS -H "Authorization: Bearer $token" \
             -H "Content-Type: application/json" \
             -X POST \
             -d '{"dateRanges":[{"startDate":"1daysAgo","endDate":"today"}],"metrics":[{"name":"totalUsers"}]}' \
             "https://analyticsdata.googleapis.com/v1beta/$GA4_PROPERTY:runReport")
 
-          if echo "$probe" | jq -e '.rows or .rowCount == 0' >/dev/null; then
-            echo "status=OK: service account / ADC con acceso a GA4" >> "$GITHUB_OUTPUT"
+          if ! echo "$data_probe" | jq -e '.rows or .rowCount == 0' >/dev/null; then
+            msg=$(echo "$data_probe" | jq -r '.error.message // "sin detalle"' 2>/dev/null)
+            echo "status=Pendiente: Analytics Data API: $msg" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          admin_probe=$(curl -sS -H "Authorization: Bearer $token" \
+            -H "X-Goog-User-Project: ${{ secrets.GOOGLE_CLOUD_QUOTA_PROJECT }}" \
+            "https://analyticsadmin.googleapis.com/v1alpha/$GA4_PROPERTY/customDimensions?pageSize=1")
+
+          if echo "$admin_probe" | jq -e '.customDimensions or (.customDimensions | length == 0)' >/dev/null; then
+            echo "status=OK: service account / ADC con acceso a GA4 Data y Admin" >> "$GITHUB_OUTPUT"
           else
-            msg=$(echo "$probe" | jq -r '.error.message // "sin detalle"' 2>/dev/null)
-            echo "status=Pendiente: $msg" >> "$GITHUB_OUTPUT"
+            msg=$(echo "$admin_probe" | jq -r '.error.message // "sin detalle"' 2>/dev/null)
+            echo "status=Pendiente: Analytics Admin API: $msg" >> "$GITHUB_OUTPUT"
           fi
 
       - name: "🧾 Generar auditoría"
