@@ -14,6 +14,8 @@ log.txt
 firebase-debug.log
 .codex
 client_secret*.json
+google-oauth-client*.json
+application_default_credentials.json
 sites/*/public/
 !sites/carta-astral/public/
 !sites/horoscopo-de-hoy/public/
