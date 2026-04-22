@@ -13,8 +13,6 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    env:
-      GOOGLE_CLOUD_QUOTA_PROJECT: ${{ secrets.GOOGLE_CLOUD_QUOTA_PROJECT }}
     steps:
       - uses: actions/checkout@v6
 
@@ -49,32 +47,32 @@ jobs:
             exit 0
           fi
 
+          echo "::add-mask::$access_token"
+          token_path="$RUNNER_TEMP/ga4_admin_token"
+          printf '%s' "$access_token" > "$token_path"
+          chmod 600 "$token_path"
           echo "missing=false" >> "$GITHUB_OUTPUT"
-          {
-            echo "token<<EOF"
-            echo "$access_token"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+          echo "token_path=$token_path" >> "$GITHUB_OUTPUT"
 
       - name: "⚙️ Sincronizar dimensiones personalizadas"
         if: steps.saauth.outcome == 'success' && steps.ga4_admin.outputs.missing != 'true'
         env:
-          OAUTH_TOKEN: ${{ steps.ga4_admin.outputs.token }}
+          OAUTH_TOKEN_PATH: ${{ steps.ga4_admin.outputs.token_path }}
         run: |
           python3 .github/scripts/ga4_custom_definitions.py \
             --property properties/531527723 \
-            --token "$OAUTH_TOKEN" \
+            --token "$(cat "$OAUTH_TOKEN_PATH")" \
             --manifest shared/ga4_custom_dimensions.json \
             --apply
 
       - name: "🎯 Sincronizar eventos clave"
         if: steps.saauth.outcome == 'success' && steps.ga4_admin.outputs.missing != 'true'
         env:
-          OAUTH_TOKEN: ${{ steps.ga4_admin.outputs.token }}
+          OAUTH_TOKEN_PATH: ${{ steps.ga4_admin.outputs.token_path }}
         run: |
           python3 .github/scripts/ga4_key_events.py \
             --property properties/531527723 \
-            --token "$OAUTH_TOKEN" \
+            --token "$(cat "$OAUTH_TOKEN_PATH")" \
             --manifest shared/ga4_key_events.json \
             --apply
 
@@ -87,7 +85,7 @@ jobs:
             echo "Sincronización GA4 Admin ejecutada." >> /tmp/ga4-admin-sync.md
             python3 .github/scripts/ga4_admin_watch.py \
               --property properties/531527723 \
-              --token "${{ steps.ga4_admin.outputs.token }}" \
+              --token "$(cat "${{ steps.ga4_admin.outputs.token_path }}")" \
               --dimensions-manifest shared/ga4_custom_dimensions.json \
               --key-events-manifest shared/ga4_key_events.json >> /tmp/ga4-admin-sync.md
           fi

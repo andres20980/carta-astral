@@ -90,7 +90,6 @@ jobs:
           fi
 
           admin_probe=$(curl -sS -H "Authorization: Bearer $token" \
-            -H "X-Goog-User-Project: ${{ secrets.GOOGLE_CLOUD_QUOTA_PROJECT }}" \
             "https://analyticsadmin.googleapis.com/v1alpha/$GA4_PROPERTY/customDimensions?pageSize=1")
 
           if echo "$admin_probe" | jq -e '.customDimensions or (.customDimensions | length == 0)' >/dev/null; then
