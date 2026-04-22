@@ -93,6 +93,10 @@ jobs:
           script: |
             const fs = require('fs');
             const titlePrefix = '⚙️ Sincronización de GA4 Admin';
+            const legacyTitlePrefixes = [
+              titlePrefix,
+              '⚙️ Sincronización GA4 Admin'
+            ];
             const today = new Date().toISOString().slice(0, 10);
             const body = fs.readFileSync('/tmp/ga4-admin-sync.md', 'utf8');
             const issues = await github.paginate(github.rest.issues.listForRepo, {
@@ -102,16 +106,34 @@ jobs:
               labels: 'report',
               per_page: 100
             });
-            const matching = issues.filter(issue => issue.title.startsWith(titlePrefix));
+            const matching = issues
+              .filter(issue => legacyTitlePrefixes.some(prefix => issue.title.startsWith(prefix)))
+              .sort((a, b) => a.number - b.number);
             const title = `${titlePrefix} — ${today}`;
             if (matching.length > 0) {
+              const primary = matching[0];
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: matching[0].number,
+                issue_number: primary.number,
                 title,
                 body
               });
+
+              for (const duplicate of matching.slice(1)) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  body: `Sustituido por #${primary.number}. Mantenemos un único issue canónico de sincronización GA4 Admin.`
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: duplicate.number,
+                  state: 'closed'
+                });
+              }
             } else {
               await github.rest.issues.create({
                 owner: context.repo.owner,

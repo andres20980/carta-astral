@@ -111,6 +111,10 @@ jobs:
           script: |
             const fs = require('fs');
             const titlePrefix = '🔐 Auditoría de autenticación de Google';
+            const legacyTitlePrefixes = [
+              titlePrefix,
+              '🔐 Auditoría de autenticación Google'
+            ];
             const today = new Date().toISOString().slice(0, 10);
             const body = fs.readFileSync('/tmp/google-auth-audit.md', 'utf8');
 
@@ -122,7 +126,9 @@ jobs:
               per_page: 100
             });
 
-            const matching = issues.filter(issue => issue.title.startsWith(titlePrefix));
+            const matching = issues
+              .filter(issue => legacyTitlePrefixes.some(prefix => issue.title.startsWith(prefix)))
+              .sort((a, b) => a.number - b.number);
             const title = `${titlePrefix} — ${today}`;
 
             if (matching.length > 0) {
