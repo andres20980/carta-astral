@@ -21,26 +21,39 @@ PROSPECTS_PATH = ROOT / "docs" / "AD_PROSPECTS.json"
 TEMPLATE_PATH = ROOT / "docs" / "AD_OUTREACH_TEMPLATE.txt"
 LEARNING_PATH = ROOT / "docs" / "AD_OUTREACH_LEARNING.json"
 
+
+def env_int(name, default, minimum=None, maximum=None):
+    value = int(os.environ.get(name, str(default)))
+    if minimum is not None:
+        value = max(value, minimum)
+    if maximum is not None:
+        value = min(value, maximum)
+    return value
+
+
 FROM_EMAIL = os.environ.get("ASTRO_MAIL_FROM", "publicidad@carta-astral-gratis.es")
 FROM_NAME = os.environ.get("ASTRO_MAIL_FROM_NAME", "Astro Cluster")
 IMPERSONATE = os.environ.get("WORKSPACE_GMAIL_IMPERSONATE", "info@licitago.es")
 SUBJECT = os.environ.get("AD_OUTREACH_SUBJECT", "Propuesta de publicidad directa en Astro Cluster")
-CONFIGURED_MAX_SEND = int(os.environ.get("AD_OUTREACH_MAX_SEND", "2"))
-HARD_MAX_SEND = int(os.environ.get("AD_OUTREACH_HARD_MAX_SEND", "2"))
+CONFIGURED_MAX_SEND = env_int("AD_OUTREACH_MAX_SEND", 2, minimum=0)
+HARD_MAX_SEND = env_int("AD_OUTREACH_HARD_MAX_SEND", 2, minimum=0)
 MAX_SEND = min(CONFIGURED_MAX_SEND, HARD_MAX_SEND)
 SEND_NEW = os.environ.get("AD_OUTREACH_SEND_NEW", "0") == "1"
 REQUIRE_SOURCE_EMAIL = os.environ.get("AD_OUTREACH_REQUIRE_SOURCE_EMAIL", "1") == "1"
 AUTO_APPROVE_VALIDATED = os.environ.get("AD_OUTREACH_AUTO_APPROVE_VALIDATED", "1") == "1"
 REQUIRE_MANUAL_APPROVAL = os.environ.get("AD_OUTREACH_REQUIRE_MANUAL_APPROVAL", "0") == "1"
 ALLOW_PUBLIC_PERSONAL_EMAIL = os.environ.get("AD_OUTREACH_ALLOW_PUBLIC_PERSONAL_EMAIL", "1") == "1"
-VALIDATION_MAX_AGE_DAYS = int(os.environ.get("AD_OUTREACH_VALIDATION_MAX_AGE_DAYS", "14"))
+VALIDATION_MAX_AGE_DAYS = env_int("AD_OUTREACH_VALIDATION_MAX_AGE_DAYS", 14, minimum=0)
 PAUSE_ON_OPEN_REPLIES = os.environ.get("AD_OUTREACH_PAUSE_ON_OPEN_REPLIES", "1") == "1"
-MIN_SENT_FOR_RATE_GUARDRAILS = int(os.environ.get("AD_OUTREACH_MIN_SENT_FOR_RATE_GUARDRAILS", "10"))
+PAUSE_ON_RECENT_BOUNCE = os.environ.get("AD_OUTREACH_PAUSE_ON_RECENT_BOUNCE", "1") == "1"
+RECENT_BOUNCE_DAYS = env_int("AD_OUTREACH_RECENT_BOUNCE_DAYS", 30, minimum=1)
+POST_SEND_BOUNCE_WAIT_SECONDS = env_int("AD_OUTREACH_POST_SEND_BOUNCE_WAIT_SECONDS", 0, minimum=0, maximum=180)
+MIN_SENT_FOR_RATE_GUARDRAILS = env_int("AD_OUTREACH_MIN_SENT_FOR_RATE_GUARDRAILS", 10, minimum=1)
 MAX_BOUNCE_RATE = float(os.environ.get("AD_OUTREACH_MAX_BOUNCE_RATE", "0.05"))
 MAX_NOT_INTERESTED_RATE = float(os.environ.get("AD_OUTREACH_MAX_NOT_INTERESTED_RATE", "0.10"))
 MAIL_TRANSPORT = os.environ.get("AD_OUTREACH_MAIL_TRANSPORT", "auto").lower()
 SMTP_HOST = os.environ.get("AD_OUTREACH_SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.environ.get("AD_OUTREACH_SMTP_PORT", "465"))
+SMTP_PORT = env_int("AD_OUTREACH_SMTP_PORT", 465, minimum=1)
 IMAP_HOST = os.environ.get("AD_OUTREACH_IMAP_HOST", "imap.gmail.com")
 GMAIL_USER = os.environ.get("GMAIL_USER", "")
 GMAIL_PASS = os.environ.get("GMAIL_PASS", "")
@@ -52,6 +65,11 @@ GMAIL_SCOPES = [
 ]
 
 NEGATIVE_RE = re.compile(r"\b(baja|no me interesa|no interesa|spam|no escribas|eliminar|unsubscribe)\b", re.I)
+BOUNCE_USER_UNKNOWN_RE = re.compile(
+    r"(5\.1\.1|user doesn't exist|no se ha encontrado la direcci[oó]n|"
+    r"recipient address rejected|undeliverable address)",
+    re.I,
+)
 EMAIL_RE = re.compile(r"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$", re.I)
 LOCAL_BLOCKLIST = {
     "abuse", "admin", "billing", "hostmaster", "noreply", "no-reply", "postmaster",
@@ -425,6 +443,8 @@ def gmail_get(token, message_id):
 def mail_get(token, message_id):
     if active_transport() == "smtp":
         return message_id if isinstance(message_id, dict) else {"id": message_id, "snippet": ""}
+    if isinstance(message_id, dict):
+        message_id = message_id.get("id", "")
     return gmail_get(token, message_id)
 
 
@@ -520,6 +540,18 @@ def open_commercial_replies(prospects):
     ]
 
 
+def recent_bounces(prospects):
+    threshold = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=RECENT_BOUNCE_DAYS)
+    recent = []
+    for prospect in prospects:
+        if prospect.get("status") != "bounced":
+            continue
+        bounced_at = parse_datetime(prospect.get("bounced_at", ""))
+        if bounced_at and bounced_at >= threshold:
+            recent.append(prospect)
+    return recent
+
+
 def outreach_metrics(prospects):
     total_sent = sum(1 for item in prospects if item.get("sent_at"))
     total_replied = sum(1 for item in prospects if item.get("status") == "replied")
@@ -551,6 +583,12 @@ def guardrail_decision(prospects):
     if PAUSE_ON_OPEN_REPLIES and open_replies:
         reasons.append(
             "hay respuestas comerciales abiertas sin commercial_followup_at ni closed_at"
+        )
+
+    recent_bounced = recent_bounces(prospects) if PAUSE_ON_RECENT_BOUNCE else []
+    if recent_bounced:
+        reasons.append(
+            f"hay {len(recent_bounced)} rebote(s) reciente(s) en los ultimos {RECENT_BOUNCE_DAYS} dias"
         )
 
     if metrics["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS:
@@ -635,10 +673,25 @@ def validate_batch(prospects):
     return validated
 
 
-def sync_status(token, prospects):
+def mark_bounced(prospect, snippet):
+    now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+    reason = "mailbox_bounced_user_unknown" if BOUNCE_USER_UNKNOWN_RE.search(snippet or "") else "mailbox_bounced"
+    prospect["status"] = "bounced"
+    prospect["bounced_at"] = now
+    prospect["suppressed_at"] = now
+    prospect["validation_status"] = "invalid"
+    prospect["validation_reason"] = reason
+    prospect["bounce_snippet"] = (snippet or "")[:240]
+
+
+def sync_status(token, prospects, restrict_emails=None):
     changed = []
+    restrict_emails = {normalize_email(email) for email in restrict_emails or []}
     for prospect in prospects:
         email = prospect.get("email", "")
+        normalized_email = normalize_email(email)
+        if restrict_emails and normalized_email not in restrict_emails:
+            continue
         if not email or prospect.get("status") not in {"sent", "replied", "not_interested", "bounced"}:
             continue
         inbound = mail_list(token, f"from:{email} newer_than:45d")
@@ -656,8 +709,8 @@ def sync_status(token, prospects):
 
         bounces = mail_list(token, f"from:(mailer-daemon@googlemail.com OR mailer-daemon@google.com) {email} newer_than:45d")
         if bounces and prospect.get("status") != "bounced":
-            prospect["status"] = "bounced"
-            prospect["bounced_at"] = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+            detail = mail_get(token, bounces[0])
+            mark_bounced(prospect, (detail.get("snippet") or "").strip())
             changed.append(prospect)
     return changed
 
@@ -698,7 +751,9 @@ def build_learning_snapshot(prospects):
         bucket["bounce_rate"] = round(bucket["bounced"] / sent_count, 4) if sent_count else 0
 
     action = "continue"
-    if totals["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS and totals["bounce_rate"] > MAX_BOUNCE_RATE:
+    if PAUSE_ON_RECENT_BOUNCE and recent_bounces(prospects):
+        action = "pause_recent_bounce"
+    elif totals["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS and totals["bounce_rate"] > MAX_BOUNCE_RATE:
         action = "pause_high_bounce_rate"
     elif totals["sent"] >= MIN_SENT_FOR_RATE_GUARDRAILS and totals["not_interested_rate"] > MAX_NOT_INTERESTED_RATE:
         action = "reduce_volume_or_adjust_copy"
@@ -756,6 +811,9 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None, guar
         f"- Exigir aprobación manual: **{'sí' if REQUIRE_MANUAL_APPROVAL else 'no'}**",
         f"- Enviar prospectos `new` sin autoaprobar: **{'sí' if SEND_NEW else 'no'}**",
         f"- Exigir email visible en fuente pública: **{'sí' if REQUIRE_SOURCE_EMAIL else 'no'}**",
+        f"- Pausar por rebote reciente: **{'sí' if PAUSE_ON_RECENT_BOUNCE else 'no'}**",
+        f"- Ventana rebote reciente: **{RECENT_BOUNCE_DAYS} días**",
+        f"- Espera post-envío para rebotes: **{POST_SEND_BOUNCE_WAIT_SECONDS}s**",
         f"- Transporte email: **{active_transport()}**",
         f"- Usuario Gmail delegado: **{IMPERSONATE}**",
         f"- From comercial: **{FROM_EMAIL}**",
@@ -803,7 +861,8 @@ def render_report(prospects, sent, changed, validated, mailbox_report=None, guar
     if changed:
         lines += ["", "### Respuestas o incidencias", ""]
         for item in changed:
-            lines.append(f"- `{item['email']}` · `{item['status']}` · {item.get('reply_snippet', '')}")
+            snippet = item.get("reply_snippet", "") or item.get("bounce_snippet", "")
+            lines.append(f"- `{item['email']}` · `{item['status']}` · {snippet}")
     return "\n".join(lines) + "\n"
 
 
@@ -827,6 +886,11 @@ def main():
     changed = sync_status(token, prospects) if args.sync else []
     if args.send:
         sent, send_validated, guardrail = send_batch(token, prospects)
+        if args.sync and sent and POST_SEND_BOUNCE_WAIT_SECONDS:
+            time.sleep(POST_SEND_BOUNCE_WAIT_SECONDS)
+            sent_emails = {item.get("email", "") for item in sent}
+            changed += sync_status(token, prospects, restrict_emails=sent_emails)
+            guardrail = guardrail_decision(prospects)
     else:
         sent, send_validated, guardrail = [], [], guardrail_decision(prospects)
     validated = standalone_validated + send_validated
