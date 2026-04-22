@@ -50,9 +50,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: "⚙️ Sincronizar dimensiones personalizadas"
-        id: dimensions
         if: steps.oauth.outputs.missing != 'true'
-        continue-on-error: true
         env:
           OAUTH_TOKEN: ${{ steps.oauth.outputs.token }}
         run: |
@@ -63,9 +61,7 @@ jobs:
             --apply
 
       - name: "🎯 Sincronizar eventos clave"
-        id: key_events
         if: steps.oauth.outputs.missing != 'true'
-        continue-on-error: true
         env:
           OAUTH_TOKEN: ${{ steps.oauth.outputs.token }}
         run: |
@@ -81,11 +77,7 @@ jobs:
           if [ "${{ steps.oauth.outputs.missing }}" = "true" ]; then
             echo "No se pudo sincronizar GA4 Admin porque faltan GOOGLE_OAUTH_*." >> /tmp/ga4-admin-sync.md
           else
-            if [ "${{ steps.dimensions.outcome }}" = "failure" ] || [ "${{ steps.key_events.outcome }}" = "failure" ]; then
-              echo "Sincronización GA4 Admin degradada: el token OAuth no tiene todos los scopes de escritura necesarios. Se mantiene la vigilancia en modo lectura para no bloquear el pipeline." >> /tmp/ga4-admin-sync.md
-            else
-              echo "Sincronización GA4 Admin ejecutada." >> /tmp/ga4-admin-sync.md
-            fi
+            echo "Sincronización GA4 Admin ejecutada." >> /tmp/ga4-admin-sync.md
             python3 .github/scripts/ga4_admin_watch.py \
               --property properties/531527723 \
               --token "${{ steps.oauth.outputs.token }}" \
