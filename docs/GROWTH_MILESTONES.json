@@ -309,6 +309,30 @@
       "tarot-del-dia": 28,
       "calcular-numerologia": 15,
       "horoscopo-de-hoy": 17
+    },
+    "adsense": {
+      "publisher_id": "pub-9368517395014039",
+      "last_rejection_date": "2026-04-20",
+      "rejection_reasons": [
+        "trafico insuficiente (81 ses/sem, objetivo minimo ~300)",
+        "bounce_rate 96.3% (objetivo <70%)",
+        "thin content percibido (18 paginas carta-astral, avg_duration 4s)",
+        "dominio nuevo <6 meses"
+      ],
+      "green_flags": [
+        "ads.txt correcto con publisher ID",
+        "privacy.html y terms.html presentes",
+        "HTTPS via Firebase Hosting",
+        "niche aceptado por politicas AdSense"
+      ],
+      "reapply_conditions": {
+        "min_weekly_sessions": 300,
+        "max_bounce_rate": 0.7,
+        "min_domain_age_months": 6,
+        "min_organic_share": 0.2
+      },
+      "earliest_reapply_date": "2026-07-01",
+      "note": "No re-solicitar antes de cumplir todas las reapply_conditions. Solicitudes repetidas sin mejoras pueden generar penalizacion de revision."
     }
   }
 }

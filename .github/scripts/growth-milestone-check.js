@@ -465,7 +465,9 @@ function main() {
     }
   }
 
+  const previousAuto = milestones.auto && typeof milestones.auto === 'object' ? milestones.auto : {};
   milestones.auto = {
+    ...previousAuto,
     last_eval: new Date().toISOString().slice(0, 10),
     current_stage_id: current.id,
     next_stage_id: next.id,
