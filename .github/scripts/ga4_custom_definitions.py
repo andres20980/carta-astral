@@ -12,7 +12,8 @@ def api_json(url, token, method="GET", body=None):
     data = None
     headers = {"Authorization": f"Bearer {token}"}
     quota_project = os.environ.get("GOOGLE_CLOUD_QUOTA_PROJECT", "").strip()
-    if quota_project:
+    include_quota_project = os.environ.get("GOOGLE_INCLUDE_QUOTA_PROJECT_HEADER", "").strip() == "1"
+    if include_quota_project and quota_project:
         headers["x-goog-user-project"] = quota_project
     if body is not None:
         data = json.dumps(body).encode("utf-8")
