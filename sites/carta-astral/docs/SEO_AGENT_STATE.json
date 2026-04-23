@@ -1,10 +1,10 @@
 {
   "site": "carta-astral",
-  "lastRun": "2026-04-22T06:58:34.675Z",
-  "lastQuery": "hacer carta astral",
+  "lastRun": "2026-04-23T07:00:11.023Z",
+  "lastQuery": "carta astral por fecha de nacimiento",
   "results": [
     {
-      "query": "hacer carta astral",
+      "query": "carta astral por fecha de nacimiento",
       "matchedSignals": [
         "token_overlap_2"
       ],
