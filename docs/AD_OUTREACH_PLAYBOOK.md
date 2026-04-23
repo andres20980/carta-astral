@@ -50,3 +50,4 @@ Objetivo: captar anunciantes directos para los banners del cluster mientras AdSe
 - Sin artifacts ni caches en GitHub Actions.
 - Uso de `ubuntu-latest` y jobs cortos con `timeout-minutes: 10`.
 - Google Programmable Search se limita con `MAX_SEARCH_QUERIES` y `MAX_RESULTS_PER_QUERY`.
+- Si Google deniega Custom Search para la configuración actual, el workflow guarda una pausa temporal en `docs/AD_PROSPECTING_STATE.json` para evitar reintentos sin valor. Se reactiva al cambiar `GOOGLE_SEARCH_API_KEY`/`GOOGLE_SEARCH_CX` o al vencer `CUSTOM_SEARCH_ACCESS_DENIED_COOLDOWN_DAYS`.

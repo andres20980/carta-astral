@@ -28,19 +28,20 @@ jobs:
           MAX_NEW_PROSPECTS: ${{ vars.MAX_NEW_PROSPECTS || '10' }}
           MAX_SEARCH_QUERIES: ${{ vars.MAX_SEARCH_QUERIES || '5' }}
           MAX_RESULTS_PER_QUERY: ${{ vars.MAX_RESULTS_PER_QUERY || '5' }}
+          CUSTOM_SEARCH_ACCESS_DENIED_COOLDOWN_DAYS: ${{ vars.CUSTOM_SEARCH_ACCESS_DENIED_COOLDOWN_DAYS || '30' }}
         run: |
           python3 .github/scripts/ad_prospecting.py --write --report /tmp/ad-prospecting-report.md
           cat /tmp/ad-prospecting-report.md
 
       - name: "💾 Persistir candidatos nuevos"
         run: |
-          if git diff --quiet -- docs/AD_PROSPECTS.json; then
+          if git diff --quiet -- docs/AD_PROSPECTS.json docs/AD_PROSPECTING_STATE.json; then
             echo "No hay candidatos nuevos que persistir."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/AD_PROSPECTS.json
+          git add docs/AD_PROSPECTS.json docs/AD_PROSPECTING_STATE.json
           git commit -m "chore: actualizar candidatos publicitarios"
           git push
 

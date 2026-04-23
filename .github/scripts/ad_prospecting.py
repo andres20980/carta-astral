@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import datetime as dt
+import hashlib
 import html
 import json
 import os
@@ -14,6 +15,8 @@ import urllib.request
 ROOT = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 PROSPECTS_PATH = os.path.join(ROOT, "docs", "AD_PROSPECTS.json")
 QUERIES_PATH = os.path.join(ROOT, "docs", "AD_PROSPECT_SEARCH_QUERIES.json")
+STATE_PATH = os.path.join(ROOT, "docs", "AD_PROSPECTING_STATE.json")
+ACCESS_DENIED_PREFIX = "Custom Search JSON API: acceso denegado para este proyecto."
 
 def env_int(name, default, minimum=0, maximum=None):
     try:
@@ -30,6 +33,7 @@ MAX_NEW = env_int("MAX_NEW_PROSPECTS", 10, minimum=0, maximum=25)
 MAX_QUERIES = env_int("MAX_SEARCH_QUERIES", 5, minimum=0, maximum=5)
 MAX_RESULTS_PER_QUERY = env_int("MAX_RESULTS_PER_QUERY", 5, minimum=1, maximum=10)
 TIMEOUT = env_int("PROSPECT_FETCH_TIMEOUT", 12, minimum=3, maximum=20)
+ACCESS_DENIED_COOLDOWN_DAYS = env_int("CUSTOM_SEARCH_ACCESS_DENIED_COOLDOWN_DAYS", 30, minimum=1, maximum=90)
 
 EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I)
 BAD_EMAIL_PARTS = {
@@ -77,6 +81,28 @@ def save_json(path, payload):
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
+
+
+def config_fingerprint(api_key, cx):
+    return hashlib.sha256(f"{api_key}\0{cx}".encode("utf-8")).hexdigest()[:16]
+
+
+def parse_date(value):
+    try:
+        return dt.date.fromisoformat(value or "")
+    except ValueError:
+        return None
+
+
+def active_access_denied_pause(state, fingerprint, today):
+    if state.get("reason") != "custom_search_access_denied":
+        return None
+    if state.get("config_fingerprint") != fingerprint:
+        return None
+    disabled_until = parse_date(state.get("disabled_until"))
+    if disabled_until and disabled_until >= today:
+        return disabled_until
+    return None
 
 
 def fetch_json(url):
@@ -209,7 +235,7 @@ def prospect(api_key, cx, existing):
             message = http_error_message(exc)
             if exc.code == 403 and is_custom_search_access_denied(message):
                 errors.append(
-                    "Custom Search JSON API: acceso denegado para este proyecto. "
+                    f"{ACCESS_DENIED_PREFIX} "
                     "Google indica que la API esta cerrada a nuevos clientes; "
                     "se detienen los reintentos para mantener la ejecucion free-tier friendly."
                 )
@@ -241,7 +267,7 @@ def prospect(api_key, cx, existing):
     return found, errors
 
 
-def report(existing, added, errors, missing_config):
+def report(existing, added, errors, missing_config, state=None):
     lines = [
         "## Prospección diaria de anunciantes",
         "",
@@ -257,6 +283,15 @@ def report(existing, added, errors, missing_config):
             "### Configuración pendiente",
             "",
             "Faltan `GOOGLE_SEARCH_API_KEY` y/o `GOOGLE_SEARCH_CX`. La acción está preparada para Google Programmable Search en free-tier.",
+            "",
+        ]
+    if state and state.get("reason") == "custom_search_access_denied":
+        lines += [
+            "### Pausa FinOps",
+            "",
+            f"- Motivo: **Custom Search JSON API denegada para la configuracion actual**.",
+            f"- Sin nuevas llamadas a la API hasta: **{state.get('disabled_until', 'sin fecha')}**.",
+            "- Para reactivar antes, cambia `GOOGLE_SEARCH_API_KEY`/`GOOGLE_SEARCH_CX` o ajusta `CUSTOM_SEARCH_ACCESS_DENIED_COOLDOWN_DAYS`.",
             "",
         ]
     if added:
@@ -289,16 +324,37 @@ def main():
     api_key = os.environ.get("GOOGLE_SEARCH_API_KEY", "").strip()
     cx = os.environ.get("GOOGLE_SEARCH_CX", "").strip()
     existing = load_json(PROSPECTS_PATH, [])
+    state = load_json(STATE_PATH, {})
     missing_config = not api_key or not cx
 
     added = []
     errors = []
     if not missing_config:
-        added, errors = prospect(api_key, cx, existing)
+        today = dt.date.today()
+        fingerprint = config_fingerprint(api_key, cx)
+        paused_until = active_access_denied_pause(state, fingerprint, today)
+        if paused_until:
+            errors.append(
+                f"{ACCESS_DENIED_PREFIX} Busqueda pausada hasta {paused_until.isoformat()} "
+                "para evitar reintentos sin valor."
+            )
+        else:
+            added, errors = prospect(api_key, cx, existing)
+            if any(error.startswith(ACCESS_DENIED_PREFIX) for error in errors):
+                state = {
+                    "reason": "custom_search_access_denied",
+                    "config_fingerprint": fingerprint,
+                    "disabled_until": (today + dt.timedelta(days=ACCESS_DENIED_COOLDOWN_DAYS)).isoformat(),
+                    "updated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+                }
+            elif state.get("reason") == "custom_search_access_denied":
+                state = {}
         if args.write and added:
             save_json(PROSPECTS_PATH, existing + added)
+        if args.write:
+            save_json(STATE_PATH, state)
 
-    body = report(existing, added, errors, missing_config)
+    body = report(existing, added, errors, missing_config, state)
     if args.report:
         with open(args.report, "w", encoding="utf-8") as fh:
             fh.write(body)
