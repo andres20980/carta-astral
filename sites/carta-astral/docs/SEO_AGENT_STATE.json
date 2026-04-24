@@ -1,12 +1,12 @@
 {
   "site": "carta-astral",
-  "lastRun": "2026-04-23T07:00:11.023Z",
-  "lastQuery": "carta astral por fecha de nacimiento",
+  "lastRun": "2026-04-24T07:01:24.913Z",
+  "lastQuery": "ascendente gratis",
   "results": [
     {
-      "query": "carta astral por fecha de nacimiento",
+      "query": "ascendente gratis",
       "matchedSignals": [
-        "token_overlap_2"
+        "token_overlap_1"
       ],
       "file": "public/index.html",
       "changed": true,
