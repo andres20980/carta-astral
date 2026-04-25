@@ -171,7 +171,10 @@ function scoreKeywordByCompetitorIntel(keyword, competitorIntel) {
 function scoreKeywordByGsc(keyword, gscSignals) {
   const query = String(keyword.query || '').trim();
   const normalizedQuery = normalizeText(query);
-  const rows = (gscSignals && Array.isArray(gscSignals.queries)) ? gscSignals.queries : [];
+  const rows = [
+    ...((gscSignals && Array.isArray(gscSignals.queries)) ? gscSignals.queries : []),
+    ...((gscSignals && Array.isArray(gscSignals.strikingDistanceQueries)) ? gscSignals.strikingDistanceQueries : []),
+  ];
   if (!normalizedQuery || rows.length === 0) {
     return { score: (keyword.priority || 99) * 100, matchedSignals: [] };
   }
@@ -198,6 +201,10 @@ function scoreKeywordByGsc(keyword, gscSignals) {
   if (position >= 8 && position <= 20) {
     boost += 20;
     matchedSignals.push('gsc_mid_position');
+  }
+  if (impressions >= 2 && ctr === 0 && position >= 4 && position <= 20) {
+    boost += 12;
+    matchedSignals.push('gsc_striking_distance_early');
   }
 
   const base = (keyword.priority || 99) * 100;

@@ -11,6 +11,8 @@ start = os.environ["GSC_START"]
 end = os.environ["GSC_END"]
 output_dir = os.environ.get("GSC_OUTPUT_DIR", "").strip()
 quota_project = os.environ.get("GOOGLE_CLOUD_QUOTA_PROJECT", "").strip()
+GSC_ROW_LIMIT = int(os.environ.get("GSC_ROW_LIMIT", "25"))
+REPORT_ROW_LIMIT = 5
 
 
 def fetch(site_url, payload):
@@ -64,12 +66,22 @@ def build_query_rows(rows):
     return results
 
 
+def normalize_page_path(page, domain):
+    parsed = urllib.parse.urlparse(page)
+    if parsed.netloc:
+        path = parsed.path or "/"
+        if parsed.query:
+            path = f"{path}?{parsed.query}"
+        return path
+    base = f"https://{domain}"
+    return page.replace(base, "") or "/"
+
+
 def build_page_rows(rows, domain):
     results = []
-    base = f"https://{domain}"
     for row in rows or []:
         page = row.get("keys", [""])[0]
-        path = page.replace(base, "") or "/"
+        path = normalize_page_path(page, domain)
         clicks = float(row.get("clicks", 0) or 0)
         impressions = float(row.get("impressions", 0) or 0)
         position = float(row.get("position", 0) or 0)
@@ -87,6 +99,16 @@ def build_page_rows(rows, domain):
         )
     results.sort(key=lambda item: item["opportunity"], reverse=True)
     return results
+
+
+def build_striking_distance_rows(rows):
+    return [
+        item for item in rows
+        if item["impressions"] >= 2
+        and item["clicks"] == 0
+        and 4 <= item["position"] <= 20
+    ]
+
 
 cluster = {"clicks": 0.0, "impressions": 0.0}
 site_reports = []
@@ -106,7 +128,7 @@ for site_key, domain, site_url in sites:
             "startDate": start,
             "endDate": end,
             "dimensions": ["query"],
-            "rowLimit": 5,
+            "rowLimit": GSC_ROW_LIMIT,
             "dataState": "all",
         },
     )
@@ -116,7 +138,7 @@ for site_key, domain, site_url in sites:
             "startDate": start,
             "endDate": end,
             "dimensions": ["page"],
-            "rowLimit": 5,
+            "rowLimit": GSC_ROW_LIMIT,
             "dataState": "all",
         },
     )
@@ -151,7 +173,9 @@ for site_key, domain, site_url in sites:
             "range": {"start": start, "end": end},
             "queries": query_rows,
             "pages": page_rows,
-            "topOpportunities": query_rows[:5],
+            "topOpportunities": query_rows[:REPORT_ROW_LIMIT],
+            "strikingDistanceQueries": build_striking_distance_rows(query_rows)[:REPORT_ROW_LIMIT],
+            "strikingDistancePages": build_striking_distance_rows(page_rows)[:REPORT_ROW_LIMIT],
         }
         target_dir = os.path.join(output_dir, site_key, "docs")
         ensure_dir(target_dir)
@@ -188,7 +212,7 @@ for report in site_reports:
     print("| Consulta | Clics | Impresiones | CTR | Posición |")
     print("|----------|-------|-------------|-----|----------|")
     if report["queries"]:
-        for row in report["queries"]:
+        for row in report["queries"][:REPORT_ROW_LIMIT]:
             query = safe_text(row["keys"][0])
             print(
                 f"| {query} | {row.get('clicks', 0):.0f} | {row.get('impressions', 0):.0f} | "
@@ -201,9 +225,8 @@ for report in site_reports:
     print("| Página | Clics | Impresiones | Posición |")
     print("|--------|-------|-------------|----------|")
     if report["pages"]:
-        base = f"https://{report['domain']}"
-        for row in report["pages"]:
-            page = safe_text(row["keys"][0].replace(base, "") or "/")
+        for row in report["pages"][:REPORT_ROW_LIMIT]:
+            page = safe_text(normalize_page_path(row["keys"][0], report["domain"]))
             print(
                 f"| {page} | {row.get('clicks', 0):.0f} | {row.get('impressions', 0):.0f} | "
                 f"{row.get('position', 0):.1f} |"
