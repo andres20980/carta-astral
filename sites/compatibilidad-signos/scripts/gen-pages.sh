@@ -552,5 +552,5 @@ $(canonical_host_redirect_script "$DOMAIN")
 END404
 
 echo "  ✓ ads.txt, robots.txt, sitemap.xml, 404.html"
-bash "$REPO_ROOT/gen-legal.sh" "$SITE_KEY"
+bash "$REPO_ROOT/scripts/generate-legal-pages.sh" "$SITE_KEY"
 echo "Done! ${PAGE_COUNT} pages + index + static files in $PUBLIC"

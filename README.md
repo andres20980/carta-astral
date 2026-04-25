@@ -18,6 +18,9 @@ Cluster de sitios estáticos SEO en español sobre astrología, tarot, numerolog
 - `sites/*/public/`: salida estática lista para deploy.
 - `shared/config.sh`: configuración compartida de dominios, GA4, AdSense, crosslinks y media kits.
 - `shared/ga4_custom_dimensions.json` y `shared/ga4_key_events.json`: estado deseado de la configuración GA4 Admin.
+- `scripts/`: utilidades compartidas del repo que no pertenecen a un único site.
+- `docs/`: documentación y estado operativo global del cluster.
+- `sites/*/docs/`: señales SEO y estado operativo específico de cada site.
 - `deploy.sh`: deploy manual a Firebase Hosting.
 - `.github/workflows/`: automatización de deploy, smoke SEO, daily regen y reporting.
 
@@ -76,7 +79,11 @@ astro-cluster/
 │   ├── scripts/
 │   └── workflows/
 ├── docs/
-│   └── DNS.md
+│   ├── AD_*.md/json/txt
+│   ├── DNS.md
+│   └── GROWTH_MILESTONES.json
+├── scripts/
+│   └── generate-legal-pages.sh
 ├── shared/
 │   └── config.sh
 ├── sites/
@@ -87,6 +94,16 @@ astro-cluster/
 │   └── horoscopo-de-hoy/
 └── deploy.sh
 ```
+
+## Convenciones de organización
+
+- Estado global del negocio, DNS, outreach y milestones: `docs/`.
+- Estado SEO generado por site: `sites/<site-key>/docs/`.
+- No usar carpetas anidadas tipo `sites/<site-key>/docs/docs`; si un archivo aplica a un solo site, va directamente en `sites/<site-key>/docs/`.
+- Scripts de un site concreto: `sites/<site-key>/scripts/`.
+- Scripts compartidos de generación/mantenimiento: `scripts/`.
+- Configuración compartida consumida por varios sites o workflows: `shared/`.
+- Workflows con kebab-case (`seo-auto-pr.yml`) y scripts Python con snake_case (`weekly_gsc_report.py`). Los scripts JavaScript existentes mantienen kebab-case por compatibilidad con workflows.
 
 ## Automatización
 

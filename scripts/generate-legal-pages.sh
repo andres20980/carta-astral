@@ -2,7 +2,7 @@
 set -euo pipefail
 # Generate privacy.html + terms.html for one or more cluster sites.
 
-REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$REPO_ROOT/shared/config.sh"
 
 TODAY_DISPLAY="9 de abril de 2026"

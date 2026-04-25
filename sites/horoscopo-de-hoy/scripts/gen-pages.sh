@@ -453,5 +453,5 @@ $(canonical_host_redirect_script "$DOMAIN")
 END404
 
 echo "  ✓ Static files"
-bash "$REPO_ROOT/gen-legal.sh" "$SITE_KEY"
+bash "$REPO_ROOT/scripts/generate-legal-pages.sh" "$SITE_KEY"
 echo "Done! ${PAGE_COUNT} sign pages + index in $PUBLIC"
