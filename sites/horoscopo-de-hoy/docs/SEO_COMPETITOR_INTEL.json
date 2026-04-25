@@ -1,8 +1,8 @@
 {
   "site": "horoscopo-de-hoy",
   "domain": "horoscopo-de-hoy.es",
-  "generatedAt": "2026-04-15T09:02:51.393Z",
-  "runId": "29e47a30",
+  "generatedAt": "2026-04-25T08:47:50.895Z",
+  "runId": "322e5e27",
   "keywordsContext": [
     "horóscopo de hoy",
     "horóscopo diario",
@@ -14,7 +14,7 @@
   "insights": {
     "crawledCount": 3,
     "successCount": 3,
-    "avgWordCount": 1848,
+    "avgWordCount": 2080,
     "faqSchemaAdoption": "0/3",
     "howToSchemaAdoption": "0/3",
     "breadcrumbAdoption": "1/3",
@@ -46,7 +46,7 @@
         "occurrences": 2
       }
     ],
-    "recommendation": "Competidores tienen de media 1848 palabras. Asegúrate de que tu landing supera ese umbral."
+    "recommendation": "Competidores tienen de media 2080 palabras. Asegúrate de que tu landing supera ese umbral."
   },
   "results": [
     {
@@ -55,19 +55,19 @@
       "error": null,
       "analysis": {
         "url": "https://www.horoscopo.com/",
-        "fetchedAt": "2026-04-15T09:02:43.598Z",
+        "fetchedAt": "2026-04-25T08:47:45.224Z",
         "title": "Horóscopos De Hoy y Diario | Horoscopo.com",
         "description": "Horoscopos gratis en Horoscopo.com. Encuentra todo lo relacionado con horoscopos, astrologia, signos zodiacales, astrologia china, numerologia, adivinos, tarot, compatibilidad y mas gratis.",
         "canonical": "https://www.horoscopo.com/",
         "h1": "Horóscopos Gratis: De Hoy y Diario",
         "h1Count": 2,
         "h2s": [
-          "&#xBF;Cu&#xE1;l es tu signo ascendente?",
-          "Visualizaci&#xF3;n para recargarte&#xA0;con la energ&#xED;a de la Tierra",
+          "Datos Curiosos: Aries",
+          "&#xA1;Conqu&#xED;stalo con estas frases!",
           "Carta del día"
         ],
         "h2Count": 3,
-        "wordCount": 737,
+        "wordCount": 713,
         "schemaTypes": [],
         "hasFaqSchema": false,
         "hasHowToSchema": false,
@@ -89,7 +89,7 @@
       "error": null,
       "analysis": {
         "url": "https://www.univision.com/horoscopos",
-        "fetchedAt": "2026-04-15T09:02:48.054Z",
+        "fetchedAt": "2026-04-25T08:47:47.718Z",
         "title": "Horóscopo diario y semanal para todos los signos del zodíaco | Univision",
         "description": "Conocé todas las noticias sobre Horóscopo en Univision | Univision",
         "canonical": "https://www.univision.com/horoscopos",
@@ -100,22 +100,22 @@
           "Horóscopos de Mizada",
           "Encuentra tu signo",
           "Características de los signos zodiacales",
+          "Tus historias favoritas están en ViX",
           "Los planetas y la astrología",
           "Cocina astral",
           "Predicciones",
           "Astrología para todos",
-          "Rituales",
-          "Espiritualidad"
+          "Rituales"
         ],
-        "h2Count": 11,
-        "wordCount": 1993,
+        "h2Count": 12,
+        "wordCount": 2712,
         "schemaTypes": [
           "BreadcrumbList"
         ],
         "hasFaqSchema": false,
         "hasHowToSchema": false,
         "hasBreadcrumb": true,
-        "internalLinks": 336,
+        "internalLinks": 428,
         "keywordFrequency": {
           "horóscopo de hoy": 0,
           "horóscopo diario": 6,
@@ -132,7 +132,7 @@
       "error": null,
       "analysis": {
         "url": "https://www.losarcanos.com/",
-        "fetchedAt": "2026-04-15T09:02:49.892Z",
+        "fetchedAt": "2026-04-25T08:47:49.394Z",
         "title": "Tarot Gratis, Tarot del Amor, Consultar el Tarot",
         "description": "Tarot Gratis, Tarot del Amor en linea, Tarot Si o No, Carta Astral Gratis, averigua tu presente y tu futuro con los consejos del Tarot de Los Arcanos",
         "canonical": "https://www.losarcanos.com/",
@@ -144,7 +144,7 @@
           "Astrología y Horóscopos gratis"
         ],
         "h2Count": 3,
-        "wordCount": 2815,
+        "wordCount": 2816,
         "schemaTypes": [],
         "hasFaqSchema": false,
         "hasHowToSchema": false,
