@@ -29,11 +29,19 @@ def env_int(name, default, minimum=0, maximum=None):
     return value
 
 
+def env_bool(name, default):
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 MAX_NEW = env_int("MAX_NEW_PROSPECTS", 10, minimum=0, maximum=25)
 MAX_QUERIES = env_int("MAX_SEARCH_QUERIES", 5, minimum=0, maximum=5)
 MAX_RESULTS_PER_QUERY = env_int("MAX_RESULTS_PER_QUERY", 5, minimum=1, maximum=10)
 TIMEOUT = env_int("PROSPECT_FETCH_TIMEOUT", 12, minimum=3, maximum=20)
 ACCESS_DENIED_COOLDOWN_DAYS = env_int("CUSTOM_SEARCH_ACCESS_DENIED_COOLDOWN_DAYS", 30, minimum=1, maximum=90)
+REQUIRE_PUBLIC_CONTACT_PAGE = env_bool("AD_PROSPECTING_REQUIRE_PUBLIC_CONTACT_PAGE", True)
 
 EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I)
 BAD_EMAIL_PARTS = {
@@ -65,6 +73,10 @@ FIT_TERMS = {
     "ritual": 2,
     "minerales": 2,
     "espiritual": 2,
+}
+CONTACT_PAGE_TERMS = {
+    "contact", "contacto", "contactar", "publicidad", "anunciate", "anúnciate",
+    "anunciantes", "colabora", "colaboraciones", "colaborar",
 }
 
 
@@ -158,6 +170,31 @@ def score_text(text):
     return sum(weight for term, weight in FIT_TERMS.items() if term in low)
 
 
+def public_contact_evidence(email, result, source_url, page_text):
+    parsed = urllib.parse.urlparse(source_url or "")
+    path = urllib.parse.unquote(parsed.path or "").lower()
+    title = html.unescape(result.get("title", "")).lower()
+    snippet = html.unescape(result.get("snippet", "")).lower()
+    text = (page_text or "").lower()
+    normalized = normalize_email(email)
+    return {
+        "contact_term_in_url": any(term in path for term in CONTACT_PAGE_TERMS),
+        "contact_term_in_result": any(term in f"{title}\n{snippet}" for term in CONTACT_PAGE_TERMS),
+        "mailto_visible": f"mailto:{normalized}" in text,
+        "email_visible": normalized in text,
+    }
+
+
+def is_public_contact_source(evidence):
+    if not evidence.get("email_visible"):
+        return False
+    return (
+        evidence.get("contact_term_in_url")
+        or evidence.get("contact_term_in_result")
+        or evidence.get("mailto_visible")
+    )
+
+
 def domain_country_hint(url):
     domain = urllib.parse.urlparse(url).netloc.lower()
     if domain.endswith(".es"):
@@ -190,6 +227,9 @@ def candidate_from(email, result, page_text, today):
     title = html.unescape(result.get("title", "")).strip()
     snippet = html.unescape(result.get("snippet", "")).strip()
     source_url = result.get("link", "")
+    contact_evidence = public_contact_evidence(email, result, source_url, page_text)
+    if REQUIRE_PUBLIC_CONTACT_PAGE and not is_public_contact_source(contact_evidence):
+        return None
     combined = f"{title}\n{snippet}\n{page_text[:5000]}"
     score = score_text(combined)
     if score < 3:
@@ -211,7 +251,9 @@ def candidate_from(email, result, page_text, today):
         "segment": segment,
         "country_hint": domain_country_hint(source_url),
         "source_url": source_url,
-        "why_fit": "Contacto publico encontrado en una pagina hispanohablante relacionada con tarot, astrologia o esoterismo.",
+        "source_kind": "public_contact_page",
+        "contact_evidence": contact_evidence,
+        "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
         "status": "new",
         "first_seen": today,
         "last_seen": today,
@@ -276,6 +318,7 @@ def report(existing, added, errors, missing_config, state=None):
         f"- Límite de búsqueda por ejecución: **{MAX_QUERIES} consultas x {MAX_RESULTS_PER_QUERY} resultados**.",
         f"- Límite de candidatos nuevos por ejecución: **{MAX_NEW}**.",
         "- Envío automático: **solo si el candidato valida MX y fuente pública en el workflow de captación**.",
+        f"- Filtro de fuente pública: **{'página de contacto profesional obligatoria' if REQUIRE_PUBLIC_CONTACT_PAGE else 'email visible en fuente pública'}**.",
         "",
     ]
     if missing_config:

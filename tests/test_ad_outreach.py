@@ -46,5 +46,21 @@ class SyncStatusTests(unittest.TestCase):
         self.assertNotIn("reply_snippet", prospect)
 
 
+class MessageBodyTests(unittest.TestCase):
+    def test_render_message_body_adds_personal_context(self):
+        prospect = {
+            "name": "Astroworld",
+            "segment": "astrologia profesional",
+            "source_url": "https://astroworld.es/contacto/",
+        }
+        template = "Hola,\n\nTe escribo porque estamos abriendo espacios.\n"
+
+        body = ad_outreach.render_message_body(prospect, template)
+
+        self.assertIn("He revisado Astroworld · astrologia profesional", body)
+        self.assertIn("https://astroworld.es/contacto/", body)
+        self.assertTrue(body.startswith("Hola,\n\nHe revisado"))
+
+
 if __name__ == "__main__":
     unittest.main()

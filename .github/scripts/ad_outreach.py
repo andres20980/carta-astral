@@ -447,6 +447,35 @@ def build_message(to_email, body):
     return {"raw": b64url(message)}
 
 
+def personalization_line(prospect):
+    name = (prospect.get("name") or "").strip()
+    segment = (prospect.get("segment") or "").strip()
+    source_url = (prospect.get("source_url") or "").strip()
+    bits = []
+    if name:
+        bits.append(name)
+    if segment:
+        bits.append(segment)
+    context = " · ".join(bits)
+    if not context and not source_url:
+        return ""
+    if context and source_url:
+        return f"He revisado {context} ({source_url}) y por eso te escribo con una propuesta bastante concreta."
+    if context:
+        return f"He revisado {context} y por eso te escribo con una propuesta bastante concreta."
+    return f"He revisado {source_url} y por eso te escribo con una propuesta bastante concreta."
+
+
+def render_message_body(prospect, template):
+    line = personalization_line(prospect)
+    if not line:
+        return template
+    marker = "Hola,\n\n"
+    if template.startswith(marker):
+        return template.replace(marker, f"{marker}{line}\n\n", 1)
+    return f"{line}\n\n{template}"
+
+
 def gmail_send(token, to_email, body):
     return request(
         "POST",
@@ -818,7 +847,7 @@ def send_batch(token, prospects):
     if not guardrail["can_send"]:
         return [], [], guardrail
     today = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-    body = TEMPLATE_PATH.read_text(encoding="utf-8")
+    body_template = TEMPLATE_PATH.read_text(encoding="utf-8")
     sent = []
     validated = []
     already_contacted = contacted_emails(prospects)
@@ -842,6 +871,7 @@ def send_batch(token, prospects):
             continue
         if not eligible(prospect):
             continue
+        body = render_message_body(prospect, body_template)
         res = mail_send(token, prospect["email"], body)
         prospect["status"] = "sent"
         prospect["sent_at"] = today

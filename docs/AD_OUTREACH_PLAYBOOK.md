@@ -20,6 +20,7 @@ Objetivo: captar anunciantes directos para los banners del cluster mientras AdSe
 ## Reglas de aprobación
 
 - Enviar solo a contactos profesionales publicados en la web de origen.
+- La prospección exige por defecto una página pública de contacto mediante `AD_PROSPECTING_REQUIRE_PUBLIC_CONTACT_PAGE=1`.
 - Exigir MX válido y email visible en la fuente pública.
 - Autoaprobar candidatos nuevos solo si pasan MX, URL pública válida, email visible en fuente pública y validación fresca.
 - Registrar señales de confianza (`validation_score`, `validation_confidence`, `validation_signals`) para priorizar contactos con `mailto`, dominio de fuente alineado y buzón comercial publicado.
