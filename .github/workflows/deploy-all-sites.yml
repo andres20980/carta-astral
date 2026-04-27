@@ -183,6 +183,14 @@ jobs:
           set -euo pipefail
           python3 .github/scripts/check_internal_urls.py "sites/${{ matrix.site }}/public" "$DOMAIN"
 
+      - name: "🗺️ Comprobar indexabilidad del sitemap"
+        shell: bash
+        env:
+          DOMAIN: ${{ steps.config.outputs.domain }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/check_sitemap_indexability.py "sites/${{ matrix.site }}/public" "$DOMAIN"
+
       - name: "🔥 Desplegar ${{ matrix.site }}"
         shell: bash
         env:
