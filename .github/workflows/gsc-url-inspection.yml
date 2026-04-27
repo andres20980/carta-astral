@@ -1,0 +1,80 @@
+name: "🔍 Inspección manual de URLs en GSC"
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: "Sitio a inspeccionar"
+        required: true
+        type: choice
+        options:
+          - calcular-numerologia
+          - carta-astral
+          - compatibilidad-signos
+          - tarot-del-dia
+          - horoscopo-de-hoy
+      paths:
+        description: "Rutas separadas por espacios"
+        required: false
+        default: "/"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: "🔎 Inspeccionar URLs"
+        shell: bash
+        env:
+          SITE: ${{ inputs.site }}
+          PATHS: ${{ inputs.paths }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
+          GOOGLE_CLOUD_QUOTA_PROJECT: ${{ secrets.GOOGLE_CLOUD_QUOTA_PROJECT }}
+        run: |
+          set -euo pipefail
+          case "$SITE" in
+            calcular-numerologia) domain="calcular-numerologia.es" ;;
+            carta-astral) domain="carta-astral-gratis.es" ;;
+            compatibilidad-signos) domain="compatibilidad-signos.es" ;;
+            tarot-del-dia) domain="tarot-del-dia.es" ;;
+            horoscopo-de-hoy) domain="horoscopo-de-hoy.es" ;;
+            *) echo "Unknown site: $SITE" >&2; exit 1 ;;
+          esac
+
+          if [ -z "${GOOGLE_OAUTH_CLIENT_ID:-}" ] || [ -z "${GOOGLE_OAUTH_CLIENT_SECRET:-}" ] || [ -z "${GOOGLE_OAUTH_REFRESH_TOKEN:-}" ]; then
+            echo "Missing GOOGLE_OAUTH_* secrets" >&2
+            exit 1
+          fi
+
+          token_json=$(curl -sS --fail-with-body --retry 2 --retry-delay 2 --connect-timeout 10 --max-time 30 https://oauth2.googleapis.com/token \
+            -d "client_id=$GOOGLE_OAUTH_CLIENT_ID" \
+            -d "client_secret=$GOOGLE_OAUTH_CLIENT_SECRET" \
+            -d "refresh_token=$GOOGLE_OAUTH_REFRESH_TOKEN" \
+            -d "grant_type=refresh_token")
+          access_token=$(echo "$token_json" | jq -r '.access_token // empty')
+          if [ -z "$access_token" ]; then
+            echo "$token_json"
+            exit 1
+          fi
+
+          headers=(-H "Authorization: Bearer $access_token" -H "Content-Type: application/json")
+          if [ -n "${GOOGLE_CLOUD_QUOTA_PROJECT:-}" ]; then
+            headers+=(-H "X-Goog-User-Project: ${GOOGLE_CLOUD_QUOTA_PROJECT}")
+          fi
+
+          for path in $PATHS; do
+            url="https://${domain}${path}"
+            body=$(jq -n --arg url "$url" --arg site "sc-domain:${domain}" '{inspectionUrl:$url, siteUrl:$site}')
+            echo "## $url"
+            curl -sS --fail-with-body --retry 2 --retry-delay 2 --connect-timeout 10 --max-time 30 \
+              -X POST \
+              "${headers[@]}" \
+              -d "$body" \
+              "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect" \
+              | jq '{coverageState:.inspectionResult.indexStatusResult.coverageState, indexingState:.inspectionResult.indexStatusResult.indexingState, robotsTxtState:.inspectionResult.indexStatusResult.robotsTxtState, pageFetchState:.inspectionResult.indexStatusResult.pageFetchState, googleCanonical:.inspectionResult.indexStatusResult.googleCanonical, userCanonical:.inspectionResult.indexStatusResult.userCanonical}'
+          done
