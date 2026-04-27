@@ -34,6 +34,7 @@ jobs:
           GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
           GOOGLE_CLOUD_QUOTA_PROJECT: ${{ secrets.GOOGLE_CLOUD_QUOTA_PROJECT }}
         run: |
+          set -euo pipefail
           # GA4 token from Service Account
           pip -q install google-auth
           TOKEN=$(python3 -c "
@@ -451,6 +452,7 @@ jobs:
           GA4_PROPERTY: "properties/531527723"
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
         run: |
+          set -euo pipefail
           # Fetch all-time stats for the public counters
           pip -q install google-auth 2>/dev/null
           TOKEN=$(python3 -c "

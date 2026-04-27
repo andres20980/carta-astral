@@ -104,6 +104,7 @@ jobs:
           OAUTH_TOKEN: ${{ steps.oauth.outputs.token }}
           ANALYTICS_SA_STATUS: ${{ steps.analytics.outputs.status }}
         run: |
+          set -euo pipefail
           status="${ANALYTICS_SA_STATUS:-}"
           if [ -z "$status" ]; then
             if [ "${{ steps.saauth.outcome }}" = "success" ]; then

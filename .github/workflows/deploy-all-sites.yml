@@ -43,6 +43,7 @@ jobs:
 
       - id: set-matrix
         run: |
+          set -euo pipefail
           ALL_SITES=(carta-astral compatibilidad-signos tarot-del-dia calcular-numerologia horoscopo-de-hoy)
 
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -96,6 +97,7 @@ jobs:
           FIREBASE_SA_HOROSCOPO_DE_HOY: ${{ secrets.FIREBASE_SA_HOROSCOPO_DE_HOY }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
+          set -euo pipefail
           case "${{ matrix.site }}" in
             carta-astral)
               project_id="carta-astral-f4ab9"
@@ -152,6 +154,7 @@ jobs:
         env:
           ADSENSE_AUTO_ADS_ENABLED: ${{ vars.ADSENSE_AUTO_ADS_ENABLED || '0' }}
         run: |
+          set -euo pipefail
           site_dir="sites/${{ matrix.site }}"
           generated=0
 
@@ -277,6 +280,7 @@ jobs:
         id: config
         shell: bash
         run: |
+          set -euo pipefail
           case "${{ matrix.site }}" in
             carta-astral) domain="carta-astral-gratis.es" ;;
             compatibilidad-signos) domain="compatibilidad-signos.es" ;;
