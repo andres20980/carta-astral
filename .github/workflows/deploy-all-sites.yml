@@ -183,6 +183,16 @@ jobs:
             exit 1
           fi
 
+          case "${ADSENSE_AUTO_ADS_ENABLED:-0}" in
+            1|true|TRUE|yes|YES) ;;
+            *)
+              if grep -R -q 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' "$site_dir/public"; then
+                echo "AdSense auto ads script found in $site_dir/public while ADSENSE_AUTO_ADS_ENABLED is disabled" >&2
+                exit 1
+              fi
+              ;;
+          esac
+
       - name: "🧱 Comprobar URLs internas generadas"
         shell: bash
         env:
