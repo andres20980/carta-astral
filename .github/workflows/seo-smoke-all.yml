@@ -76,6 +76,7 @@ jobs:
           set -euo pipefail
           site_dir="sites/${{ matrix.site }}"
           python3 .github/scripts/check_sitemap_indexability.py "$site_dir/public" "${{ matrix.domain }}"
+          python3 .github/scripts/check_sitemap_freshness.py "$site_dir/public/sitemap.xml"
 
       - name: "🧪 Verificar URLs críticas"
         shell: bash
