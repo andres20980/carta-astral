@@ -201,6 +201,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 .github/scripts/check_internal_urls.py "sites/${{ matrix.site }}/public" "$DOMAIN"
+          python3 .github/scripts/check_firebase_hosting_headers.py "sites/${{ matrix.site }}/firebase.json"
 
       - name: "🗺️ Comprobar indexabilidad del sitemap"
         shell: bash
