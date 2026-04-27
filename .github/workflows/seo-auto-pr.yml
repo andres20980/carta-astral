@@ -76,6 +76,8 @@ jobs:
           domain="${DOMAINS[$SITE_KEY]}"
           python3 .github/scripts/check_internal_urls.py "sites/${SITE_KEY}/public" "$domain"
           python3 .github/scripts/check_sitemap_indexability.py "sites/${SITE_KEY}/public" "$domain"
+          SEO_SMOKE_DOMAIN="$domain" python3 .github/scripts/seo_smoke_html_checks.py "sites/${SITE_KEY}/public/index.html" \
+            | jq -e '.title_present and .meta_description_present and .canonical_ok and .structured_data_present and .homepage_not_noindex and .h1_present and (.internal_copy_leaked | not)'
 
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
           cat /tmp/seo-result.json

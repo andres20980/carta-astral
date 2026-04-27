@@ -27,6 +27,8 @@ jobs:
           bash sites/horoscopo-de-hoy/scripts/gen-pages.sh
           python3 .github/scripts/check_internal_urls.py sites/horoscopo-de-hoy/public horoscopo-de-hoy.es
           python3 .github/scripts/check_sitemap_indexability.py sites/horoscopo-de-hoy/public horoscopo-de-hoy.es
+          SEO_SMOKE_DOMAIN="horoscopo-de-hoy.es" python3 .github/scripts/seo_smoke_html_checks.py sites/horoscopo-de-hoy/public/index.html \
+            | jq -e '.title_present and .meta_description_present and .canonical_ok and .structured_data_present and .homepage_not_noindex and .h1_present and (.internal_copy_leaked | not)'
 
       - name: "📤 Confirmar y subir cambios"
         run: |
