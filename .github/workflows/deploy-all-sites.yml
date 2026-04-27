@@ -22,6 +22,11 @@ on:
           - tarot-del-dia
           - calcular-numerologia
           - horoscopo-de-hoy
+      run_lighthouse:
+        description: 'Ejecutar Lighthouse tras desplegar'
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-${{ github.ref }}
@@ -266,7 +271,7 @@ jobs:
     needs:
       - detect-changes
       - deploy
-    if: needs.detect-changes.outputs.has_sites == 'true'
+    if: github.event_name == 'workflow_dispatch' && inputs.run_lighthouse == true && needs.detect-changes.outputs.has_sites == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
