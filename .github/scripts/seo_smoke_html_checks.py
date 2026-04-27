@@ -50,7 +50,7 @@ class PageParser(HTMLParser):
             elif name == "robots":
                 self.meta_robots = attrs.get("content", "")
         elif tag == "link":
-            if attrs.get("rel", "").lower() == "canonical":
+            if "canonical" in attrs.get("rel", "").lower().split():
                 self.canonical = attrs.get("href", "")
         elif tag == "script":
             self.in_script = True
@@ -89,11 +89,12 @@ has_adsense_loader = (
 title_text = " ".join(chunk.strip() for chunk in parser.title_chunks if chunk.strip()).strip()
 h1_text = " ".join(chunk.strip() for chunk in parser.h1_chunks if chunk.strip()).strip()
 meta_robots = parser.meta_robots.lower()
+canonical = parser.canonical.rstrip("/")
 
 results = {
     "title_present": bool(title_text),
     "meta_description_present": bool(parser.meta_description.strip()),
-    "canonical_ok": parser.canonical in {f"https://{DOMAIN}", f"https://{DOMAIN}/"},
+    "canonical_ok": canonical == f"https://{DOMAIN}",
     "structured_data_present": parser.has_ldjson,
     "adsense_script_present": parser.has_adsense_script or has_adsense_loader,
     "homepage_not_noindex": "noindex" not in meta_robots,
