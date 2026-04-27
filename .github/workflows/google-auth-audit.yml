@@ -33,7 +33,7 @@ jobs:
             -d "client_id=$GOOGLE_OAUTH_CLIENT_ID" \
             -d "client_secret=$GOOGLE_OAUTH_CLIENT_SECRET" \
             -d "refresh_token=$GOOGLE_OAUTH_REFRESH_TOKEN" \
-            -d "grant_type=refresh_token")
+            -d "grant_type=refresh_token" || true)
 
           access_token=$(echo "$token_json" | jq -r '.access_token // empty')
           if [ -z "$access_token" ]; then
@@ -81,7 +81,7 @@ jobs:
             -H "Content-Type: application/json" \
             -X POST \
             -d '{"dateRanges":[{"startDate":"1daysAgo","endDate":"today"}],"metrics":[{"name":"totalUsers"}]}' \
-            "https://analyticsdata.googleapis.com/v1beta/$GA4_PROPERTY:runReport")
+            "https://analyticsdata.googleapis.com/v1beta/$GA4_PROPERTY:runReport" || true)
 
           if ! echo "$data_probe" | jq -e '.rows or .rowCount == 0' >/dev/null; then
             msg=$(echo "$data_probe" | jq -r '.error.message // "sin detalle"' 2>/dev/null)
@@ -90,7 +90,7 @@ jobs:
           fi
 
           admin_probe=$(curl -sS --fail-with-body --retry 2 --retry-delay 2 --connect-timeout 10 --max-time 30 -H "Authorization: Bearer $token" \
-            "https://analyticsadmin.googleapis.com/v1alpha/$GA4_PROPERTY/customDimensions?pageSize=1")
+            "https://analyticsadmin.googleapis.com/v1alpha/$GA4_PROPERTY/customDimensions?pageSize=1" || true)
 
           if echo "$admin_probe" | jq -e '.customDimensions or (.customDimensions | length == 0)' >/dev/null; then
             echo "status=OK: service account / ADC con acceso a GA4 Data y Admin" >> "$GITHUB_OUTPUT"
