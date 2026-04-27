@@ -45,10 +45,11 @@ stats = {
 with open('sites/carta-astral/public/stats.json','w') as f:
   json.dump(stats, f)
 "
+python3 .github/scripts/update_ops_status.py
 
 git config user.name "github-actions[bot]"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-git add docs/GROWTH_MILESTONES.json sites/carta-astral/public/stats.json sites/*/docs/SEO_GSC_QUERIES.json sites/*/docs/SEO_GA4_PAGES.json sites/*/docs/SEO_TEMPLATE_FAMILIES.json
+git add docs/GROWTH_MILESTONES.json docs/OPS_STATUS.md sites/carta-astral/public/stats.json sites/*/docs/SEO_GSC_QUERIES.json sites/*/docs/SEO_GA4_PAGES.json sites/*/docs/SEO_TEMPLATE_FAMILIES.json
 
 if git diff --cached --quiet; then
   echo "No weekly public stats changes to commit."
