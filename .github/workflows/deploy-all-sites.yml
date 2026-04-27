@@ -218,6 +218,13 @@ jobs:
           set -euo pipefail
           python3 .github/scripts/check_critical_urls.py "sites/${{ matrix.site }}" "$DOMAIN"
 
+      - name: "🚫 Comprobar regresiones noindex en numerología"
+        if: matrix.site == 'calcular-numerologia'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/check_noindex_regressions.py "sites/calcular-numerologia/public" --allow 404.html
+
       - name: "🔥 Desplegar ${{ matrix.site }}"
         shell: bash
         env:
