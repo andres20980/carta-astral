@@ -2,7 +2,7 @@ name: "💰 Vigilancia de sitios de AdSense"
 
 on:
   schedule:
-    - cron: '25 7 * * *'
+    - cron: '25 7 * * 1,4'
   workflow_dispatch:
 
 permissions:
