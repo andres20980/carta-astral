@@ -84,6 +84,7 @@ jobs:
           set -euo pipefail
           site_dir="sites/${{ matrix.site }}"
           python3 .github/scripts/check_critical_urls.py "$site_dir" "${{ matrix.domain }}"
+          python3 .github/scripts/check_html_size_budget.py "$site_dir/public" --max-kb 220
 
       - name: "🔎 Comprobar ${{ matrix.domain }}"
         id: smoke
