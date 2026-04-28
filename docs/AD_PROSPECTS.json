@@ -212,5 +212,195 @@
     "last_contacted_at": "2026-04-23T15:15:50+00:00",
     "message_id": "19dbae96e89abeea",
     "thread_id": "19dbae96e89abeea"
+  },
+  {
+    "email": "info@ilusancheztarot.es",
+    "name": "Consulta de Tarot Online - Ilu Sanchez Tarot",
+    "segment": "tarot",
+    "country_hint": "ES",
+    "source_url": "https://ilusancheztarot.es/producto/consulta-de-tarot-online/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": false,
+      "mailto_visible": true,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 8
+  },
+  {
+    "email": "cannelle@nostra-tarot.com",
+    "name": "Tarot Gratis Online con IA | Respuestas certeras | Nostra",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://www.nostra-tarot.com/es",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": true,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 9
+  },
+  {
+    "email": "contact@nostra-tarot.com",
+    "name": "Tarot Gratis Online con IA | Respuestas certeras | Nostra",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://www.nostra-tarot.com/es",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": true,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 9
+  },
+  {
+    "email": "consulta@vidente.xyz",
+    "name": "Vidente Gratis Online | Tarot y Consulta por WhatsApp",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://vidente.xyz/es/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 13
+  },
+  {
+    "email": "amashinystar@gmail.com",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "catedratesci@gmail.com",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "diegorovayo23@gmail.com",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "elena95.96@hotmail.com",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "juanvasquez533@gmail.com",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "juliaglezmiranda@gmail.com",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
   }
 ]
