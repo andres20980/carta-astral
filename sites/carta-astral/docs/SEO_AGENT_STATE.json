@@ -1,12 +1,12 @@
 {
   "site": "carta-astral",
-  "lastRun": "2026-04-27T07:14:48.666Z",
-  "lastQuery": "calcular ascendente",
+  "lastRun": "2026-04-28T07:14:07.487Z",
+  "lastQuery": "casas astrales significado",
   "results": [
     {
-      "query": "calcular ascendente",
+      "query": "casas astrales significado",
       "matchedSignals": [
-        "token_overlap_1"
+        "token_overlap_2"
       ],
       "file": "public/index.html",
       "changed": true,
