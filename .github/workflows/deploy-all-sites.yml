@@ -159,6 +159,8 @@ jobs:
         shell: bash
         env:
           ADSENSE_AUTO_ADS_ENABLED: ${{ vars.ADSENSE_AUTO_ADS_ENABLED || '0' }}
+          SITE_TZ: Europe/Madrid
+          TZ: Europe/Madrid
         run: |
           set -euo pipefail
           site_dir="sites/${{ matrix.site }}"

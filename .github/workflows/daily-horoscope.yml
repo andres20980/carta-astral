@@ -22,6 +22,8 @@ jobs:
       - name: "🔄 Regenerar páginas del horóscopo"
         env:
           ADSENSE_AUTO_ADS_ENABLED: ${{ vars.ADSENSE_AUTO_ADS_ENABLED || '0' }}
+          SITE_TZ: Europe/Madrid
+          TZ: Europe/Madrid
         run: |
           set -euo pipefail
           bash sites/horoscopo-de-hoy/scripts/gen-pages.sh
@@ -31,6 +33,8 @@ jobs:
             | jq -e '.title_present and .meta_description_present and .canonical_ok and .structured_data_present and .homepage_not_noindex and .h1_present and (.internal_copy_leaked | not)'
 
       - name: "📤 Confirmar y subir cambios"
+        env:
+          TZ: Europe/Madrid
         run: |
           set -euo pipefail
           cd sites/horoscopo-de-hoy

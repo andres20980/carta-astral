@@ -14,11 +14,15 @@ source "$REPO_ROOT/shared/config.sh"
 SITE_KEY="horoscopo-de-hoy"
 DOMAIN="${DOMAINS[$SITE_KEY]}"
 GA4="${GA4_IDS[$SITE_KEY]}"
-TODAY=$(date +%Y-%m-%d)
+SITE_TZ="${SITE_TZ:-Europe/Madrid}"
+site_date() {
+  TZ="$SITE_TZ" date "$@"
+}
+TODAY=$(site_date +%Y-%m-%d)
 AD_CSS="$(ad_css)"
 CLUSTER_CSS="$(cluster_css)"
-TODAY_DISPLAY=$(date +"%d de %B de %Y" | sed 's/January/enero/;s/February/febrero/;s/March/marzo/;s/April/abril/;s/May/mayo/;s/June/junio/;s/July/julio/;s/August/agosto/;s/September/septiembre/;s/October/octubre/;s/November/noviembre/;s/December/diciembre/')
-DOW=$(date +%u)  # 1=Mon..7=Sun
+TODAY_DISPLAY=$(site_date +"%d de %B de %Y" | sed 's/January/enero/;s/February/febrero/;s/March/marzo/;s/April/abril/;s/May/mayo/;s/June/junio/;s/July/julio/;s/August/agosto/;s/September/septiembre/;s/October/octubre/;s/November/noviembre/;s/December/diciembre/')
+DOW=$(site_date +%u)  # 1=Mon..7=Sun
 
 mkdir -p "$PUBLIC"
 
@@ -155,7 +159,7 @@ ${CLUSTER_CSS}
 gen_footer() {
   cat <<ENDFOOTER
 <footer>
-  <p>© $(date +%Y) Horóscopo de Hoy — Actualizado diariamente</p>
+  <p>© $(site_date +%Y) Horóscopo de Hoy — Actualizado diariamente</p>
   <p><a href="/privacy">Privacidad</a> · <a href="/terms">Términos</a></p>
   $(footer_publicidad_line "$SITE_KEY")
   ${CROSSLINKS_HTML}
