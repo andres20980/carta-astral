@@ -1,8 +1,8 @@
 {
   "site": "tarot-del-dia",
   "domain": "tarot-del-dia.es",
-  "generatedAt": "2026-04-18T08:47:33.606Z",
-  "runId": "cd615920",
+  "generatedAt": "2026-04-28T09:19:57.382Z",
+  "runId": "68afcaa5",
   "keywordsContext": [
     "tarot del día",
     "tarot gratis",
@@ -14,7 +14,7 @@
   "insights": {
     "crawledCount": 3,
     "successCount": 3,
-    "avgWordCount": 1409,
+    "avgWordCount": 1416,
     "faqSchemaAdoption": "0/3",
     "howToSchemaAdoption": "0/3",
     "breadcrumbAdoption": "1/3",
@@ -41,7 +41,7 @@
       }
     ],
     "commonH2Patterns": [],
-    "recommendation": "Competidores tienen de media 1409 palabras. Asegúrate de que tu landing supera ese umbral."
+    "recommendation": "Competidores tienen de media 1416 palabras. Asegúrate de que tu landing supera ese umbral."
   },
   "results": [
     {
@@ -50,7 +50,7 @@
       "error": null,
       "analysis": {
         "url": "https://www.univision.com/horoscopos/tarot",
-        "fetchedAt": "2026-04-18T08:47:28.699Z",
+        "fetchedAt": "2026-04-28T09:19:52.505Z",
         "title": "Tarot: Predicciones, significado y características de las lecturas de cartas del tarot en Univision | Univision",
         "description": "Leer tarot gratis con predicciones del tarot, significado, definición y características de las cartas del tarot en Univision | Univision",
         "canonical": "https://www.univision.com/horoscopos/tarot",
@@ -85,19 +85,19 @@
       "error": null,
       "analysis": {
         "url": "https://www.horoscopo.com/",
-        "fetchedAt": "2026-04-18T08:47:30.377Z",
+        "fetchedAt": "2026-04-28T09:19:54.131Z",
         "title": "Horóscopos De Hoy y Diario | Horoscopo.com",
         "description": "Horoscopos gratis en Horoscopo.com. Encuentra todo lo relacionado con horoscopos, astrologia, signos zodiacales, astrologia china, numerologia, adivinos, tarot, compatibilidad y mas gratis.",
         "canonical": "https://www.horoscopo.com/",
         "h1": "Horóscopos Gratis: De Hoy y Diario",
         "h1Count": 2,
         "h2s": [
-          "&#xA1;Conqu&#xED;stalo con estas frases!",
-          "&#xA1;Te han despedido!",
+          "Compatibilidad entre el mismo signo",
+          "Las diez mejores profesiones para C&#xE1;ncer",
           "Carta del día"
         ],
         "h2Count": 3,
-        "wordCount": 726,
+        "wordCount": 748,
         "schemaTypes": [],
         "hasFaqSchema": false,
         "hasHowToSchema": false,
@@ -119,7 +119,7 @@
       "error": null,
       "analysis": {
         "url": "https://www.losarcanos.com/",
-        "fetchedAt": "2026-04-18T08:47:32.104Z",
+        "fetchedAt": "2026-04-28T09:19:55.879Z",
         "title": "Tarot Gratis, Tarot del Amor, Consultar el Tarot",
         "description": "Tarot Gratis, Tarot del Amor en linea, Tarot Si o No, Carta Astral Gratis, averigua tu presente y tu futuro con los consejos del Tarot de Los Arcanos",
         "canonical": "https://www.losarcanos.com/",
