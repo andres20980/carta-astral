@@ -343,15 +343,28 @@ cat >> "$PUBLIC/index.html" <<ENDINDEX
   </script>
   <style>
 ${COMMON_CSS}
-    .intro{text-align:center;color:var(--muted);font-size:.92rem;line-height:1.6;max-width:600px;margin:0 auto 1.5rem}
+    .intro{text-align:center;color:var(--muted);font-size:.92rem;line-height:1.6;max-width:620px;margin:0 auto 1.5rem}
     .spread-area{text-align:center;margin:1.5rem 0}
-    .deck{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin:1.5rem 0;max-width:700px;margin-left:auto;margin-right:auto}
-    .deck .card-back{width:70px;height:110px;background:linear-gradient(135deg,#2d1b69,#4a2c8a,#1a0f3c);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#c084fc;font-size:1.5rem;transition:all .2s;border:2px solid transparent;box-shadow:0 2px 8px rgba(45,27,105,.3)}
-    .deck .card-back:hover{transform:translateY(-4px);border-color:#c084fc;box-shadow:0 6px 20px rgba(45,27,105,.4)}
-    .deck .card-back.picked{opacity:.3;pointer-events:none}
-    .chosen{display:flex;gap:1.2rem;justify-content:center;margin:2rem 0;flex-wrap:wrap}
-    .chosen .slot{width:140px;min-height:200px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.8rem;transition:all .3s}
-    .chosen .slot.filled{border:2px solid var(--accent);background:linear-gradient(135deg,#2d1b69,#4a2c8a);color:#e8dff5}
+    .ritual-panel{background:linear-gradient(135deg,#fff 0%,#f3eeff 56%,#fef9ee 100%);border:1px solid var(--border);border-radius:18px;padding:1.25rem;box-shadow:var(--shadow);margin:0 auto 1.2rem;max-width:720px}
+    .ritual-panel h2{font-size:1.05rem;margin-bottom:.35rem}
+    .ritual-panel p{color:var(--muted);font-size:.88rem;line-height:1.65;margin:0 auto .9rem;max-width:560px}
+    .intention-row{display:grid;grid-template-columns:1fr auto;gap:.7rem;align-items:center;margin:.8rem auto 0;max-width:620px}
+    .intention-row input{width:100%;min-height:44px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text);font:inherit;font-size:.9rem;padding:.7rem .85rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+    .intention-row input:focus{outline:2px solid rgba(124,58,237,.22);border-color:rgba(124,58,237,.48)}
+    .shuffle-btn{min-height:44px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:inherit;font-size:.88rem;font-weight:700;padding:.72rem 1rem;cursor:pointer;box-shadow:0 8px 20px rgba(124,58,237,.22);transition:transform .18s,box-shadow .18s,background .18s}
+    .shuffle-btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(124,58,237,.28);background:#6d28d9}
+    .shuffle-btn:disabled{opacity:.7;cursor:default;transform:none}
+    .draw-status{font-size:.84rem;color:var(--accent);font-weight:700;margin:.95rem 0 .4rem;min-height:1.4rem}
+    .deck-wrap{margin:1rem auto 1.4rem;max-width:760px;overflow-x:auto;overscroll-behavior-x:contain;padding:.35rem .2rem .85rem;scrollbar-width:thin}
+    .deck{display:flex;gap:.55rem;justify-content:flex-start;min-width:max-content;padding:.2rem}
+    .deck.locked{opacity:.46;filter:saturate(.75)}
+    .deck.locked .card-back{pointer-events:none}
+    .deck .card-back{width:64px;height:104px;flex:0 0 64px;background:radial-gradient(circle at 50% 28%,rgba(212,160,23,.22),transparent 31%),linear-gradient(145deg,#17213f 0%,#35215e 55%,#111827 100%);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#f5d98b;font-size:1.45rem;transition:transform .2s,border-color .2s,box-shadow .2s,opacity .2s;border:1px solid rgba(245,217,139,.42);box-shadow:0 4px 12px rgba(17,24,39,.24)}
+    .deck.ready .card-back:hover{transform:translateY(-6px) rotate(-1deg);border-color:#f5d98b;box-shadow:0 10px 24px rgba(17,24,39,.32)}
+    .deck .card-back.picked{opacity:.24;pointer-events:none;transform:translateY(2px)}
+    .chosen{display:flex;gap:1rem;justify-content:center;margin:1.4rem 0 1.1rem;flex-wrap:wrap}
+    .chosen .slot{width:146px;min-height:192px;border:2px dashed var(--border);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.85rem;transition:all .3s;background:rgba(255,255,255,.72)}
+    .chosen .slot.filled{border:1px solid rgba(245,217,139,.65);background:linear-gradient(145deg,#17213f 0%,#35215e 62%,#111827 100%);color:#f8edd0;box-shadow:0 12px 26px rgba(17,24,39,.22)}
     .chosen .slot .pos{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.3rem}
     .chosen .slot.filled .pos{color:#c084fc}
     .chosen .slot .cname{font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;margin:.3rem 0}
@@ -364,9 +377,19 @@ ${COMMON_CSS}
     .result .reading p{line-height:1.7;color:var(--muted);font-size:.9rem}
     .result .reading .link{display:inline-block;margin-top:.5rem;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500}
     .btn-reset{margin-top:1rem;padding:.5rem 1.5rem;background:var(--bg);color:var(--accent);border:1px solid var(--border);border-radius:10px;font-weight:600;cursor:pointer;font-family:inherit;font-size:.85rem}
+    .result-deeper{margin:1rem 0 0;padding:1.15rem;border-radius:14px;border:1px solid var(--border);background:linear-gradient(135deg,#fff 0%,#fef9ee 100%);text-align:center}
+    .result-deeper h3{font-family:'Playfair Display',serif;font-size:1.02rem;margin-bottom:.35rem}
+    .result-deeper p{color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:.75rem}
+    .result-deeper a{display:inline-block;padding:.58rem 1rem;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-size:.84rem;font-weight:700}
     .seo-text{margin:2rem 0}
     .seo-text h2{font-size:1.1rem;margin:1.2rem 0 .5rem}
     .seo-text p{line-height:1.7;color:var(--muted);font-size:.9rem;margin-bottom:.5rem}
+    @media(max-width:640px){
+      .intention-row{grid-template-columns:1fr}
+      .chosen{gap:.7rem}
+      .chosen .slot{width:31%;min-width:96px;min-height:154px;padding:.65rem}
+      .deck .card-back{width:58px;height:94px;flex-basis:58px}
+    }
   </style>
 </head>
 <body>
@@ -374,17 +397,27 @@ ${COMMON_CSS}
   <header style="text-align:center;padding:1.5rem 0 .5rem">
     <div style="font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:600">Tarot</div>
     <h1><span>Tarot del Día</span></h1>
-    <p class="intro">Concéntrate en tu pregunta, elige 3 cartas del mazo y descubre el mensaje que los Arcanos Mayores tienen para ti hoy.</p>
+    <p class="intro">Respira, formula una intención para el día y elige tus cartas cuando el mazo ya esté barajado. La lectura combina símbolo, posición y una acción concreta para hoy.</p>
   </header>
 
   <div class="spread-area">
-    <p style="font-size:.85rem;color:var(--accent);font-weight:600;margin-bottom:.5rem" id="instruction">🃏 Elige 3 cartas del mazo</p>
+    <section class="ritual-panel" aria-labelledby="ritual-title">
+      <h2 id="ritual-title">Relájate antes de elegir</h2>
+      <p>Piensa en una situación concreta de hoy. Baraja el mazo y elige las tres cartas que te llamen sin buscar una respuesta perfecta.</p>
+      <div class="intention-row">
+        <input id="intention" type="text" maxlength="120" placeholder="Intención opcional: qué necesito ver hoy">
+        <button class="shuffle-btn" id="shuffleBtn" type="button">Barajar cartas</button>
+      </div>
+    </section>
+    <p class="draw-status" id="instruction">Baraja para activar la tirada</p>
     <div class="chosen">
       <div class="slot" id="slot0"><span class="pos">Pasado</span><span style="font-size:1.5rem;color:var(--border)">?</span></div>
       <div class="slot" id="slot1"><span class="pos">Presente</span><span style="font-size:1.5rem;color:var(--border)">?</span></div>
       <div class="slot" id="slot2"><span class="pos">Futuro</span><span style="font-size:1.5rem;color:var(--border)">?</span></div>
     </div>
-    <div class="deck" id="deck"></div>
+    <div class="deck-wrap" aria-label="Mazo de tarot barajado">
+      <div class="deck locked" id="deck"></div>
+    </div>
   </div>
 
 $(ad_block "🔮" "¿Quieres llegar a usuarios que consultan tarot hoy?" "Espacio visible entre la tirada interactiva y la lectura, con contexto perfecto para conversión." "Ver espacios y tarifas →")
@@ -435,19 +468,53 @@ $(gen_footer)
   const POS=['Pasado','Presente','Futuro'];
   let chosen=[];
   let started=false;
+  let isShuffled=false;
+  let shuffled=[];
   const deck=document.getElementById('deck');
-  const shuffled=[...Array(CARDS.length).keys()].sort(()=>Math.random()-.5);
+  const instruction=document.getElementById('instruction');
+  const shuffleBtn=document.getElementById('shuffleBtn');
+  const intention=document.getElementById('intention');
 
-  shuffled.forEach((ci,i)=>{
-    const el=document.createElement('div');
-    el.className='card-back';
-    el.innerHTML='🂠';
-    el.dataset.idx=ci;
-    el.addEventListener('click',()=>pickCard(el,ci));
-    deck.appendChild(el);
-  });
+  function shuffleIndexes(){
+    return [...Array(CARDS.length).keys()].sort(()=>Math.random()-.5);
+  }
+
+  function renderDeck(){
+    deck.innerHTML='';
+    shuffled.forEach((ci)=>{
+      const el=document.createElement('button');
+      el.type='button';
+      el.setAttribute('aria-label','Carta boca abajo');
+      el.className='card-back';
+      el.innerHTML='🂠';
+      el.dataset.idx=ci;
+      el.addEventListener('click',()=>pickCard(el,ci));
+      deck.appendChild(el);
+    });
+  }
+
+  function activateDeck(){
+    if(chosen.length)return;
+    shuffled=shuffleIndexes();
+    isShuffled=true;
+    renderDeck();
+    deck.classList.remove('locked');
+    deck.classList.add('ready');
+    shuffleBtn.textContent='Mazo barajado';
+    shuffleBtn.disabled=true;
+    instruction.textContent='Elige 3 cartas escuchando tu intuición';
+    if(window.clusterTrack)window.clusterTrack('tarot_deck_shuffle',{tool_action:'shuffle'});
+  }
+
+  shuffled=shuffleIndexes();
+  renderDeck();
+  shuffleBtn.addEventListener('click',activateDeck);
 
   function pickCard(el,ci){
+    if(!isShuffled){
+      instruction.textContent='Primero baraja el mazo';
+      return;
+    }
     if(chosen.length>=3)return;
     if(!started){
       started=true;
@@ -457,16 +524,19 @@ $(gen_footer)
     const isReversed=Math.random()<.35;
     const card={...CARDS[ci],reversed:isReversed};
     chosen.push(card);
+    const remaining=3-chosen.length;
     const slot=document.getElementById('slot'+chosen.length-1+'')||document.getElementById('slot'+(chosen.length-1));
     slot.classList.add('filled');
     slot.innerHTML='<span class="pos">'+POS[chosen.length-1]+'</span><span class="cnum">'+card.num+'</span><span class="cname">'+card.n+'</span>'+(isReversed?'<span class="reversed-tag">↕ Invertida</span>':'');
+    instruction.textContent=remaining>0?'Faltan '+remaining+' carta'+(remaining===1?'':'s'):'Tu lectura está lista';
     if(chosen.length===3)showResult();
   }
 
   function showResult(){
-    document.getElementById('instruction').textContent='✨ Tu lectura está lista';
+    instruction.textContent='Tu lectura está lista';
     const res=document.getElementById('result');
     let html='';
+    const intentionValue=(intention.value||'').trim();
     if(window.clusterTrack){
       window.clusterTrack('tarot_reading_complete',{
         cards_chosen:String(chosen.length),
@@ -479,6 +549,10 @@ $(gen_footer)
       const meaning=c.reversed?c.rev:c.up;
       html+='<div class="reading"><h3>'+POS[i]+': '+c.n+' ('+c.num+')'+(c.reversed?' ↕ Invertida':'')+'</h3><p>'+meaning+'</p><a class="link" href="/arcanos-mayores/'+c.slug+'">Leer significado completo de '+c.n+' →</a></div>';
     });
+    if(intentionValue){
+      html='<div class="reading"><h3>Intención de la tirada</h3><p>'+intentionValue.replace(/[<>&]/g,(ch)=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[ch]))+'</p></div>'+html;
+    }
+    html+='<div class="result-deeper"><h3>¿Quieres profundizar más?</h3><p>Completa la lectura diaria con tu carta astral para entender qué área de tu vida está activando estas cartas.</p><a href="https://carta-astral-gratis.es/">Calcular mi carta astral gratis →</a></div>';
     html+='<div style="text-align:center"><button class="btn-reset" onclick="location.reload()">🔄 Nueva tirada</button></div>';
     res.innerHTML=html;
     res.classList.add('show');
