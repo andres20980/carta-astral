@@ -10,6 +10,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+from html.parser import HTMLParser
 
 
 ROOT = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
@@ -42,6 +43,7 @@ MAX_RESULTS_PER_QUERY = env_int("MAX_RESULTS_PER_QUERY", 5, minimum=1, maximum=1
 TIMEOUT = env_int("PROSPECT_FETCH_TIMEOUT", 12, minimum=3, maximum=20)
 ACCESS_DENIED_COOLDOWN_DAYS = env_int("CUSTOM_SEARCH_ACCESS_DENIED_COOLDOWN_DAYS", 30, minimum=1, maximum=90)
 REQUIRE_PUBLIC_CONTACT_PAGE = env_bool("AD_PROSPECTING_REQUIRE_PUBLIC_CONTACT_PAGE", True)
+SEARCH_PROVIDER = os.environ.get("AD_PROSPECTING_SEARCH_PROVIDER", "auto").strip().lower()
 
 EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I)
 BAD_EMAIL_PARTS = {
@@ -78,6 +80,18 @@ CONTACT_PAGE_TERMS = {
     "contact", "contacto", "contactar", "publicidad", "anunciate", "anúnciate",
     "anunciantes", "colabora", "colaboraciones", "colaborar",
 }
+
+
+class TextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self._chunks = []
+
+    def handle_data(self, data):
+        self._chunks.append(data)
+
+    def text(self):
+        return " ".join(" ".join(self._chunks).split())
 
 
 def load_json(path, fallback):
@@ -223,6 +237,49 @@ def google_search(query, api_key, cx):
     return payload.get("items", [])
 
 
+def html_to_text(value):
+    parser = TextExtractor()
+    parser.feed(html.unescape(value or ""))
+    return parser.text()
+
+
+def md_table_cell(value):
+    return str(value or "").replace("|", "\\|").replace("\n", " ").strip()
+
+
+def brave_search(query, api_key):
+    params = urllib.parse.urlencode({
+        "q": query,
+        "count": min(20, MAX_RESULTS_PER_QUERY),
+        "country": "es",
+        "search_lang": "es",
+        "safesearch": "strict",
+    })
+    req = urllib.request.Request(
+        f"https://api.search.brave.com/res/v1/web/search?{params}",
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "astro-cluster-prospecting/1.0",
+            "X-Subscription-Token": api_key,
+        },
+    )
+    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
+    results = []
+    for item in payload.get("web", {}).get("results", []):
+        link = html.unescape(item.get("url", "")).strip()
+        if not link.startswith(("http://", "https://")):
+            continue
+        results.append({
+            "title": html_to_text(item.get("title", "")),
+            "link": link,
+            "snippet": html_to_text(item.get("description", "")),
+        })
+        if len(results) >= MAX_RESULTS_PER_QUERY:
+            break
+    return results
+
+
 def candidate_from(email, result, page_text, today):
     title = html.unescape(result.get("title", "")).strip()
     snippet = html.unescape(result.get("snippet", "")).strip()
@@ -261,7 +318,7 @@ def candidate_from(email, result, page_text, today):
     }
 
 
-def prospect(api_key, cx, existing):
+def prospect_with_search(existing, search_fn):
     today = dt.date.today().isoformat()
     seen = {item.get("email", "").lower() for item in existing}
     queries = load_json(QUERIES_PATH, [])
@@ -272,7 +329,7 @@ def prospect(api_key, cx, existing):
         if len(found) >= MAX_NEW:
             break
         try:
-            results = google_search(query, api_key, cx)
+            results = search_fn(query)
         except urllib.error.HTTPError as exc:
             message = http_error_message(exc)
             if exc.code == 403 and is_custom_search_access_denied(message):
@@ -309,19 +366,29 @@ def prospect(api_key, cx, existing):
     return found, errors
 
 
-def report(existing, added, errors, missing_config, state=None):
+def prospect(api_key, cx, existing):
+    return prospect_with_search(existing, lambda query: google_search(query, api_key, cx))
+
+
+def prospect_brave(api_key, existing):
+    return prospect_with_search(existing, lambda query: brave_search(query, api_key))
+
+
+def report(existing, added, errors, missing_config, state=None, provider="google"):
+    google_required = provider in {"google", "auto"}
     lines = [
         "## Prospección diaria de anunciantes",
         "",
         f"- Candidatos nuevos: **{len(added)}**",
         f"- Total histórico: **{len(existing) + len(added)}**",
+        f"- Proveedor de búsqueda: **{provider}**.",
         f"- Límite de búsqueda por ejecución: **{MAX_QUERIES} consultas x {MAX_RESULTS_PER_QUERY} resultados**.",
         f"- Límite de candidatos nuevos por ejecución: **{MAX_NEW}**.",
         "- Envío automático: **solo si el candidato valida MX y fuente pública en el workflow de captación**.",
         f"- Filtro de fuente pública: **{'página de contacto profesional obligatoria' if REQUIRE_PUBLIC_CONTACT_PAGE else 'email visible en fuente pública'}**.",
         "",
     ]
-    if missing_config:
+    if missing_config and google_required:
         lines += [
             "### Configuración pendiente",
             "",
@@ -340,7 +407,10 @@ def report(existing, added, errors, missing_config, state=None):
     if added:
         lines += ["### Nuevos candidatos", "", "| Email | Nombre | Segmento | Fuente |", "|---|---|---|---|"]
         for item in added:
-            lines.append(f"| `{item['email']}` | {item['name']} | {item['segment']} | {item['source_url']} |")
+            lines.append(
+                f"| `{md_table_cell(item['email'])}` | {md_table_cell(item['name'])} | "
+                f"{md_table_cell(item['segment'])} | {md_table_cell(item['source_url'])} |"
+            )
         lines.append("")
     if errors:
         lines += ["### Incidencias", ""]
@@ -366,13 +436,16 @@ def main():
 
     api_key = os.environ.get("GOOGLE_SEARCH_API_KEY", "").strip()
     cx = os.environ.get("GOOGLE_SEARCH_CX", "").strip()
+    brave_api_key = os.environ.get("BRAVE_SEARCH_API_KEY", "").strip()
     existing = load_json(PROSPECTS_PATH, [])
     state = load_json(STATE_PATH, {})
     missing_config = not api_key or not cx
+    provider = SEARCH_PROVIDER if SEARCH_PROVIDER in {"google", "brave"} else "auto"
 
     added = []
     errors = []
-    if not missing_config:
+    use_brave = (provider == "brave" and bool(brave_api_key)) or (provider == "auto" and missing_config and brave_api_key)
+    if not missing_config and provider in {"auto", "google"}:
         today = dt.date.today()
         fingerprint = config_fingerprint(api_key, cx)
         paused_until = active_access_denied_pause(state, fingerprint, today)
@@ -381,6 +454,7 @@ def main():
                 f"{ACCESS_DENIED_PREFIX} Busqueda pausada hasta {paused_until.isoformat()} "
                 "para evitar reintentos sin valor."
             )
+            use_brave = provider == "auto" and bool(brave_api_key)
         else:
             added, errors = prospect(api_key, cx, existing)
             if any(error.startswith(ACCESS_DENIED_PREFIX) for error in errors):
@@ -390,14 +464,26 @@ def main():
                     "disabled_until": (today + dt.timedelta(days=ACCESS_DENIED_COOLDOWN_DAYS)).isoformat(),
                     "updated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
                 }
+                use_brave = provider == "auto" and bool(brave_api_key)
             elif state.get("reason") == "custom_search_access_denied":
                 state = {}
-        if args.write and added:
-            save_json(PROSPECTS_PATH, existing + added)
-        if args.write:
-            save_json(STATE_PATH, state)
+    elif provider == "google":
+        errors.append("Faltan GOOGLE_SEARCH_API_KEY y/o GOOGLE_SEARCH_CX.")
+    elif provider == "brave" and not brave_api_key:
+        errors.append("Falta BRAVE_SEARCH_API_KEY.")
 
-    body = report(existing, added, errors, missing_config, state)
+    if use_brave and len(added) < MAX_NEW:
+        brave_added, brave_errors = prospect_brave(brave_api_key, existing + added)
+        added += brave_added[: max(0, MAX_NEW - len(added))]
+        errors += [f"Brave Search API: {error}" for error in brave_errors]
+        provider = "brave" if missing_config else "google+brave"
+
+    if args.write and added:
+        save_json(PROSPECTS_PATH, existing + added)
+    if args.write and not missing_config:
+        save_json(STATE_PATH, state)
+
+    body = report(existing, added, errors, missing_config, state, provider)
     if args.report:
         with open(args.report, "w", encoding="utf-8") as fh:
             fh.write(body)
