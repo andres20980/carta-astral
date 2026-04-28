@@ -402,5 +402,195 @@
     "first_seen": "2026-04-28",
     "last_seen": "2026-04-28",
     "score": 18
+  },
+  {
+    "email": "mparisr@gmail.com",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "ppvalera@yahoo.es",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "silvica@gmx.es",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "tarotdelmarchile@gmail.com",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "tarotdemarcelo@gmail.com",
+    "name": "Servicio de Tarot Online, Consulta las Cartas Gratis Primera Sesión",
+    "segment": "tarot",
+    "country_hint": "",
+    "source_url": "https://tellmeapp.site/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 18
+  },
+  {
+    "email": "info@productosesotericoscm.com",
+    "name": "Tienda Esotérica Online | Productos Esotéricos CM",
+    "segment": "tienda esoterica",
+    "country_hint": "",
+    "source_url": "https://productosesotericoscm.com/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 8
+  },
+  {
+    "email": "lacasadeeleggua@hotmail.com",
+    "name": "La Casa De Eleggua | Madrid | Lacasadeeleggua Tienda Esoterica",
+    "segment": "tienda esoterica",
+    "country_hint": "ES",
+    "source_url": "https://www.todosbiz.es/la-casa-de-eleggua",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 6
+  },
+  {
+    "email": "info@eleggua.es",
+    "name": "Comprar productos esotéricos online - Tienda esotérica Madrid y Barcelona - Eleggua",
+    "segment": "tienda esoterica",
+    "country_hint": "ES",
+    "source_url": "https://eleggua.es/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": true,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 3
+  },
+  {
+    "email": "emilio@astrologiaholistica.es",
+    "name": "Contacto: Consultas Personalizadas de Astrología Holística - Astrología Holística",
+    "segment": "astrologia",
+    "country_hint": "ES",
+    "source_url": "https://astrologiaholistica.es/contacto/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": true,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 4
+  },
+  {
+    "email": "antomarpie80@gmail.com",
+    "name": "Consultas",
+    "segment": "astrologia",
+    "country_hint": "",
+    "source_url": "https://www.avastrologia.com/2019/08/quieres-hacer-alguna-consulta.html",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-28",
+    "last_seen": "2026-04-28",
+    "score": 4
   }
 ]
