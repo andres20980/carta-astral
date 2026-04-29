@@ -105,10 +105,34 @@ jobs:
             exit 0
           fi
           if [ "${AD_OUTREACH_MODE}" = "dry-run" ]; then
-            python3 .github/scripts/ad_outreach.py --check-mailbox --validate --sync --report /tmp/ad-outreach-report.md
+            outreach_args=(--check-mailbox --validate --sync --report /tmp/ad-outreach-report.md)
           else
-            python3 .github/scripts/ad_outreach.py --check-mailbox --send --sync --write --report /tmp/ad-outreach-report.md
+            outreach_args=(--check-mailbox --send --sync --write --report /tmp/ad-outreach-report.md)
           fi
+
+          set +e
+          python3 .github/scripts/ad_outreach.py "${outreach_args[@]}" 2> /tmp/ad-outreach-error.log
+          outreach_exit=$?
+          set -e
+
+          if [ "$outreach_exit" -ne 0 ]; then
+            if grep -qi "Gmail API DWD no esta autorizado" /tmp/ad-outreach-error.log; then
+              {
+                echo "## Captación de anunciantes"
+                echo
+                echo "Aviso: Gmail API DWD no autorizado para la service account."
+                echo
+                echo "La ejecución continúa sin envío para no romper el run programado."
+                echo "Detalle técnico:" 
+                echo
+                sed 's/^/- /' /tmp/ad-outreach-error.log
+              } > /tmp/ad-outreach-report.md
+            else
+              cat /tmp/ad-outreach-error.log >&2
+              exit "$outreach_exit"
+            fi
+          fi
+
           cat /tmp/ad-outreach-report.md
 
       - name: "💾 Persistir estado de captación"
