@@ -302,7 +302,7 @@
       "email_visible": true
     },
     "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
-    "status": "approved",
+    "status": "sent",
     "first_seen": "2026-04-28",
     "last_seen": "2026-04-28",
     "score": 9,
@@ -320,7 +320,11 @@
     "validation_status": "valid",
     "validation_reason": "mx_and_public_source_ok",
     "approved_at": "2026-04-28T09:47:50+00:00",
-    "approved_by": "automation"
+    "approved_by": "automation",
+    "sent_at": "2026-04-30T15:22:56+00:00",
+    "last_contacted_at": "2026-04-30T15:22:56+00:00",
+    "message_id": "19ddefc7c48312ca",
+    "thread_id": "19ddefc7c48312ca"
   },
   {
     "email": "consulta@vidente.xyz",
@@ -747,7 +751,7 @@
     "first_seen": "2026-04-28",
     "last_seen": "2026-04-28",
     "score": 6,
-    "validated_at": "2026-04-28T09:48:09+00:00",
+    "validated_at": "2026-04-30T15:22:56+00:00",
     "validation_status": "temporary_error",
     "validation_reason": "source_check_failed: HTTP Error 403: Forbidden"
   },
@@ -765,7 +769,7 @@
       "email_visible": true
     },
     "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
-    "status": "approved",
+    "status": "sent",
     "first_seen": "2026-04-28",
     "last_seen": "2026-04-28",
     "score": 3,
@@ -783,7 +787,11 @@
     "validation_status": "valid",
     "validation_reason": "mx_and_public_source_ok",
     "approved_at": "2026-04-28T09:48:10+00:00",
-    "approved_by": "automation"
+    "approved_by": "automation",
+    "sent_at": "2026-04-30T15:22:56+00:00",
+    "last_contacted_at": "2026-04-30T15:22:56+00:00",
+    "message_id": "19ddefc7ce1b2a5d",
+    "thread_id": "19ddefc7ce1b2a5d"
   },
   {
     "email": "emilio@astrologiaholistica.es",
@@ -803,7 +811,7 @@
     "first_seen": "2026-04-28",
     "last_seen": "2026-04-28",
     "score": 4,
-    "validated_at": "2026-04-28T09:48:17+00:00",
+    "validated_at": "2026-04-30T15:22:56+00:00",
     "validation_status": "temporary_error",
     "validation_reason": "source_check_failed: HTTP Error 404: Not Found"
   },
@@ -852,10 +860,20 @@
       "email_visible": true
     },
     "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
-    "status": "new",
+    "status": "review_required",
     "first_seen": "2026-04-28",
     "last_seen": "2026-04-28",
-    "score": 4
+    "score": 4,
+    "validated_at": "2026-04-30T15:22:57+00:00",
+    "validation_score": 80,
+    "validation_confidence": "high",
+    "validation_signals": [
+      "email_syntax_ok",
+      "domain_mx_ok",
+      "public_source_visible"
+    ],
+    "validation_status": "manual_review",
+    "validation_reason": "personal_mailbox_requires_explicit_approval"
   },
   {
     "email": "hola@cosmograma.com",
@@ -871,10 +889,25 @@
       "email_visible": true
     },
     "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
-    "status": "new",
+    "status": "approved",
     "first_seen": "2026-04-28",
     "last_seen": "2026-04-28",
-    "score": 4
+    "score": 4,
+    "validated_at": "2026-04-30T15:22:58+00:00",
+    "validation_score": 100,
+    "validation_confidence": "high",
+    "validation_signals": [
+      "email_syntax_ok",
+      "domain_mx_ok",
+      "public_source_visible",
+      "mailto_visible",
+      "source_domain_matches_email_domain",
+      "public_contact_local_part"
+    ],
+    "validation_status": "valid",
+    "validation_reason": "mx_and_public_source_ok",
+    "approved_at": "2026-04-30T15:22:58+00:00",
+    "approved_by": "automation"
   },
   {
     "email": "lluisgisbert@geocosmos.es",
@@ -890,10 +923,24 @@
       "email_visible": true
     },
     "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
-    "status": "new",
+    "status": "approved",
     "first_seen": "2026-04-28",
     "last_seen": "2026-04-28",
-    "score": 4
+    "score": 4,
+    "validated_at": "2026-04-30T15:22:59+00:00",
+    "validation_score": 100,
+    "validation_confidence": "high",
+    "validation_signals": [
+      "email_syntax_ok",
+      "domain_mx_ok",
+      "public_source_visible",
+      "mailto_visible",
+      "source_domain_matches_email_domain"
+    ],
+    "validation_status": "valid",
+    "validation_reason": "mx_and_public_source_ok",
+    "approved_at": "2026-04-30T15:22:59+00:00",
+    "approved_by": "automation"
   },
   {
     "email": "exemple@gmail.com",
@@ -909,9 +956,19 @@
       "email_visible": true
     },
     "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
-    "status": "new",
+    "status": "review_required",
     "first_seen": "2026-04-29",
     "last_seen": "2026-04-29",
-    "score": 22
+    "score": 22,
+    "validated_at": "2026-04-30T15:23:00+00:00",
+    "validation_score": 80,
+    "validation_confidence": "high",
+    "validation_signals": [
+      "email_syntax_ok",
+      "domain_mx_ok",
+      "public_source_visible"
+    ],
+    "validation_status": "manual_review",
+    "validation_reason": "personal_mailbox_requires_explicit_approval"
   }
 ]
