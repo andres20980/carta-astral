@@ -9,8 +9,8 @@ DIR="$SITE_DIR/public/signos"
 source "$REPO_ROOT/shared/config.sh"
 GA4="${GA4_IDS[carta-astral]}"
 mkdir -p "$DIR"
-SIGN_PAGE_TITLE_TEMPLATE="Carta Astral {{name}} {{glyph}} — Características y lectura del signo"
-SIGN_PAGE_DESC_TEMPLATE="Descubre {{name}} en la carta astral: fechas ({{dates}}), elemento {{element}}, regente {{ruler}} y cómo influye este signo en tu mapa natal."
+SIGN_PAGE_TITLE_TEMPLATE="Carta Astral {{name}} {{glyph}} — Signo, rasgos y significado natal"
+SIGN_PAGE_DESC_TEMPLATE="Carta astral de {{name}} {{glyph}}: fechas ({{dates}}), elemento {{element}}, planeta regente {{ruler}} y significado en tu carta natal. Calcula tu carta astral gratis."
 
 declare -A SIGNS=(
   [aries]="Aries|♈|21 de marzo – 19 de abril|Fuego|Marte|Cardinal|El primer signo del zodíaco. Aries es pura energía de inicio, impulso y coraje. Los nacidos bajo este signo son pioneros naturales, directos y apasionados. Su regente Marte les da una fuerza de voluntad imparable.|independencia, coraje, entusiasmo, determinación|impaciencia, impulsividad, tendencia a la confrontación|En la carta astral, tener el Sol, la Luna o el Ascendente en Aries indica una personalidad que necesita liderar, actuar y no quedarse quieta. Marte en Aries está domiciliado: su energía es pura y directa."
