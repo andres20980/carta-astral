@@ -974,5 +974,24 @@
     "validation_reason": "example_mailbox_rejected_manual",
     "rejected_at": "2026-04-30T15:34:36+00:00",
     "rejected_by": "manual"
+  },
+  {
+    "email": "info@mundo-de-brujas.com",
+    "name": "Tienda esotérica y religiosa online – Mundo De Brujas",
+    "segment": "tienda esoterica",
+    "country_hint": "",
+    "source_url": "https://mundo-de-brujas.com/",
+    "source_kind": "public_contact_page",
+    "contact_evidence": {
+      "contact_term_in_url": false,
+      "contact_term_in_result": true,
+      "mailto_visible": false,
+      "email_visible": true
+    },
+    "why_fit": "Contacto profesional publicado en una pagina de contacto hispanohablante relacionada con tarot, astrologia o esoterismo.",
+    "status": "new",
+    "first_seen": "2026-04-30",
+    "last_seen": "2026-04-30",
+    "score": 5
   }
 ]
