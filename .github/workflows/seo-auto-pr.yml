@@ -66,7 +66,7 @@ jobs:
           node ../../.github/scripts/seo-auto-pr.js > /tmp/seo-result.json
           changed=$(jq -r '.changedCount' /tmp/seo-result.json)
 
-          if [ "$changed" != "0" ] && [ -f scripts/gen-pages.sh ]; then
+          if [ -f scripts/gen-pages.sh ] && { [ "$changed" != "0" ] || [ ! -f public/sitemap.xml ]; }; then
             bash scripts/gen-pages.sh
           fi
 
